@@ -1,1 +1,1 @@
-# PingMe签到脚本
+# PingMe签到
