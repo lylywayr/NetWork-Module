@@ -1,76 +1,41 @@
 /**
  * ============================================================================
  * 脚本名称：Sub-Store 节点重命名脚本 (SubStore-ReName.js)
- * 版本：4.5
- * 功能：节点重命名、地区识别（支持 Google 自动获取国家）、关键词保留、过滤、排序、添加国旗、去重。
+ * 版本：4.3.2
+ * 功能：节点重命名、地区识别（基于丰富关键词）、关键词保留、过滤、排序、添加国旗、去重。
+ * 更新说明：
+ *   - 移除 Google 国家识别相关代码，恢复纯净脚本。
+ *   - 大幅扩充 rurekey 地区映射关键词，覆盖更多国家代码、城市名、别名。
+ *   - 扩充 pcgn 国内排除关键词（含省份简称、运营商等）。
  * 适用平台：Sub-Store (https://sub-store.app/)
  * 更新日期：2026-06-23
- * 作者：lylywayr
  * 
  * ============================================================================
- * 使用方法：
- * 将本脚本作为 Sub-Store 的“脚本操作”，通过 URL 参数传递配置。
- * 格式：https://raw.githubusercontent.com/你的用户名/仓库名/SubStore-ReName.js#参数1=值&参数2=值...
- * 
- * 所有布尔参数传 =1 启用；gjsb 可传 1 或 2。
- * 
- * ============================================================================
- * 完整参数列表（按功能分组）：
- * 
- * 1. 地区识别与输出格式
- *   in=zh|en|quan|flag       输入识别方式（zh中文，en英文缩写，quan英文全称，flag国旗），默认自动判断
- *   out=zh|en|quan|flag      输出格式（默认同 in 或 zh）
- *   fgf=分隔符               唯一连接符（默认空格，传 0 无连接符）
- *   gjsb=1|2                 Google 国家识别模式：
- *                            1 = 仅补充未包含地区关键词的节点
- *                            2 = 强制所有节点使用 Google 获取的国家信息
- *                            不设置或 0 = 按原有方式处理
- * 
- * 2. 前缀与编号
- *   name=机场名称            添加前缀，通过 fgf 连接
+ * 参数列表（与之前一致，无 Google 相关参数）：
+ *   in=zh|en|quan|flag       输入识别方式
+ *   out=zh|en|quan|flag      输出格式
+ *   fgf=分隔符               唯一连接符
+ *   name=机场名称            添加前缀
  *   one=1                    移除单节点编号
- * 
- * 3. 关键词保留与替换
  *   blkey=关键词1+关键词2>新名  保留自定义关键词，支持替换
- *   blgd=1                   保留固定格式标识（IPLC、IEPL等）
+ *   blgd=1                   保留固定格式标识
  *   bl=1                     倍率显示为 “数字×”
  *   blbz=1                   倍率显示为 “数字倍率”（覆盖 bl）
  *   blcs=1                   测速显示为 “数字Mbps”
  *   blnx=1                   只保留高倍率（>1x）节点
  *   nx=1                     保留 1x 或无倍率节点
  *   blpx=1                   对保留标识排序（特殊优先）
- * 
- * 4. 过滤
- *   clear=1                  清理乱名（套餐、到期、官网、回国等）
- *   pcgn=1                   排除中国大陆节点
+ *   clear=1                  清理乱名
+ *   pcgn=1                   排除中国大陆节点（含省份、城市、运营商等）
  *   key=1                    额外过滤
  *   nm=1                     保留未匹配地区节点
- * 
- * 5. 去重
  *   jdqc=1                   去重（server+port+type 完全一致）
  *   jdqcyg=1                 去重（同一 server 只保留一个，优先级：Snell > hy2/tuic > AnyTLS > Trojan > Vmess > Shadowsocks > Vless > 其他UDP > 其他）
- *                             ★ jdqcyg 优先级高于 jdqc，启用时 jdqc 不生效
- *   jjdqc=1                  仅去重模式。启用后，其他所有参数均不生效，
- *                            只执行去重操作（规则由 jdqc 或 jdqcyg 决定），不进行重命名等操作
- * 
- * 6. 其他
+ *   jjdqc=1                  仅去重模式
  *   flag=1                   添加国旗
  *   blockquic=on|off         控制 block-quic
  *   debug=1                  调试模式（预留）
  * 
- * ============================================================================
- * 使用示例：
- *   # 仅按 server 去重，不重命名（使用 jdqcyg 规则）
- *   https://.../SubStore-ReName.js#jjdqc=1&jdqcyg=1
- * 
- *   # 按 server 去重并重命名（正常模式）
- *   https://.../SubStore-ReName.js#jdqcyg=1&name=机场&flag=1
- * 
- *   # 利用 Google 自动补充无地区节点
- *   https://.../SubStore-ReName.js#gjsb=1&name=机场
- * 
- *   # 强制所有节点使用 Google 国家信息
- *   https://.../SubStore-ReName.js#gjsb=2&name=机场
  * ============================================================================
  */
 
@@ -95,12 +60,6 @@ const jdqc = parseBool(inArg.jdqc);
 const jdqcyg = parseBool(inArg.jdqcyg);
 const jjdqc = parseBool(inArg.jjdqc);
 
-// gjsb：0/未设置=原有方式，1=补充未识别节点，2=完全覆盖
-const gjsb = inArg.gjsb === undefined ? 0 : parseInt(inArg.gjsb);
-
-// Google 国家代码（从 args.cv 获取，SubStore 自动注入）
-const googleCountry = (inArg.cv && inArg.cv.trim()) || '';
-
 const FGF = inArg.fgf === undefined ? " " : (inArg.fgf === "0" ? "" : inArg.fgf);
 const FNAME = inArg.name == undefined ? "" : inArg.name;
 const BLKEY = inArg.blkey == undefined ? "" : inArg.blkey;
@@ -115,7 +74,6 @@ const outputName = nameMap[inArg.out] || "";
 //    顺序必须一一对应
 // ==========================================================================
 
-// 国旗（Emoji）
 const FG = [
   '🇭🇰','🇲🇴','🇹🇼','🇯🇵','🇰🇷','🇸🇬','🇺🇸','🇬🇧','🇫🇷','🇩🇪','🇦🇺','🇦🇪',
   '🇦🇫','🇦🇱','🇩🇿','🇦🇴','🇦🇷','🇦🇲','🇦🇹','🇦🇿','🇧🇭','🇧🇩','🇧🇾','🇧🇪',
@@ -135,7 +93,6 @@ const FG = [
   '🇨🇼','🇸🇨','🇦🇶','🇬🇮','🇨🇺','🇫🇴','🇦🇽','🇧🇲','🇹🇱'
 ];
 
-// 英文缩写
 const EN = [
   'HK','MO','TW','JP','KR','SG','US','GB','FR','DE','AU','AE',
   'AF','AL','DZ','AO','AR','AM','AT','AZ','BH','BD','BY','BE',
@@ -155,7 +112,6 @@ const EN = [
   'CW','SC','AQ','GI','CU','FO','AX','BM','TL'
 ];
 
-// 中文名称
 const ZH = [
   '香港','澳门','台湾','日本','韩国','新加坡','美国','英国','法国','德国','澳大利亚','阿联酋',
   '阿富汗','阿尔巴尼亚','阿尔及利亚','安哥拉','阿根廷','亚美尼亚','奥地利','阿塞拜疆','巴林','孟加拉国','白俄罗斯','比利时',
@@ -175,7 +131,6 @@ const ZH = [
   '库拉索','塞舌尔','南极','直布罗陀','古巴','法罗群岛','奥兰群岛','百慕达','东帝汶'
 ];
 
-// 英文全称
 const QC = [
   'Hong Kong','Macao','Taiwan','Japan','Korea','Singapore','United States','United Kingdom','France','Germany','Australia','Dubai',
   'Afghanistan','Albania','Algeria','Angola','Argentina','Armenia','Austria','Azerbaijan','Bahrain','Bangladesh','Belarus','Belgium',
@@ -199,17 +154,14 @@ const QC = [
 // 2. 正则与关键词
 // ==========================================================================
 
-// specialRegex 用于 blpx 排序
 const specialRegex = [
   /(\d\.)?\d+×/,
   /IPLC|IEPL|Kern|Edge|Pro|Std|Exp|Biz|Fam|Game|Buy|Zx|LB|Game/
 ];
 
-// clear 参数使用的乱名关键词
 const nameclear =
   /(套餐|到期|有效|剩余|版本|已用|过期|失联|测试|官方|网址|备用|群|TEST|客服|网站|获取|订阅|流量|机场|下次|官址|联系|邮箱|工单|学术|USE|USED|TOTAL|EXPIRE|EMAIL|官网|回国)/i;
 
-// blgd 使用的固定格式标识
 const regexArray = [
   /ˣ²/, /ˣ³/, /ˣ⁴/, /ˣ⁵/, /ˣ⁶/, /ˣ⁷/, /ˣ⁸/, /ˣ⁹/, /ˣ¹⁰/,
   /ˣ²⁰/, /ˣ³⁰/, /ˣ⁴⁰/, /ˣ⁵⁰/,
@@ -223,17 +175,18 @@ const valueArray = [
   "Buy","Zx","LB","CF","UDP","GPT","UDPN"
 ];
 
-// 倍率过滤
 const nameblnx = /(高倍|(?!1)2+(x|倍)|ˣ²|ˣ³|ˣ⁴|ˣ⁵|ˣ¹⁰)/i;
 const namenx   = /(高倍|(?!1)(0\.|\d)+(x|倍)|ˣ²|ˣ³|ˣ⁴|ˣ⁵|ˣ¹⁰)/i;
 
-// key 参数过滤
 const keya = /港|Hong|HK|新加坡|SG|Singapore|日本|Japan|JP|美国|United States|US|韩|土耳其|TR|Turkey|Korea|KR|🇸🇬|🇭🇰|🇯🇵|🇺🇸|🇰🇷|🇹🇷/i;
 const keyb = /(((1|2|3|4)\d)|(香港|Hong|HK) 0[5-9]|((新加坡|SG|Singapore|日本|Japan|JP|美国|United States|US|韩|土耳其|TR|Turkey|Korea|KR) 0[3-9]))/i;
 
-// 预替换映射表
+// ==========================================================================
+// 3. 预替换映射表（rurekey）- 已全面扩充
+// ==========================================================================
 const rurekey = {
-  "美国": /美西|美东|洛杉矶|圣何塞|硅谷|俄勒冈|西雅图|达拉斯|亚特兰大|迈阿密|纽约|芝加哥|凤凰城|丹佛|拉斯维加斯|休斯顿|华盛顿|旧金山|USA|America|United States|波特兰|哥伦布/gi,
+  // 美洲
+  "美国": /美西|美东|洛杉矶|圣何塞|硅谷|俄勒冈|西雅图|达拉斯|亚特兰大|迈阿密|纽约|芝加哥|凤凰城|丹佛|拉斯维加斯|休斯顿|华盛顿|旧金山|USA|US|America|United States|美利坚|波特兰|哥伦布/gi,
   "加拿大": /温哥华|多伦多|蒙特利尔|卡尔加里|渥太华|CA|Canada/gi,
   "墨西哥": /墨西哥城|MX|Mexico/gi,
   "巴西": /圣保罗|里约热内卢|巴西利亚|BR|Brazil/gi,
@@ -242,9 +195,10 @@ const rurekey = {
   "哥伦比亚": /波哥大|CO|Colombia/gi,
   "秘鲁": /利马|PE|Peru/gi,
   "委内瑞拉": /加拉加斯|VE|Venezuela/gi,
-  "英国": /伦敦|曼彻斯特|伯明翰|UK|United Kingdom|Britain|Great Britain/gi,
-  "德国": /法兰克福|柏林|慕尼黑|杜塞尔多夫|DE|Germany|Frankfurt/gi,
-  "法国": /巴黎|马赛|里昂|FR|France/gi,
+  // 欧洲
+  "英国": /伦敦|曼彻斯特|伯明翰|UK|GB|United Kingdom|Britain|Great Britain|大不列颠|英伦/gi,
+  "德国": /法兰克福|柏林|慕尼黑|杜塞尔多夫|DE|Germany|德意志/gi,
+  "法国": /巴黎|马赛|里昂|FR|France|法兰西/gi,
   "荷兰": /阿姆斯特丹|鹿特丹|NL|Netherlands/gi,
   "瑞典": /斯德哥尔摩|哥德堡|SE|Sweden/gi,
   "挪威": /奥斯陆|卑尔根|NO|Norway/gi,
@@ -258,16 +212,38 @@ const rurekey = {
   "瑞士": /苏黎世|日内瓦|CH|Switzerland|Zurich/gi,
   "奥地利": /维也纳|AT|Austria/gi,
   "爱尔兰": /都柏林|IE|Ireland/gi,
-  "捷克": /布拉格|CZ|Czech/gi,
+  "捷克": /布拉格|CZ|Czech|捷克共和国/gi,
   "匈牙利": /布达佩斯|HU|Hungary/gi,
   "罗马尼亚": /布加勒斯特|RO|Romania/gi,
   "乌克兰": /基辅|UA|Ukraine/gi,
   "俄罗斯": /莫斯科|圣彼得堡|RU|Russia/gi,
   "土耳其": /伊斯坦布尔|安卡拉|TR|Turkey/gi,
+  "希腊": /雅典|GR|Greece/gi,
+  "白俄罗斯": /明斯克|BY|Belarus/gi,
+  "保加利亚": /索非亚|BG|Bulgaria/gi,
+  "爱沙尼亚": /塔林|EE|Estonia/gi,
+  "拉脱维亚": /里加|LV|Latvia/gi,
+  "立陶宛": /维尔纽斯|LT|Lithuania/gi,
+  "卢森堡": /卢森堡市|LU|Luxembourg/gi,
+  "马耳他": /瓦莱塔|MT|Malta/gi,
+  "塞浦路斯": /尼科西亚|CY|Cyprus/gi,
+  "斯洛伐克": /布拉迪斯拉发|SK|Slovakia/gi,
+  "斯洛文尼亚": /卢布尔雅那|SI|Slovenia/gi,
+  "克罗地亚": /萨格勒布|HR|Croatia/gi,
+  "塞尔维亚": /贝尔格莱德|RS|Serbia/gi,
+  "黑山": /波德戈里察|ME|Montenegro/gi,
+  "北马其顿": /斯科普里|MK|Macedonia/gi,
+  "阿尔巴尼亚": /地拉那|AL|Albania/gi,
+  "格鲁吉亚": /第比利斯|GE|Georgia/gi,
+  "亚美尼亚": /埃里温|AM|Armenia/gi,
+  "阿塞拜疆": /巴库|AZ|Azerbaijan/gi,
+  "摩尔多瓦": /基希讷乌|MD|Moldova/gi,
+  // 亚洲
   "香港": /香港|Hongkong|HONG KONG|HK/gi,
+  "澳门": /澳门|Macao|MO/gi,
   "台湾": /台北|新北|台中|高雄|台南|台(?!.*线)|Taipei|Taiwan|TW/gi,
-  "日本": /东京|大阪|名古屋|福冈|札幌|JP|Japan|Tokyo|Osaka/gi,
-  "韩国": /首尔|春川|KR|Korea|Seoul|Chuncheon/gi,
+  "日本": /东京|大阪|名古屋|福冈|札幌|JP|Japan|东瀛/gi,
+  "韩国": /首尔|春川|KR|Korea|南韩/gi,
   "新加坡": /狮城|SG|Singapore/gi,
   "马来西亚": /吉隆坡|MY|Malaysia/gi,
   "菲律宾": /马尼拉|PH|Philippines/gi,
@@ -282,7 +258,7 @@ const rurekey = {
   "缅甸": /仰光|内比都|MM|Myanmar/gi,
   "老挝": /万象|LA|Laos/gi,
   "柬埔寨": /金边|KH|Cambodia/gi,
-  "阿联酋": /迪拜|阿布扎比|AE|UAE|Dubai/gi,
+  "阿联酋": /迪拜|阿布扎比|AE|UAE|阿拉伯联合酋长国/gi,
   "沙特阿拉伯": /利雅得|吉达|SA|Saudi/gi,
   "以色列": /特拉维夫|耶路撒冷|IL|Israel/gi,
   "伊朗": /德黑兰|IR|Iran/gi,
@@ -291,13 +267,21 @@ const rurekey = {
   "卡塔尔": /多哈|QA|Qatar/gi,
   "阿曼": /马斯喀特|OM|Oman/gi,
   "巴林": /麦纳麦|BH|Bahrain/gi,
+  "哈萨克斯坦": /阿斯塔纳|阿拉木图|KZ|Kazakhstan|Kazakstan/gi,
+  "乌兹别克斯坦": /塔什干|UZ|Uzbekistan/gi,
+  "土库曼斯坦": /阿什哈巴德|TM|Turkmenistan/gi,
+  "吉尔吉斯斯坦": /比什凯克|KG|Kyrgyzstan/gi,
+  "塔吉克斯坦": /杜尚别|TJ|Tajikistan/gi,
+  // 大洋洲
   "澳大利亚": /悉尼|墨尔本|布里斯班|珀斯|阿德莱德|AU|Australia/gi,
   "新西兰": /奥克兰|惠灵顿|NZ|New Zealand/gi,
+  // 非洲
   "南非": /约翰内斯堡|开普敦|比勒陀利亚|ZA|South Africa/gi,
   "埃及": /开罗|亚历山大|EG|Egypt/gi,
   "尼日利亚": /拉各斯|阿布贾|NG|Nigeria/gi,
   "肯尼亚": /内罗毕|蒙巴萨|KE|Kenya/gi,
   "摩洛哥": /卡萨布兰卡|拉巴特|MA|Morocco/gi,
+  // 原有兼容条目（保留）
   GB: /UK/g,
   "B-G-P": /BGP/g,
   "Russia Moscow": /Moscow/g,
@@ -336,37 +320,9 @@ const rurekey = {
 };
 
 // ==========================================================================
-// 3. Google 国家代码映射表
-// ==========================================================================
-
-const googleCountryMap = {
-  'HK': '香港', 'MO': '澳门', 'TW': '台湾',
-  'JP': '日本', 'KR': '韩国', 'SG': '新加坡',
-  'US': '美国', 'GB': '英国', 'UK': '英国',
-  'FR': '法国', 'DE': '德国', 'AU': '澳大利亚',
-  'CA': '加拿大', 'IT': '意大利', 'ES': '西班牙',
-  'NL': '荷兰', 'SE': '瑞典', 'NO': '挪威',
-  'FI': '芬兰', 'DK': '丹麦', 'PL': '波兰',
-  'RU': '俄罗斯', 'TR': '土耳其', 'IN': '印度',
-  'ID': '印度尼西亚', 'MY': '马来西亚', 'PH': '菲律宾',
-  'TH': '泰国', 'VN': '越南', 'AE': '阿联酋',
-  'SA': '沙特阿拉伯', 'IL': '以色列', 'ZA': '南非',
-  'EG': '埃及', 'NG': '尼日利亚', 'BR': '巴西',
-  'AR': '阿根廷', 'CL': '智利', 'MX': '墨西哥',
-  'NZ': '新西兰', 'CH': '瑞士', 'AT': '奥地利',
-  'BE': '比利时', 'BG': '保加利亚', 'CY': '塞浦路斯',
-  'CZ': '捷克', 'EE': '爱沙尼亚', 'GR': '希腊',
-  'HU': '匈牙利', 'IE': '爱尔兰', 'LV': '拉脱维亚',
-  'LT': '立陶宛', 'LU': '卢森堡', 'MT': '马耳他',
-  'PT': '葡萄牙', 'RO': '罗马尼亚', 'SK': '斯洛伐克',
-  'SI': '斯洛文尼亚'
-};
-
-// ==========================================================================
 // 4. 辅助函数
 // ==========================================================================
 
-// 根据参数获取对应的地区列表
 function getList(arg) {
   switch (arg) {
     case 'us':   return EN;
@@ -376,7 +332,6 @@ function getList(arg) {
   }
 }
 
-// 对保留的标识进行分组排序（特殊标识优先）
 function fampx(pro) {
   const wis = [];
   const wnout = [];
@@ -396,7 +351,6 @@ function fampx(pro) {
   return wnout.concat(wis);
 }
 
-// 缓存地区映射表（提高性能）
 let GetK = false, AMK = [];
 function ObjKA(i) {
   GetK = true;
@@ -418,61 +372,11 @@ function getPriority(type) {
   return 9;
 }
 
-// ---------- 检查节点名是否包含地区关键词 ----------
-function hasRegionInName(name) {
-  const regionKeywords = [
-    /香港|HK|HongKong/i,
-    /台湾|TW|Taiwan/i,
-    /新加坡|SG|Singapore/i,
-    /日本|JP|Japan/i,
-    /韩国|韩|KR|Korea/i,
-    /美国|US|America|United States/i,
-    /英国|英|UK|United Kingdom|Britain/i,
-    /德国|德|DE|Germany/i,
-    /法国|法|FR|France/i,
-    /加拿大|加|CA|Canada/i,
-    /澳大利亚|澳洲|AU|Australia/i,
-    /阿联酋|Dubai|UAE|AE/i,
-    /印度|IN|India/i,
-    /印尼|ID|Indonesia/i,
-    /马来西亚|MY|Malaysia/i,
-    /菲律宾|PH|Philippines/i,
-    /泰国|TH|Thailand/i,
-    /越南|VN|Vietnam/i,
-    /土耳其|TR|Turkey/i,
-    /俄罗斯|RU|Russia/i,
-    /意大利|IT|Italy/i,
-    /西班牙|ES|Spain/i,
-    /荷兰|NL|Netherlands/i,
-    /巴西|BR|Brazil/i,
-    /阿根廷|AR|Argentina/i,
-    /南非|ZA|South Africa/i,
-    /埃及|EG|Egypt/i,
-    /新西兰|NZ|New Zealand/i,
-    /瑞士|CH|Switzerland/i,
-    /奥地利|AT|Austria/i,
-    /比利时|BE|Belgium/i,
-    /葡萄牙|PT|Portugal/i,
-    /瑞典|SE|Sweden/i,
-    /挪威|NO|Norway/i,
-    /芬兰|FI|Finland/i,
-    /丹麦|DK|Denmark/i,
-    /波兰|PL|Poland/i,
-    /希腊|GR|Greece/i,
-    /爱尔兰|IE|Ireland/i,
-    /捷克|CZ|Czech/i,
-    /匈牙利|HU|Hungary/i
-  ];
-  return regionKeywords.some(re => re.test(name));
-}
-
 // ==========================================================================
 // 5. 主函数 operator
 // ==========================================================================
 function operator(pro) {
-  // ========================================================================
-  // 第一步：去重（jdqcyg 优先，若启用则忽略 jdqc）
-  // ========================================================================
+  // ---------- 去重 ----------
   if (jdqcyg) {
     const groupMap = new Map();
     pro.forEach(node => {
@@ -504,28 +408,15 @@ function operator(pro) {
     });
   }
 
-  // ========================================================================
-  // 第二步：如果 jjdqc=1，仅去重后直接返回
-  // ========================================================================
+  // 如果 jjdqc=1，仅去重后返回
   if (jjdqc) {
     return pro;
   }
 
-  // ========================================================================
-  // 第三步：准备 Google 国家信息（若 gjsb 启用）
-  // ========================================================================
-  let googleRegion = '';
-  if ((gjsb === 1 || gjsb === 2) && googleCountry) {
-    googleRegion = googleCountryMap[googleCountry.toUpperCase()] || googleCountry;
-  }
-
-  // ========================================================================
-  // 第四步：执行所有其他操作（过滤、重命名等）
-  // ========================================================================
-
-  // ---------- 排除中国大陆节点 ----------
+  // ---------- 排除中国大陆节点（pcgn） ----------
+  // 扩充：增加城市、省份简称、运营商等
   if (pcgn) {
-    const chinaRegex = /(?:^|\s)(北京|上海|广州|深圳|杭州|成都|武汉|南京|重庆|天津|苏州|郑州|长沙|西安|东莞|青岛|沈阳|宁波|昆明|大连|厦门|合肥|佛山|福州|哈尔滨|济南|长春|温州|石家庄|贵阳|常州|徐州|嘉兴|金华|南宁|泉州|呼和浩特|太原|乌鲁木齐|兰州|银川|海口|拉萨|西宁|南昌|中国|国内|CN|China)(?=\s|$)/i;
+    const chinaRegex = /(?:^|\s)(北京|上海|广州|深圳|杭州|成都|武汉|南京|重庆|天津|苏州|郑州|长沙|西安|东莞|青岛|沈阳|宁波|昆明|大连|厦门|合肥|佛山|福州|哈尔滨|济南|长春|温州|石家庄|贵阳|常州|徐州|嘉兴|金华|南宁|泉州|呼和浩特|太原|乌鲁木齐|兰州|银川|海口|拉萨|西宁|南昌|中国|国内|CN|China|河北|山西|辽宁|吉林|黑龙江|江苏|浙江|安徽|福建|江西|山东|河南|湖北|湖南|广东|海南|四川|贵州|云南|陕西|甘肃|青海|台湾省|内蒙古|新疆|西藏|宁夏|广西|香港|澳门|京|津|沪|渝|冀|晋|辽|吉|黑|苏|浙|皖|闽|赣|鲁|豫|湘|粤|琼|川|黔|滇|陕|甘|青|蒙|新|藏|宁|桂)(?=\s|$)/i;
     pro = pro.filter(p => !chinaRegex.test(p.name));
   }
 
@@ -574,7 +465,7 @@ function operator(pro) {
   pro.forEach((e) => {
     let bktf = false, ens = e.name;
 
-    // 预替换（别名统一）
+    // 预替换（rurekey 将别名统一为标准名称）
     Object.keys(rurekey).forEach((ikey) => {
       if (rurekey[ikey].test(e.name)) {
         e.name = e.name.replace(rurekey[ikey], ikey);
@@ -610,7 +501,6 @@ function operator(pro) {
       delete e["block-quic"];
     }
 
-    // blkey（未处理部分）
     if (!bktf && BLKEY) {
       let BLKEY_REPLACE = "", re = false;
       BLKEYS.forEach((i) => {
@@ -624,7 +514,6 @@ function operator(pro) {
       retainKey = re ? BLKEY_REPLACE : BLKEYS.filter((items) => e.name.includes(items));
     }
 
-    // blgd
     let ikey = "", ikeys = "";
     if (blgd) {
       regexArray.forEach((regex, index) => {
@@ -634,7 +523,6 @@ function operator(pro) {
       });
     }
 
-    // 倍率
     const extractRate = bl || blbz;
     if (extractRate) {
       const match = e.name.match(
@@ -648,7 +536,6 @@ function operator(pro) {
       }
     }
 
-    // 测速
     let csStr = "";
     if (blcs) {
       const speedMatch = e.name.match(/(\d+(?:\.\d+)?)\s*([Mm]bps)/);
@@ -657,63 +544,21 @@ function operator(pro) {
       }
     }
 
-    // ---------- 地区匹配（支持 Google 国家识别） ----------
-    // 首先确定该节点应使用的地区名称（用于查找 Allmap）
-    let targetRegion = null;
-
-    // 如果 gjsb == 2，强制使用 Google 地区
-    if (gjsb === 2 && googleRegion) {
-      targetRegion = googleRegion;
-    } else {
-      // 否则先尝试从节点名中提取地区
-      !GetK && ObjKA(Allmap);
-      const findKey = AMK.find(([key]) => e.name.includes(key));
-      if (findKey) {
-        targetRegion = findKey[1]; // 原始地区
-      } else {
-        // 未匹配到地区，且 gjsb == 1 且 googleRegion 有效，则使用 Google 地区
-        if (gjsb === 1 && googleRegion) {
-          targetRegion = googleRegion;
-        }
-      }
-    }
-
-    // 如果 targetRegion 有效，从 Allmap 中获取输出名称
-    let regionOutput = null;
-    if (targetRegion) {
-      // 在 Allmap 中查找（Allmap 的键可以是中文、英文、国旗等，我们需要匹配）
-      const entry = Object.entries(Allmap).find(([key]) => key === targetRegion);
-      if (entry) {
-        regionOutput = entry[1]; // 输出名称（如中文）
-      } else {
-        // 尝试用 targetRegion 直接作为输出（例如用户已经指定了输出格式）
-        regionOutput = targetRegion;
-      }
-    }
+    // ---------- 地区匹配 ----------
+    !GetK && ObjKA(Allmap);
+    const findKey = AMK.find(([key]) => e.name.includes(key));
 
     let usflag = "";
     let regionPure = "";
-    if (regionOutput) {
-      // 如果找到了地区输出，使用它
-      regionPure = regionOutput; // 最终显示的地区名
-
-      // 如果目标地区不在 outList 中，可能无法获取国旗，但我们可以尝试查找
+    if (findKey?.[1]) {
+      regionPure = findKey[1];
       if (addflag) {
         const index = outList.indexOf(regionPure);
         if (index !== -1) {
           usflag = FG[index];
           usflag = usflag === "🇹🇼" ? "🇨🇳" : usflag;
-        } else {
-          // 尝试用 targetRegion 查找（可能是英文缩写等）
-          const altIndex = outList.indexOf(targetRegion);
-          if (altIndex !== -1) {
-            usflag = FG[altIndex];
-            usflag = usflag === "🇹🇼" ? "🇨🇳" : usflag;
-          }
         }
       }
-
-      // 编号
       if (!regionCount[regionPure]) regionCount[regionPure] = 0;
       regionCount[regionPure]++;
       const num = String(regionCount[regionPure]).padStart(2, '0');
@@ -725,7 +570,6 @@ function operator(pro) {
       e.name = usflag ? usflag + (mainPart ? FGF : '') + mainPart : mainPart;
       e._region = regionPure;
     } else {
-      // 未匹配到任何地区
       if (nm) {
         e.name = FNAME ? FNAME + FGF + e.name : e.name;
       } else {
@@ -736,7 +580,6 @@ function operator(pro) {
 
   pro = pro.filter(e => e.name !== null);
 
-  // ---------- one 参数：移除单节点编号 ----------
   if (numone) {
     pro.forEach(e => {
       if (e._region && regionTotal[e._region] === 1) {
@@ -746,10 +589,7 @@ function operator(pro) {
     });
   }
 
-  // ---------- blpx 排序 ----------
   if (blpx) pro = fampx(pro);
-
-  // ---------- key 最终过滤 ----------
   if (key) pro = pro.filter(e => !keyb.test(e.name));
 
   return pro;
