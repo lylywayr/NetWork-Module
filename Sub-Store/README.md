@@ -1,1 +1,1 @@
-# Sub-Store重命名脚本
+# 自用Sub-Store仓库
