@@ -1,17 +1,19 @@
 /**
  * ============================================================================
  * 脚本名称：Sub-Store 节点重命名脚本 (SubStore-ReName.js)
- * 版本：4.3.2
- * 功能：节点重命名、地区识别（基于丰富关键词）、关键词保留、过滤、排序、添加国旗、去重。
+ * 版本：4.3.3
+ * 功能：节点重命名、地区识别（基于丰富关键词）、倍率提取（支持上标如³ˣ）、
+ *       关键词保留、过滤、排序、添加国旗、去重。
  * 更新说明：
- *   - 移除 Google 国家识别相关代码，恢复纯净脚本。
- *   - 大幅扩充 rurekey 地区映射关键词，覆盖更多国家代码、城市名、别名。
- *   - 扩充 pcgn 国内排除关键词（含省份简称、运营商等）。
+ *   - 移除 Google 国家识别相关代码。
+ *   - 大幅扩充 rurekey 地区映射关键词。
+ *   - 新增上标倍率识别（例如 ³ˣ、ˣ²）。
+ *   - 扩充 pcgn 国内排除关键词。
  * 适用平台：Sub-Store (https://sub-store.app/)
- * 更新日期：2026-06-23
+ * 更新日期：2026-06-25
  * 
  * ============================================================================
- * 参数列表（与之前一致，无 Google 相关参数）：
+ * 参数列表（与之前一致）：
  *   in=zh|en|quan|flag       输入识别方式
  *   out=zh|en|quan|flag      输出格式
  *   fgf=分隔符               唯一连接符
@@ -30,7 +32,7 @@
  *   key=1                    额外过滤
  *   nm=1                     保留未匹配地区节点
  *   jdqc=1                   去重（server+port+type 完全一致）
- *   jdqcyg=1                 去重（同一 server 只保留一个，优先级：Snell > hy2/tuic > AnyTLS > Trojan > Vmess > Shadowsocks > Vless > 其他UDP > 其他）
+ *   jdqcyg=1                 去重（同一 server 只保留一个，优先级规则）
  *   jjdqc=1                  仅去重模式
  *   flag=1                   添加国旗
  *   blockquic=on|off         控制 block-quic
@@ -414,7 +416,6 @@ function operator(pro) {
   }
 
   // ---------- 排除中国大陆节点（pcgn） ----------
-  // 扩充：增加城市、省份简称、运营商等
   if (pcgn) {
     const chinaRegex = /(?:^|\s)(北京|上海|广州|深圳|杭州|成都|武汉|南京|重庆|天津|苏州|郑州|长沙|西安|东莞|青岛|沈阳|宁波|昆明|大连|厦门|合肥|佛山|福州|哈尔滨|济南|长春|温州|石家庄|贵阳|常州|徐州|嘉兴|金华|南宁|泉州|呼和浩特|太原|乌鲁木齐|兰州|银川|海口|拉萨|西宁|南昌|中国|国内|CN|China|河北|山西|辽宁|吉林|黑龙江|江苏|浙江|安徽|福建|江西|山东|河南|湖北|湖南|广东|海南|四川|贵州|云南|陕西|甘肃|青海|台湾省|内蒙古|新疆|西藏|宁夏|广西|香港|澳门|京|津|沪|渝|冀|晋|辽|吉|黑|苏|浙|皖|闽|赣|鲁|豫|湘|粤|琼|川|黔|滇|陕|甘|青|蒙|新|藏|宁|桂)(?=\s|$)/i;
     pro = pro.filter(p => !chinaRegex.test(p.name));
@@ -523,8 +524,11 @@ function operator(pro) {
       });
     }
 
+    // ========== 倍率提取（支持上标） ==========
     const extractRate = bl || blbz;
     if (extractRate) {
+      let found = false;
+      // 1) 尝试匹配普通格式（如 x2、2×、倍率 2）
       const match = e.name.match(
         /((倍率|X|x|×)\D?((\d{1,3}\.)?\d+)\D?)|((\d{1,3}\.)?\d+)(倍|X|x|×)/
       );
@@ -532,10 +536,40 @@ function operator(pro) {
         const rev = match[0].match(/(\d[\d.]*)/)[0];
         if (rev !== "1") {
           ikey = blbz ? rev + "倍率" : rev + "×";
+          found = true;
         }
+      }
+      // 2) 若未匹配，尝试上标格式（如 ³ˣ、ˣ²）
+      if (!found) {
+        const superscriptMap = {
+          '¹':'1', '²':'2', '³':'3', '⁴':'4', '⁵':'5',
+          '⁶':'6', '⁷':'7', '⁸':'8', '⁹':'9', '⁰':'0'
+        };
+        // 尝试匹配 数字上标 + ˣ
+        let sm = e.name.match(/([¹²³⁴⁵⁶⁷⁸⁹⁰]+)ˣ/);
+        if (sm) {
+          let numStr = sm[1].split('').map(ch => superscriptMap[ch]).join('');
+          if (numStr && numStr !== "1") {
+            ikey = blbz ? numStr + "倍率" : numStr + "×";
+            found = true;
+          }
+        }
+        if (!found) {
+          // 尝试匹配 ˣ + 数字上标
+          sm = e.name.match(/ˣ([¹²³⁴⁵⁶⁷⁸⁹⁰]+)/);
+          if (sm) {
+            let numStr = sm[1].split('').map(ch => superscriptMap[ch]).join('');
+            if (numStr && numStr !== "1") {
+              ikey = blbz ? numStr + "倍率" : numStr + "×";
+              found = true;
+            }
+          }
+        }
+        // 如果仍不匹配，保持 ikey 为空
       }
     }
 
+    // ---------- 测速 ----------
     let csStr = "";
     if (blcs) {
       const speedMatch = e.name.match(/(\d+(?:\.\d+)?)\s*([Mm]bps)/);
