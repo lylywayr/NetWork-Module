@@ -1,19 +1,19 @@
 /*
  * Telegram 链接重定向 - Surge
  *
- * 模块参数：
+ * 模块参数（不区分大小写）：
  * CLIENT=Telegram | Swiftgram | Turrit | iMe | Nicegram | Lingogram
  *
  * 请将本文件与 Telegram-Redirect.sgmodule 放在同一个 Surge 配置目录。
  */
 
-const SCHEME = {
-  Telegram: "tg",
-  Swiftgram: "sg",
-  Turrit: "turrit",
-  iMe: "ime",
-  Nicegram: "ng",
-  Lingogram: "lingo",
+const CLIENT_SCHEME = {
+  telegram: "tg",
+  swiftgram: "sg",
+  turrit: "turrit",
+  ime: "ime",
+  nicegram: "ng",
+  lingogram: "lingo",
 };
 
 function parseArgument(argument) {
@@ -67,22 +67,22 @@ function makeDeepLink(scheme, path, queryString) {
 
   if (!parts[0]) return "";
 
-  // 处理邀请链接：t.me/+xxxx
+  // 邀请链接：t.me/+xxxx
   if (parts[0].startsWith("+")) {
     return `${scheme}://join?invite=${encode(parts[0].slice(1))}`;
   }
 
-  // 处理旧版邀请链接：t.me/joinchat/xxxx
+  // 旧版邀请链接：t.me/joinchat/xxxx
   if (parts[0] === "joinchat" && parts[1]) {
     return `${scheme}://join?invite=${encode(parts[1])}`;
   }
 
-  // 处理贴纸包：t.me/addstickers/xxxx
+  // 贴纸包：t.me/addstickers/xxxx
   if (parts[0] === "addstickers" && parts[1]) {
     return `${scheme}://addstickers?set=${encode(parts[1])}`;
   }
 
-  // 处理分享链接：t.me/share/url?url=...&text=...
+  // 分享链接：t.me/share/url?url=...&text=...
   if (parts[0] === "share" && parts[1] === "url") {
     const url = queryValue(queryString, "url");
     const text = queryValue(queryString, "text");
@@ -90,14 +90,14 @@ function makeDeepLink(scheme, path, queryString) {
     return `${scheme}://msg_url?url=${encode(url)}&text=${encode(text)}`;
   }
 
-  // 处理频道/群组消息：t.me/channel/123
+  // 频道或群组消息：t.me/channel/123
   if (parts[1] && /^\d+$/.test(parts[1])) {
     return `${scheme}://resolve?domain=${encode(parts[0])}&post=${encode(
       parts[1]
     )}`;
   }
 
-  // 处理普通用户名：t.me/username
+  // 普通用户名：t.me/username
   return `${scheme}://resolve?domain=${encode(parts[0])}`;
 }
 
@@ -108,8 +108,9 @@ if (!urlMatch) {
 } else {
   const args = parseArgument($argument);
 
-  const client = (args.CLIENT || "Telegram").trim();
-  const scheme = SCHEME[client] || SCHEME.Telegram;
+  // 忽略大小写与前后空格；无效值回退到官方 Telegram。
+  const client = (args.CLIENT || "Telegram").trim().toLowerCase();
+  const scheme = CLIENT_SCHEME[client] || CLIENT_SCHEME.telegram;
 
   let tail = urlMatch[1];
 
