@@ -103,8 +103,7 @@ const specialRegex = [
   /IPLC|IEPL|Kern|Edge|Pro|Std|Exp|Biz|Fam|Game|Buy|Zx|LB|Game/
 ];
 
-const nameclear = /套餐|到期|有效期|剩余(?:流量|时间)?|版本|已用|过期|失联|测试|官方|官网|网址|备用|客服|网站|获取|订阅(?:地址|链接)?|流量(?:包|已用|剩余|重置)?|机场|下次|官址|联系|邮箱|工单|学术|回国|更新通知|公告|频道|入口|教程|使用说明|购买|续费|充值|邀请(?:码)?|返利|余额|过期时间|总流量|使用流量|每月重置|维护(?:中)?|失效|不可用|防失联|QQ群|微信群|Telegram(?:群)?|(?:\bTG\b|TG群)|USE(?:D)?|TOTAL|EXPIRE|EMAIL|TEST|TRAFFIC|RESET|SUBSCRIBE|OFFICIAL|NOTICE|CHANNEL|GROUP|RENEW|BUY|PAY|INVITE|BALANCE|HOME|WEB|URL|HTTPS?:\/\//i;
-
+const nameclear = /套餐|到期|有效期|剩余(?:流量|时间)?|版本|已用|过期|失联|测试|官方|官网|网址|备用|客服|网站|获取|订阅(?:地址|链接)?|流量(?:包|已用|剩余|重置)?|机场|下次|官址|联系|邮箱|工单|学术|回国|更新通知|公告|频道|入口|教程|使用说明|购买|续费|充值|邀请(?:码)?|返利|余额|过期时间|总流量|使用流量|每月重置|维护(?:中)?|失效|不可用|防失联|QQ群|微信群|Telegram(?:群)?|(?:\bTG\b|TG群)|USE(?:D)?|TOTAL|EXPIRE|EMAIL|TEST|TRAFFIC|RESET|SUBSCRIBE|OFFICIAL|NOTICE|CHANNEL|GROUP|RENEW|BUY|PAY|INVITE|BALANCE|HOME|WEB|URL|HTTPS?:\/\/|[-—_ ]*以下为.+?区[-—_ ]*/i;
 const regexArray = [
   /ˣ²/, /ˣ³/, /ˣ⁴/, /ˣ⁵/, /ˣ⁶/, /ˣ⁷/, /ˣ⁸/, /ˣ⁹/, /ˣ¹⁰/,
   /ˣ²⁰/, /ˣ³⁰/, /ˣ⁴⁰/, /ˣ⁵⁰/,
