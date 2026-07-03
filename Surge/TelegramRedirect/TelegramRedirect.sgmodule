@@ -4,7 +4,7 @@
 #!arguments-desc=[使用说明]\n\n跳转客户端：填写用于打开 t.me 链接的 Telegram 客户端名称。\n\n可选值：Telegram、Swiftgram、Turrit、iMe、Nicegram、Lingogram。\n\n客户端名称不区分大小写；填写其他值时，自动回退至 Telegram。\n\n使用前请确认已开启 Surge 的 MITM 总开关，并已安装及信任 Surge CA 证书。
 
 [Script]
-Telegram Redirect = type=http-request,pattern=^https?:\/\/t\.me\/.+,script-path=Telegram-Redirect.js,argument=跳转客户端={{{跳转客户端}}},timeout=10,engine=jsc
+Telegram Redirect = type=http-request,pattern=^https?:\/\/t\.me\/.+,https://raw.githubusercontent.com/lylywayr/NetWork-Module/refs/heads/main/Surge/TelegramRedirect/TelegramRedirect.js,argument=跳转客户端={{{跳转客户端}}},timeout=10,engine=jsc
 
 [MITM]
 hostname = %APPEND% t.me
