@@ -1,0 +1,20 @@
+#!name=VVebo
+#!desc=修复用户主页时间线问题，需将本插件置于[微博去广告]之前，并禁用[微博轻享版去广告]，以避免本插件不生效。
+#!author=suiyuran[https://github.com/suiyuran], androidcn[https://github.com/androidcn]
+#!icon=https://raw.githubusercontent.com/sooyaaabo/Loon/main/Icon/App-Icon/VVebo.png
+#!openUrl=https://apps.apple.com/app/id670910957
+#!tag=功能增强
+#!homepage=https://github.com/sooyaaabo/Egern
+#!date=2025-04-17 11:00
+
+[Script]
+VVebo修复时间线 = type=http-request, pattern=^https:\/\/api\.weibo\.cn\/2\/remind\/unread_count\?, script-path=https://raw.githubusercontent.com/suiyuran/stash/main/scripts/fix-vvebo-user-timeline.js
+
+VVebo修复时间线 = type=http-request, pattern=^https:\/\/api\.weibo\.cn\/2\/statuses\/user_timeline\?, script-path=https://raw.githubusercontent.com/suiyuran/stash/main/scripts/fix-vvebo-user-timeline.js
+
+VVebo修复时间线 = type=http-response, pattern=^https:\/\/api\.weibo\.cn\/2\/profile\/statuses\/tab\?, script-path=https://raw.githubusercontent.com/suiyuran/stash/main/scripts/fix-vvebo-user-timeline.js, requires-body=true
+
+VVebo修复我的页面 = type=http-response, pattern=^https:\/\/api\.weibo\.cn\/2\/cardlist\?, script-path=https://raw.githubusercontent.com/suiyuran/stash/main/scripts/fix-vvebo-fans.js, requires-body=true
+
+[MITM]
+hostname = %APPEND% api.weibo.cn

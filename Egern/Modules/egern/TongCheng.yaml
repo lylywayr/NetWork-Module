@@ -1,0 +1,42 @@
+#!name = 同程旅行
+#!desc = 获取Cookie与自动签到（需搭配BoxJs）
+#!author = 樱花
+#!icon = https://raw.githubusercontent.com/Orz-3/mini/master/TongCheng.png
+
+name: "同程旅行"
+description: "获取Cookie与自动签到（需搭配BoxJs）"
+author: "樱花"
+icon: "https://raw.githubusercontent.com/Orz-3/mini/master/TongCheng.png"
+
+env_schema:
+  COOKIE_BTN:
+    name: "获取Cookie"
+    description: "开启后，访问同程页面时将自动抓取登录态"
+    default_value: "true"
+    options: ["true", "false"]
+  SIGN_BTN:
+    name: "签到"
+    description: "开启后，每天9:00自动执行签到"
+    default_value: "true"
+    options: ["true", "false"]
+
+scriptings:
+  - http_request:
+      name: 同程旅行Cookie
+      match: ^https?:\/\/(m\.elong\.com|wx\.17u\.cn|my\.elong\.com|app\.17u\.cn\/welfarecenter\/index\/signIndex)
+      script_url: https://raw.githubusercontent.com/chavyleung/scripts/master/tongcheng-trip/tongcheng-trip.js
+      timeout: 60
+      enabled: "{{ .env.COOKIE_BTN == 'true' }}"
+  - schedule:
+      name: 同程旅行签到
+      cron: "0 9 * * *"
+      script_url: https://raw.githubusercontent.com/chavyleung/scripts/master/tongcheng-trip/tongcheng-trip.js
+      timeout: 60
+      enabled: "{{ .env.SIGN_BTN == 'true' }}"
+
+mitm:
+  hostnames:
+    - m.elong.com
+    - wx.17u.cn
+    - my.elong.com
+    - app.17u.cn

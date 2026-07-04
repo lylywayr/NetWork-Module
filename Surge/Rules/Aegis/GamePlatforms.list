@@ -1,0 +1,294 @@
+# > GamePlatforms.list（游戏平台服务规则集）
+# - 分类：游戏平台 / 数字发行平台
+# - 来源：官方文档 / 本地流量行为分析 / 手动校验 / 持续自维护
+# - 特征：涵盖 Steam、Epic、PlayStation、Nintendo 等主流游戏平台与相关服务域名
+# - 用途：本规则集用于防御性安全研究，禁止用于任何非法用途
+# - 维护：https://github.com/Thoseyearsbrian/Aegis
+# - 更新时间：2026-05-11
+# - 校对时间：2026-05-11
+
+# > Tencent Games Common Services（腾讯游戏通用服务）
+# - 校对时间：2026-05-11
+
+DOMAIN-SUFFIX,tencentgames.com # 腾讯游戏主域名
+DOMAIN-SUFFIX,igame.qq.com # 腾讯游戏平台域名
+DOMAIN-SUFFIX,gamecenter.qq.com # 腾讯游戏中心域名
+DOMAIN-SUFFIX,gvoice.tencent.com # 腾讯语音通信服务域名
+DOMAIN-SUFFIX,dlied1.qq.com # 腾讯游戏下载服务域名
+DOMAIN-SUFFIX,dlied2.qq.com # 腾讯游戏下载服务域名
+DOMAIN-SUFFIX,egame.qq.com # 腾讯游戏服务域名
+
+# > Honor of Kings Services（王者荣耀游戏服务）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,down-update.qq.com # 王者荣耀更新服务域名
+DOMAIN-SUFFIX,downupdate.tyyy.tcdnos.com # 王者荣耀更新分发域名
+DOMAIN-SUFFIX,down.tyyy.tcdnos.com # 王者荣耀资源下载域名
+DOMAIN-SUFFIX,down.ajy.tcdnos.com # 王者荣耀更新分发域名
+DOMAIN-SUFFIX,anticheatexpert.com # 腾讯反作弊服务域名
+DOMAIN-SUFFIX,cschannel.anticheatexpert.com # 腾讯反作弊通信域名
+DOMAIN-SUFFIX,nj.cschannel.anticheatexpert.com # 腾讯反作弊通信节点
+IP-CIDR,182.254.116.117/32 # 腾讯云游戏服务节点
+
+# > Game for Peace Services（和平精英游戏服务）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,ossweb-img.qq.com # 腾讯图片资源域名
+DOMAIN-SUFFIX,jsonatm.broker.tplay.qq.com # 和平精英协议通信域名
+DOMAIN-SUFFIX,cjm.broker.tplay.qq.com # 和平精英协议通信域名
+DOMAIN-SUFFIX,rdt.tfogc.com # 和平精英实时传输域名
+DOMAIN-SUFFIX,down.qq.com # 腾讯下载分发域名
+DOMAIN-SUFFIX,ios-v1.perfsight.qq.com # 腾讯性能监测域名
+DOMAIN-SUFFIX,gpcloud.tgpa.qq.com # 腾讯网络优化域名
+DOMAIN-SUFFIX,api.unipay.qq.com # 腾讯支付接口域名
+DOMAIN-SUFFIX,cgugccdn.pg.qq.com # 和平精英资源分发域名
+DOMAIN-SUFFIX,receiver.tdm.qq.com # 腾讯数据接收域名
+DOMAIN-SUFFIX,szmg.qq.com # 和平精英业务接口域名
+DOMAIN-SUFFIX,game.gtimg.cn # 腾讯游戏静态资源域名
+DOMAIN-SUFFIX,cdn.cn.gcloudcs.com # 腾讯云 CDN 域名
+DOMAIN-SUFFIX,cn.voice.gcloudcs.com # 腾讯云语音通信域名
+DOMAIN-SUFFIX,qosidc.gcloudsdk.com # 腾讯网络调度域名
+IP-CIDR,175.6.84.70/32 # 和平精英实时对战通信节点
+IP-CIDR,101.226.101.163/32 # 腾讯游戏服务节点
+IP-CIDR,27.155.112.58/32 # 和平精英对战通信节点
+IP-CIDR,112.54.207.10/32 # 和平精英实时对战通信节点
+IP-CIDR,222.184.48.140/32 # 和平精英实时对战通信节点
+IP-CIDR,112.13.114.142/32 # 和平精英实时对战通信节点
+IP-CIDR,180.127.11.186/32 # 和平精英实时对战通信节点
+
+# > League of Legends: Wild Rift Services（英雄联盟手游游戏服务）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,down.bdy.tcdnos.com # 英雄联盟手游资源下载域名
+DOMAIN-SUFFIX,down.bytes.tcdnos.com # 英雄联盟手游资源下载域名
+IP-CIDR,180.105.204.17/32 # 腾讯游戏服务节点
+
+# > Delta Force Services（三角洲行动游戏服务）
+# - 校对时间：2026-04-09
+
+DOMAIN-SUFFIX,dir.500638030-2-1.gcloudsvcs.com # 三角洲行动目录服务域名
+DOMAIN-SUFFIX,puffer.500638030-11-1.gcloudsvcs.com # 三角洲行动传输服务域名
+DOMAIN-SUFFIX,df-gcloud.ajy.tcdnos.com # 三角洲行动资源下载域名
+DOMAIN-SUFFIX,df-gcloud.csysw.tcdnos.com # 三角洲行动资源下载域名
+DOMAIN-SUFFIX,df-gcloud.bdy.tcdnos.com # 三角洲行动资源下载域名
+DOMAIN-SUFFIX,df-gcloud.bytes.tcdnos.com # 三角洲行动资源下载域名
+DOMAIN-SUFFIX,df-gcloud.ajy.tcdnos.com # 三角洲行动资源下载域名
+DOMAIN-SUFFIX,df-gcloud.bytes.tcdnos.com # 三角洲行动资源下载域名
+
+# > Genshin Impact Services（原神游戏服务）
+# - 校对时间：2026-04-12
+
+DOMAIN-SUFFIX,mihoyo.com # 米哈游官网及相关服务域名
+DOMAIN-SUFFIX,yuanshen.com # 原神官方网站及游戏服务域名
+DOMAIN-SUFFIX,autopatchcn.yuanshen.com # 原神国服自动更新服务域名
+DOMAIN-SUFFIX,sdk-static.mihoyo.com # 米哈游 SDK 静态资源域名
+DOMAIN-SUFFIX,webstatic.mihoyo.com # 米哈游网页静态资源域名
+DOMAIN-SUFFIX,hk4e-sdk-s.mihoyo.com # 原神 SDK 服务域名
+DOMAIN-SUFFIX,hk4e-ann-api.mihoyo.com # 原神公告与活动接口服务域名
+DOMAIN-SUFFIX,h5log-api-dualstack.mihoyo.com # 米哈游日志接口服务域名
+DOMAIN-SUFFIX,ys-log-upload.mihoyo.com # 原神日志上传服务域名
+DOMAIN-SUFFIX,h5log-api-dualstack.mihoyo.com # 米哈游日志接口服务域名
+DOMAIN-SUFFIX,apm-log-upload-v6.mihoyo.com # 米哈游性能日志上传域名
+DOMAIN-SUFFIX,log-upload-v6.mihoyo.com # 米哈游日志上传域名
+DOMAIN-SUFFIX,ad-log-upload.mihoyo.com # 米哈游广告日志上传域名
+DOMAIN-SUFFIX,sdk-log-upload.mihoyo.com # 米哈游 SDK 日志上传域名
+
+# > Minecraft Mobile Services（我的世界移动版游戏服务）
+# - 校对时间：2026-04-13
+
+DOMAIN-SUFFIX,netease.com # 网易相关平台服务主域名
+DOMAIN-SUFFIX,minecraft.cn # 我的世界中国版官网及相关服务域名
+DOMAIN-SUFFIX,data-detect.nie.netease.com # 网易游戏数据服务域名
+DOMAIN-SUFFIX,drpf-g79.proxima.nie.netease.com # 我的世界移动版资源与连接服务域名
+DOMAIN-SUFFIX,tdid.netease.com # 网易终端标识服务域名
+DOMAIN-SUFFIX,service.mkey.163.com # 网易账号认证与密钥服务域名
+DOMAIN-SUFFIX,g79apigatewayobt.minecraft.cn # 我的世界移动版 API 网关域名
+DOMAIN-SUFFIX,g79mclobt.minecraft.cn # 我的世界移动版客户端接入域名
+DOMAIN-SUFFIX,g79obtapigtcoregray.minecraft.cn # 我的世界移动版核心接入域名
+DOMAIN-SUFFIX,sdkgate.pushv3.netease.com # 网易推送服务网关域名
+DOMAIN-SUFFIX,g79.update.netease.com # 我的世界移动版更新服务域名
+DOMAIN-SUFFIX,hunter.nie.netease.com # 网易业务数据服务域名
+DOMAIN-SUFFIX,nstool.netease.com # 网易 SDK 工具服务域名
+DOMAIN-SUFFIX,api-access.pangolin-sdk-toutiao.com # 穿山甲 SDK 接口域名
+DOMAIN-SUFFIX,client.discovery.minecraft-services.net # Minecraft 客户端服务发现域名
+DOMAIN-SUFFIX,x19.update.netease.com # 网易更新服务域名
+DOMAIN-SUFFIX,applog.matrix.netease.com # 网易应用日志服务域名
+DOMAIN-SUFFIX,drpf-summer.proxima.nie.netease.com # 网易 Proxima 连接与数据服务域名
+DOMAIN-SUFFIX,gate-gz.hunter.netease.com # 网易业务数据接入域名
+DOMAIN-SUFFIX,g79.appdump.nie.netease.com # 我的世界移动版客户端数据服务域名
+
+# > Fantasy Westward Journey Mobile Services（梦幻西游移动端游戏服务）
+# - 校对时间：2026-04-13
+
+DOMAIN-SUFFIX,mpay-translation.g.mkey.163.com # 梦幻西游支付服务接口域名
+DOMAIN-SUFFIX,whoami.nie.tx163.com # 梦幻西游身份识别服务域名
+DOMAIN-SUFFIX,drpf-g18.proxima.nie.netease.com # 梦幻西游资源与连接域名
+DOMAIN-SUFFIX,applog.matrix.netease.com # 网易应用日志服务域名
+DOMAIN-SUFFIX,netlink-sigma.proxima.nie.netease.com # 梦幻西游网络连接服务域名
+DOMAIN-SUFFIX,sigma-performance-g18.proxima.nie.netease.com # 梦幻西游性能日志服务域名
+DOMAIN-SUFFIX,my.update.netease.com # 梦幻西游更新服务域名
+DOMAIN-SUFFIX,mailbox.g.mkey.163.com # 梦幻西游邮件服务域名
+DOMAIN-SUFFIX,skyshow.res.queniukx.cn # 梦幻西游相关资源域名
+IP-CIDR,45.253.137.97/32 # 梦幻西游相关服务节点
+
+# > NetEase Game Network IPv4（网易游戏相关 IPv4 网络段）
+# - 数据来源：https://ipinfo.io/AS45062
+# - 辅助校验：https://bgp.tools/as/45062
+# - 校对时间：2026-04-13
+
+IP-CIDR,42.186.0.0/17 # 网易官方 IPv4 网络段
+IP-CIDR,42.186.128.0/17 # 网易官方 IPv4 网络段
+IP-CIDR,45.253.176.0/20 # 网易官方 IPv4 网络段
+IP-CIDR,103.71.201.0/24 # 网易官方 IPv4 网络段
+
+# > QQ Speed Mobile Services（QQ飞车移动端游戏服务）
+# - 校对时间：2026-04-13
+
+DOMAIN-SUFFIX,download.3.366423425.tc.gcloudgbs.com # QQ飞车移动端游戏资源分发域名
+DOMAIN-SUFFIX,qsm-30034.sz.gfp.tencent-cloud.com # QQ飞车移动端游戏记录资源域名
+DOMAIN-SUFFIX,access1.tpns.tencent.com # 腾讯推送服务接入域名
+
+# > Tencent Game-Related IPv4（腾讯游戏相关 IPv4 网络段）
+# - 数据来源：https://ipinfo.io/AS45090
+# - 辅助校验：https://bgp.tools/as/45090
+# - 校对时间：2026-04-13
+
+IP-CIDR,1.12.0.0/14 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,43.148.0.0/14 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,43.176.0.0/12 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,49.232.0.0/14 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,94.191.0.0/20 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,101.34.64.0/18 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,118.24.64.0/22 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,121.51.68.0/23 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,121.51.70.0/23 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,121.51.72.0/23 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,121.51.80.0/22 # 腾讯游戏相关 IPv4 网络段
+IP-CIDR,139.155.0.0/16 # 腾讯游戏相关 IPv4 网络段
+
+# > Steam Platform（Steam 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,steampowered.com # Steam 平台主域名
+DOMAIN-SUFFIX,steamcommunity.com # Steam 社区域名
+DOMAIN-SUFFIX,steamusercontent.com # Steam 静态资源域名
+DOMAIN-SUFFIX,steamcontent.com # Steam 内容分发域名
+DOMAIN-SUFFIX,steamgames.com # Steam 平台服务域名
+DOMAIN-SUFFIX,valvesoftware.com # Valve 官方网站
+DOMAIN-SUFFIX,csgo.com # Counter-Strike 游戏域名
+DOMAIN-SUFFIX,dota2.com # Dota 2 游戏域名
+DOMAIN-SUFFIX,teamfortress.com # Team Fortress 游戏域名
+DOMAIN-SUFFIX,underlords.com # Dota Underlords 游戏域名
+DOMAIN-SUFFIX,artifact.game # Artifact 游戏域名
+DOMAIN-SUFFIX,api.steampowered.com # Steam API 接口
+
+# > Epic Games Platform（Epic Games 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,epicgames.com # Epic Games 平台主域名
+DOMAIN-SUFFIX,epicgames.dev # Epic Games 开发者服务域名
+DOMAIN-SUFFIX,fortnite.com # Fortnite 游戏域名
+DOMAIN-SUFFIX,unrealengine.com # Unreal Engine 官方平台
+DOMAIN-SUFFIX,rocketleague.com # Rocket League 游戏域名
+
+# > PlayStation Platform（Sony PlayStation 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,playstation.com # PlayStation 官方网站
+DOMAIN-SUFFIX,sonyentertainmentnetwork.com # PlayStation 网络服务域名
+DOMAIN-SUFFIX,playstation.net # PlayStation 服务域名
+DOMAIN-SUFFIX,pscdn.co # PlayStation 静态资源域名
+DOMAIN-SUFFIX,pscp.tv # PlayStation 流媒体服务域名
+
+# > Nintendo Platform（Nintendo 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,nintendo.com # Nintendo 官方网站
+DOMAIN-SUFFIX,nintendoswitch.com # Nintendo Switch 官方网站
+DOMAIN-SUFFIX,nintendo.net # Nintendo 服务域名
+DOMAIN-SUFFIX,nintendo.co.jp # Nintendo 日本站点域名
+DOMAIN-SUFFIX,nshop.nintendo.net # Nintendo eShop 域名
+DOMAIN-SUFFIX,nsu.nintendo.net # Nintendo 系统更新域名
+
+# > Xbox Gaming Services（Xbox 游戏服务）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,xbox.com # Xbox 官方网站
+DOMAIN-SUFFIX,xboxlive.com # Xbox 网络服务域名
+DOMAIN-SUFFIX,xboxservices.com # Xbox 服务域名
+DOMAIN-SUFFIX,xboxab.com # Xbox 业务域名
+DOMAIN-SUFFIX,xbox360.com # Xbox 历史主域名
+DOMAIN-SUFFIX,xboxone.com # Xbox 产品域名
+DOMAIN-SUFFIX,msxbox.com # Xbox 服务域名
+
+# > Riot Games Platform（Riot Games 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,riotgames.com # Riot Games 官方网站
+DOMAIN-SUFFIX,lolstatic.com # Riot Games 静态资源域名
+DOMAIN-SUFFIX,leagueoflegends.com # League of Legends 游戏域名
+DOMAIN-SUFFIX,wildrift.leagueoflegends.com # Wild Rift 游戏域名
+DOMAIN-SUFFIX,valorant.com # VALORANT 游戏域名
+DOMAIN-SUFFIX,teamfighttactics.leagueoflegends.com # Teamfight Tactics 游戏域名
+
+# > Blizzard Entertainment Platform（Blizzard 暴雪游戏平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,battle.net # 平台主域
+DOMAIN-SUFFIX,blizzard.com # 官方网站
+DOMAIN-SUFFIX,overwatch.blizzard.com # 游戏域名
+DOMAIN-SUFFIX,diablo.blizzard.com # 游戏域名
+DOMAIN-SUFFIX,hearthstone.blizzard.com # 游戏域名
+DOMAIN-SUFFIX,starcraft2.com # 游戏域名
+DOMAIN-SUFFIX,worldofwarcraft.com # 游戏域名
+
+# > Ubisoft Platform（Ubisoft 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,ubisoft.com # 官方网站
+DOMAIN-SUFFIX,ubi.com # 服务域名
+DOMAIN-SUFFIX,uplayconnect.com # 连接服务域名
+DOMAIN-SUFFIX,ubisoftconnect.com # 平台域名
+DOMAIN-SUFFIX,ubisoftgroup.com # 集团域名
+
+# > EA Platform（EA / Origin / Apex 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,ea.com # EA 官方网站
+DOMAIN-SUFFIX,origin.com # Origin 平台域名
+DOMAIN-SUFFIX,apexlegends.com # Apex Legends 游戏域名
+DOMAIN-SUFFIX,battlefield.com # Battlefield 游戏域名
+
+# > Rockstar Games Platform（Rockstar Games / RGL 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,rockstargames.com # Rockstar Games 官方网站
+DOMAIN-SUFFIX,socialclub.rockstargames.com # Rockstar 社区域名
+DOMAIN-SUFFIX,rsg.sc # Rockstar 短链接域名
+
+# > Bethesda Platform（Bethesda / Doom / Fallout 平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,bethesda.net # 发行平台域名
+DOMAIN-SUFFIX,doom.com # 游戏域名
+DOMAIN-SUFFIX,fallout.bethesda.net # 游戏域名
+
+# > GOG Platform（GOG 数字游戏平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,gog.com # 平台主域
+DOMAIN-SUFFIX,gog-statics.com # 静态资源域名
+
+# > itch.io Indie Platform（itch.io 独立游戏平台）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,itch.io # 平台主域
+DOMAIN-SUFFIX,itch.zone # 资源域名
+
+# > Game Resources And Engines（游戏资源、模组与引擎服务）
+# - 校对时间：2026-03-30
+
+DOMAIN-SUFFIX,curseforge.com # CurseForge Mod 平台域名
+DOMAIN-SUFFIX,nexusmods.com # Nexus Mods 平台域名
+DOMAIN-SUFFIX,moddb.com # ModDB 平台域名
+DOMAIN-SUFFIX,unity.com # Unity 官方平台

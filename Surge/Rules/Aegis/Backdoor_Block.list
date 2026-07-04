@@ -1,0 +1,135 @@
+# > Backdoor_Block.list（后门行为与恶意活动规则集）
+# - 分类：后门程序 / 远控连接 / 恶意通信基础设施
+# - 来源：全球威胁情报数据库 / 安全社区情报 / 通信行为抓包 / 自定义样本校验
+# - 特征：封锁具备反连、心跳、远程控制特征的通信节点，涵盖 RAT、Sliver、Metasploit 等常见后门工具所依赖的 C2 基础设施
+# - 用途：本规则集用于防御性安全研究，禁止用于任何非法用途
+# - 维护：https://github.com/Thoseyearsbrian/Aegis
+# - 更新时间：2026-06-12
+# - 校对时间：2026-06-12
+
+# > Silver Fox Backdoor Communication Infrastructure（银狐木马后门通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2063346262845685760.html
+# - 校对时间：2026-06-12
+
+DOMAIN-SUFFIX,nwphotoblog.com # 银狐木马相关后门通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,ws.ztts88.cyou # 银狐木马相关后门通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,aeya388.club # 银狐木马相关后门通信域名（微步在线公开情报披露）
+IP-CIDR,206.238.115.58/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+IP-CIDR,154.211.86.110/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+IP-CIDR,43.156.77.97/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+IP-CIDR,103.214.172.33/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+IP-CIDR,18.139.83.110/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+IP-CIDR,112.121.183.202/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+
+# > Silver Fox RAT Delivery and C2 Infrastructure（银狐木马投递与远控基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2030842959356522496.html
+# - 校对时间：2026-04-27
+
+DOMAIN-SUFFIX,time.googledns.io # 银狐木马 DNS C2 通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,time.micrsofthost.com # 银狐木马 C2 通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,time.wkossclsaleklddeff.is # 银狐木马 C2 通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,time.secssl.com # 银狐木马 C2 通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,xiazaiabcd5.cyou # 银狐木马恶意下载投递域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,yandibaiji0203.com # 银狐木马恶意下载投递域名（微步在线公开情报披露）
+IP-CIDR,103.117.103.11/32 # 银狐木马二阶段载荷下载节点（微步在线公开情报披露）
+
+# > Silver Fox Phishing Delivery and Backdoor Infrastructure（银狐木马钓鱼投递与后门基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2046112394325569536.html
+# - 校对时间：2026-04-25
+
+DOMAIN-SUFFIX,missallanahstarr.com # 银狐木马相关后门基础设施域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,a8.share-dns.com # 银狐木马相关动态 DNS 通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,b8.share-dns.net # 银狐木马相关动态 DNS 通信域名（微步在线公开情报披露）
+IP-CIDR,137.220.153.175/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+IP-CIDR,103.115.56.66/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+
+# > Silver Fox Payload Delivery Infrastructure（银狐木马载荷投递基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2043514695680065536.html
+# - 校对时间：2026-04-25
+
+DOMAIN-SUFFIX,pan.tenire.com # 银狐木马相关载荷投递域名（微步在线公开情报披露）
+
+# > Silver Fox Backdoor Infrastructure（银狐木马后门通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2042163568908718080.html
+# - 校对时间：2026-04-25
+
+IP-CIDR,118.107.43.65/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+
+# > Silver Fox Remote Control Infrastructure（银狐木马远控通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2042888472213913600.html
+# - 校对时间：2026-04-25
+
+DOMAIN-SUFFIX,hc15.ime.hk # 银狐木马远控通信域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,bb.kgdhjc.com # 银狐木马远控通信域名（微步在线公开情报披露）
+
+# > Silver Fox Backdoor Communication Nodes（银狐木马后门通信节点）
+# - 数据来源：https://s.threatbook.com/blog/attack/2044663992597450752.html
+# - 校对时间：2026-04-27
+
+IP-CIDR,207.148.123.69/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+IP-CIDR,108.187.4.192/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+IP-CIDR,108.187.7.232/32 # 银狐木马相关通信节点（微步在线公开情报披露）
+IP-CIDR,193.111.117.17/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+
+# > Silver Fox ValleyRAT Backdoor Infrastructure（银狐木马 ValleyRAT 后门通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2044680598048313344.html
+# - 校对时间：2026-04-27
+
+DOMAIN-SUFFIX,usd56789.com # 银狐木马 ValleyRAT 相关基础设施域名（微步在线公开情报披露）
+DOMAIN-SUFFIX,hotshang.com # 银狐木马 ValleyRAT C2 通信域名（微步在线公开情报披露）
+IP-CIDR,1.78.4.252/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,8.217.60.40/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,27.124.21.211/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,27.124.38.151/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,43.129.233.99/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,43.129.233.146/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,43.132.212.111/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,43.132.235.4/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,47.76.86.151/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,47.84.16.249/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,47.239.240.171/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,47.242.153.43/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,101.33.117.200/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,103.68.181.217/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,103.75.13.174/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,108.187.4.252/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,108.187.43.3/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,111.170.36.160/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,111.229.157.84/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,119.28.32.143/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,119.28.41.143/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,124.156.134.223/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,134.122.128.131/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,134.122.155.138/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,143.92.34.55/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,148.66.11.10/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,151.242.152.192/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.39.255.141/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.82.85.12/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.86.18.75/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.86.19.38/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.92.16.22/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,154.92.19.81/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,156.239.225.187/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,156.247.33.53/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,161.248.87.250/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,185.74.222.152/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,192.252.181.62/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,192.252.187.56/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,204.0.57.217/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+IP-CIDR,206.119.175.16/32 # 银狐木马 ValleyRAT 相关通信节点（微步在线公开情报披露）
+
+
+# > Silver Fox Backdoor Communication Infrastructure（银狐木马后门通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2044640794594086912.html
+# - 校对时间：2026-04-27
+
+DOMAIN-SUFFIX,b.clu-e.eu # 银狐木马相关后门通信域名（微步在线公开情报披露）
+IP-CIDR,193.111.117.17/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）
+
+# > Silver Fox Backdoor Communication Infrastructure（银狐木马后门通信基础设施）
+# - 数据来源：https://s.threatbook.com/blog/attack/2028730054033043456.html
+# - 校对时间：2026-04-27
+
+DOMAIN-SUFFIX,dashenbaba3.com # 银狐木马相关后门通信域名（微步在线公开情报披露）
+IP-CIDR,27.124.10.18/32 # 银狐木马相关后门通信节点（微步在线公开情报披露）

@@ -1,0 +1,34 @@
+#!name=微博轻享版
+#!desc=过滤微博轻享版广告
+#!author=Keywos[https://github.com/Keywos], kokoryh[https://github.com/kokoryh]
+#!icon=https://raw.githubusercontent.com/sooyaaabo/Loon/main/Icon/App-Icon/Weibo_intl.png
+#!openUrl=https://apps.apple.com/app/id1215210046
+#!tag=去广告
+#!homepage=https://github.com/sooyaaabo/Egern
+#!date=2025-04-17 11:00
+
+[Map Local]
+# 热门视频、热推荐
+^https?:\/\/api\.weibo\.c(n|om)\/\d\/(cardlist\?v_f=\d|ad\/weibointl\?) data-type=text data="{}" status-code=200
+
+^https?:\/\/weibointl\.api\.weibo\.c(n|om)\/portal\.php\?a=hot_search_users data-type=text data="{}" status-code=200
+
+# 私信中绿洲的擦边诱导推广
+^https?:\/\/weibointl\.api\.weibo\.c(n|om)\/portal\.php\?a=treehole&auth= data-type=text data="{}" status-code=200
+
+^https?:\/\/api\.weibo\.cn\/2\/ad\/weibointl\? data-type=text data="{}" status-code=200
+
+^https?:\/\/weibointl\.api\.weibo\.cn\/portal\.php\?a=get_searching_info& data-type=text data="{"retcode":0,"info":"","data":{"expiration_time":"86400","cards":[{"tip":"搜索微博","word":""}]}}" header="Content-Type:text/html"
+
+^https?:\/\/weibointl\.api\.weibo\.cn\/portal\.php\?ct=feed&a=search_topic& data-type=text data="{"retcode":0,"info":"","data":[],"ext":{}}" header="Content-Type:text/html"
+
+[Script]
+# 趋势页、开屏广告、用户中心、热搜置顶、我的页面 尊享专属、瀑布流去广告
+微博轻享版去广告 = type=http-response, pattern=^https?:\/\/weibointl\.api\.weibo\.cn\/portal\.php\?(ct=(feed&a=trends|user&a=get_searching_info)|a=(get_coopen_ads|user_center|search_topic|open_app&auth|icon_center)), script-path=https://raw.githubusercontent.com/Keywos/rule/master/script/weibo_us/js/index.js, requires-body=true
+
+微博轻享版去广告 = type=http-response, pattern=^https?:\/\/api\.weibo\.cn\/\d\/statuses\/.*timeline, script-path=https://raw.githubusercontent.com/Keywos/rule/master/script/weibo_us/js/index.js, requires-body=true
+
+微博轻享版去广告 = type=http-response, pattern=^https?:\/\/sdkapp\.uve\.weibo\.com\/interface\/sdk\/sdkad\.php, script-path=https://raw.githubusercontent.com/Keywos/rule/master/script/weibo_us/js/index.js, requires-body=true
+
+[MITM]
+hostname = %APPEND% api.weibo.cn, weibointl.api.weibo.cn, open.e.kuaishou.com, mi.gdt.qq.com, tqt.weibo.cn, *biz.weibo.com, *uve.weibo.com, *api.weibo.cn

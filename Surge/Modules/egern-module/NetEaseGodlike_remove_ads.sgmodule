@@ -1,0 +1,33 @@
+# 引用链接: https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/%E7%BD%91%E6%98%93%E5%A4%A7%E7%A5%9E%E5%8E%BB%E5%B9%BF%E5%91%8A.sgmodule
+#!name=网易大神去广告
+#!desc=移除开屏广告，精简我的页面。
+#!author=可莉🅥[https://github.com/luestr/ProxyResource/blob/main/README.md]
+#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NetEaseGodlike.png
+#!category=iKeLee
+#!openUrl=https://apps.apple.com/app/id1359055423
+#!tag=去广告
+#!loon_version=3.2.4(787)
+#!homepage=https://github.com/luestr/ProxyResource/blob/main/README.md
+#!date=2024-12-04 15:48:23
+
+[Rule]
+DOMAIN,httpdns.music.163.com,REJECT,extended-matching,pre-matching
+DOMAIN,httpdns.n.netease.com,REJECT,extended-matching,pre-matching
+DOMAIN,httpdns-sdk.n.netease.com,REJECT,extended-matching,pre-matching
+DOMAIN,httpdns.yunxindns.com,REJECT,extended-matching,pre-matching
+DOMAIN,lofter.httpdns.c.163.com,REJECT,extended-matching,pre-matching
+DOMAIN,music.httpdns.c.163.com,REJECT,extended-matching,pre-matching
+IP-CIDR,59.111.239.61/32,REJECT,no-resolve,pre-matching
+IP-CIDR,59.111.239.62/32,REJECT,no-resolve,pre-matching
+IP-CIDR,115.236.121.51/32,REJECT,no-resolve,pre-matching
+IP-CIDR,115.236.121.195/32,REJECT,no-resolve,pre-matching
+
+[URL Rewrite]
+^https:\/\/god\.gameyw\.netease\.com\/v\d\/ad - reject
+
+[Body Rewrite]
+http-response ^https:\/\/app-conf\.ds\.163\.com\/v1\/app\/base\/conf\/static\/start-config\? \{"os":"all","weight":50\.0,"hidden":false,"name":"游戏"\},\{"os":"all","weight":50\.0,"hidden":false,"name":"频道"\}, null
+
+[MITM]
+hostname = %APPEND% god.gameyw.netease.com, app-conf.ds.163.com
+
