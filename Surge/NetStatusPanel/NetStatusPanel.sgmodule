@@ -1,9 +1,9 @@
-#!name=网络服务解锁面板
-#!desc=检测 YouTube、Netflix、Disney+、Spotify、ChatGPT、Claude、Gemini、Grok 的可用性与延迟；点击面板可刷新。
+#!name=服务解锁概览
+#!desc=紧凑状态概览，点击刷新。
 #!system=ios
 
 [Panel]
-NetStatusPanel = title="网络服务解锁",content="点击刷新以检测",style=info,script-name=NetStatusPanel,update-interval=300
+NetStatusPanel = title="服务解锁",content="加载服务状态...",icon=dot.radiowaves.left.and.right,icon-color=#34C759,script-name=NetStatusPanel,update-interval=300
 
 [Script]
 NetStatusPanel = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/NetStatusPanel/NetStatusPanel.js,timeout=15,engine=auto
