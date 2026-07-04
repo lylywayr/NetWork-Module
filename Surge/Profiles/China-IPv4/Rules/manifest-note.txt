@@ -1,0 +1,1 @@
+Use upstream blobs for local mirror.
