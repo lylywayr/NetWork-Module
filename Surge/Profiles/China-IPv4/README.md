@@ -1,6 +1,6 @@
 # 中国大陆 IPv4 分流配置（Surge）
 
-适用于中国大陆网络环境的 Surge 公开托管配置。
+适用于中国大陆网络环境的 Surge 托管配置。
 
 ## 托管地址
 
@@ -8,18 +8,18 @@
 https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/Profiles/China-IPv4/China-IPv4-Routing.conf
 ```
 
-在 Surge 中通过 URL 添加托管配置即可使用。
+## 使用说明
 
-## 说明
+- 配置保留 MITM、内置证书、脚本、策略组与原有分流逻辑。
+- `我的节点`、`CF优选`、`自建节点` 三个策略组的订阅地址已替换为：`填入你的订阅`。
+- 请在 Surge 本地编辑这三个策略组，填入自己的订阅地址。
+- `Rules` 目录用于存放配置引用的规则集；托管配置会使用本仓库的 Raw 地址。
 
-- 默认 `Proxy` 选择为 `DIRECT`，避免未配置节点时影响网络。
-- 需要代理时，请在本地副本中补充自己的节点或订阅配置。
-- 需要去广告或签到时，请在 Surge App 中按需添加模块。
-- 本仓库版本不包含个人节点、订阅地址、令牌、证书或账户数据。
+## 目录结构
 
-## 特性
-
-- IPv4-only
-- AliDNS 与 DNSPod DoH
-- 常用服务分流与 Cloudflare 分流
-- 新加坡、日本、美国、香港、韩国、台湾及其他地区节点筛选
+```text
+Surge/Profiles/China-IPv4/
+├── China-IPv4-Routing.conf
+├── README.md
+└── Rules/
+```
