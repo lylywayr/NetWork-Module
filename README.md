@@ -1,8 +1,12 @@
 # NetWork-Module
 
-Collected modules, scripts, and configuration files from non-automation repositories.
+网络模块、脚本与配置整理仓库。
 
-## Included sources
+## 整理范围
+
+仅整理非自动化仓库中的模块、脚本、配置等内容。
+
+本次整理主要收录：
 
 - `Surge`
 - `MySelf`
@@ -13,7 +17,7 @@ Collected modules, scripts, and configuration files from non-automation reposito
 - `whos`
 - `resource`
 
-## Excluded automation-style repos
+本次未整理自动化相关仓库：
 
 - `proxy-rulesets`
 - `proxy-rulesets-builder`
@@ -21,25 +25,10 @@ Collected modules, scripts, and configuration files from non-automation reposito
 - `SurgeHub-src`
 - `tv-matrix-core-tvbox-github-pages`
 
-## Structure
+## 目录说明
 
-- `Surge/Modules`: Surge-related modules and companion scripts
-- `Surge/Profiles`: Surge profile and configuration files
-- `Surge/Rules`: Surge rule lists
-- `Egern/Configs`: Egern profiles and base config files
-- `Egern/Modules`: Egern modules
-- `Egern/Rules`: Egern rule files
-- `Egern/Themes`: Egern theme files
-- `Egern/Widgets`: Egern widget files
-- `Clash`: Clash profiles and rules
-- `Loon`: Loon configs and plugins
-- `QuantumultX`: Quantumult X configs
-- `Shadowrocket`: Shadowrocket configs
-- `Stash`: Stash configs and script overrides
-- `Scripts`: general-purpose scripts grouped by source repository
-- `Sub-Store/Scripts`: Sub-Store related scripts
-
-## Notes
-
-- Existing content in this repository was kept in place.
-- Imported files are grouped by platform and source repository to make later updates easier.
+- `Surge`：Surge 模块、配置、规则
+- `Egern`：Egern 模块、规则、主题、组件
+- `Configs`：Clash、Loon、Quantumult X、Shadowrocket、Stash 配置
+- `Scripts`：通用脚本整理
+- `Sub-Store`：Sub-Store 相关脚本
