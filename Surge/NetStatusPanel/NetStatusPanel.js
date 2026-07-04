@@ -1,10 +1,6 @@
 /**
- * 网络服务解锁监测 · Surge Panel 移植版
- * 来源功能：milull/milu 的 Egern GPT-AI 小组件
- * 适配：Surge iOS Information Panel
- *
- * Surge Panel 只支持 title / content / style 文本卡片。
- * 使用单列紧凑清单，避免双列文本在 iOS 面板内自动换行。
+ * 服务解锁概览 · Surge Panel
+ * 以 Surge 原生 Information Panel 的紧凑 2×4 概览形式展示。
  */
 
 const COMMON_HEADERS = {
@@ -13,54 +9,42 @@ const COMMON_HEADERS = {
   "Pragma": "no-cache"
 };
 
-const POLICY_REGION = {
-  "YouTube": "HK",
-  "Netflix": "SG",
-  "Disney+": "SG",
-  "Spotify": "US",
-  "ChatGPT": "US",
-  "Claude": "US",
-  "Gemini": "US",
-  "Grok": "US"
-};
-
-function getFlagEmoji(countryCode) {
-  if (!countryCode || countryCode === "XX" || countryCode === "--") return "";
-  return String(countryCode)
-    .toUpperCase()
-    .replace(/./g, function (char) {
-      return String.fromCodePoint(char.charCodeAt(0) + 127397);
-    });
-}
+const SERVICES = [
+  { name: "YouTube", code: "YT", url: "https://www.youtube.com/generate_204", timeout: 3, redirect: true, ok: function (s) { return s === 204; } },
+  { name: "Netflix", code: "NF", url: "https://www.netflix.com/title/81280792", timeout: 5, redirect: true, ok: function (s) { return s === 200; } },
+  { name: "Disney+", code: "DS", url: "https://www.disneyplus.com/", timeout: 3, redirect: false, ok: function (s) { return s > 0 && s !== 403; } },
+  { name: "Spotify", code: "SP", url: "https://open.spotify.com/", timeout: 3, redirect: false, ok: function (s) { return s === 200; } },
+  { name: "ChatGPT", code: "GPT", url: "https://chatgpt.com/", timeout: 3, redirect: false, ok: function (s) { return s > 0 && s !== 403 && s !== 429; } },
+  { name: "Claude", code: "CL", url: "https://claude.ai/login", timeout: 3, redirect: false, ok: function (s) { return s === 200; } },
+  { name: "Gemini", code: "GM", url: "https://gemini.google.com/app", timeout: 3, redirect: false, ok: function (s) { return s === 200; } },
+  { name: "Grok", code: "GK", url: "https://grok.com/", timeout: 3, redirect: false, ok: function (s) { return s === 200; } }
+];
 
 function httpGet(options) {
   const timeout = Number(options.timeout || 3);
-  return new Promise(function (resolve) {
-    let finished = false;
 
-    function finish(error, response, data) {
-      if (finished) return;
-      finished = true;
+  return new Promise(function (resolve) {
+    let done = false;
+    const finish = function (error, response, data) {
+      if (done) return;
+      done = true;
       resolve({ error: error || null, response: response || null, data: data || "" });
-    }
+    };
 
     const timer = setTimeout(function () {
       finish(new Error("Timeout"));
     }, timeout * 1000 + 250);
 
     try {
-      $httpClient.get(
-        {
-          url: options.url,
-          headers: options.headers || {},
-          timeout: timeout,
-          "auto-redirect": options.autoRedirect !== false
-        },
-        function (error, response, data) {
-          clearTimeout(timer);
-          finish(error, response, data);
-        }
-      );
+      $httpClient.get({
+        url: options.url,
+        headers: COMMON_HEADERS,
+        timeout: timeout,
+        "auto-redirect": options.redirect !== false
+      }, function (error, response, data) {
+        clearTimeout(timer);
+        finish(error, response, data);
+      });
     } catch (error) {
       clearTimeout(timer);
       finish(error);
@@ -68,177 +52,66 @@ function httpGet(options) {
   });
 }
 
-async function timed(task) {
+async function inspect(service) {
   const startedAt = Date.now();
-  try {
-    const result = await task();
-    return Object.assign({}, result, { ms: Date.now() - startedAt });
-  } catch (_) {
-    return { code: "ERR", ms: Date.now() - startedAt };
-  }
-}
-
-async function fetchProxy() {
-  const response = await httpGet({
-    url: "http://ip-api.com/json/?lang=zh-CN&_t=" + Date.now(),
-    timeout: 3,
-    headers: COMMON_HEADERS
-  });
-
-  if (response.error || !response.response) {
-    return { code: "ERR", cc: "XX" };
-  }
-
-  try {
-    const data = JSON.parse(response.data);
-    return {
-      code: data.countryCode ? "OK" : "ERR",
-      cc: data.countryCode || "XX"
-    };
-  } catch (_) {
-    return { code: "ERR", cc: "XX" };
-  }
-}
-
-async function checkStatus(url, timeout, predicate, autoRedirect) {
-  const result = await httpGet({
-    url: url,
-    timeout: timeout,
-    headers: COMMON_HEADERS,
-    autoRedirect: autoRedirect
-  });
-
+  const result = await httpGet(service);
   const status = result.response ? Number(result.response.status) : 0;
-  return { code: !result.error && predicate(status) ? "OK" : "ERR" };
-}
-
-function buildItem(name, result, proxyCountry) {
-  const available = result.code !== "ERR";
-  const region = available ? (POLICY_REGION[name] || proxyCountry || "XX") : "--";
 
   return {
-    name: name,
-    available: available,
-    region: region,
-    ms: Number(result.ms || 0)
+    code: service.code,
+    available: !result.error && service.ok(status),
+    latency: Math.max(0, Date.now() - startedAt)
   };
 }
 
-function statusMark(item) {
-  if (!item.available) return "🔴";
-  if (item.ms >= 1500) return "🟣";
-  return "🟢";
+function latencyText(ms) {
+  if (ms < 1000) return ms + "ms";
+  if (ms < 10000) return (ms / 1000).toFixed(1) + "s";
+  return Math.round(ms / 1000) + "s";
 }
 
-function formatLine(item) {
-  if (!item.available) {
-    return statusMark(item) + " " + item.name + " · 未解锁";
+function marker(item) {
+  if (!item.available) return "×";
+  if (item.latency >= 1500) return "≈";
+  return "✓";
+}
+
+function itemText(item) {
+  return marker(item) + " " + item.code + " " + (item.available ? latencyText(item.latency) : "—");
+}
+
+function compactGrid(items) {
+  const rows = [];
+  for (let index = 0; index < items.length; index += 2) {
+    rows.push(itemText(items[index]) + "    " + itemText(items[index + 1]));
   }
-
-  return statusMark(item) + " " + item.name + " · " +
-    getFlagEmoji(item.region) + " " + item.region + " · " + item.ms + "ms";
+  return rows.join("\n");
 }
 
-function renderContent(items) {
-  return items.map(formatLine).join("\n");
+function iconColor(okCount) {
+  if (okCount === SERVICES.length) return "#34C759";
+  if (okCount === 0) return "#FF453A";
+  return "#FF9F0A";
 }
 
 (async function () {
-  const results = await Promise.all([
-    timed(fetchProxy),
-    timed(function () {
-      return checkStatus(
-        "https://www.youtube.com/generate_204",
-        3,
-        function (status) { return status === 204; },
-        true
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://www.netflix.com/title/81280792",
-        5,
-        function (status) { return status === 200; },
-        true
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://www.disneyplus.com/",
-        3,
-        function (status) { return status !== 403 && status > 0; },
-        false
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://open.spotify.com/",
-        3,
-        function (status) { return status === 200; },
-        false
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://chatgpt.com/",
-        3,
-        function (status) { return status !== 403 && status !== 429 && status > 0; },
-        false
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://claude.ai/login",
-        3,
-        function (status) { return status === 200; },
-        false
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://gemini.google.com/app",
-        3,
-        function (status) { return status === 200; },
-        false
-      );
-    }),
-    timed(function () {
-      return checkStatus(
-        "https://grok.com/",
-        3,
-        function (status) { return status === 200; },
-        false
-      );
-    })
-  ]);
-
-  const proxy = results[0];
-  const items = [
-    buildItem("YouTube", results[1], proxy.cc),
-    buildItem("Netflix", results[2], proxy.cc),
-    buildItem("Disney+", results[3], proxy.cc),
-    buildItem("Spotify", results[4], proxy.cc),
-    buildItem("ChatGPT", results[5], proxy.cc),
-    buildItem("Claude", results[6], proxy.cc),
-    buildItem("Gemini", results[7], proxy.cc),
-    buildItem("Grok", results[8], proxy.cc)
-  ];
-
+  const items = await Promise.all(SERVICES.map(inspect));
   const okCount = items.filter(function (item) { return item.available; }).length;
-  const lockedCount = items.length - okCount;
   const now = new Date();
   const time = String(now.getHours()).padStart(2, "0") + ":" +
     String(now.getMinutes()).padStart(2, "0");
 
   $done({
-    title: "网络服务解锁 · " + okCount + "/8 · " + time,
-    content: renderContent(items),
-    style: lockedCount === 0 ? "good" : (okCount === 0 ? "error" : "alert")
+    title: "服务解锁 · " + okCount + "/8 · " + time,
+    content: compactGrid(items),
+    icon: "dot.radiowaves.left.and.right",
+    "icon-color": iconColor(okCount)
   });
-})().catch(function (error) {
+})().catch(function () {
   $done({
-    title: "网络服务解锁",
-    content: "🔴 检测脚本执行失败\n" + (error && error.message ? error.message : "Unknown error"),
-    style: "error"
+    title: "服务解锁 · 检测失败",
+    content: "× 网络请求异常，请点击刷新重试",
+    icon: "wifi.exclamationmark",
+    "icon-color": "#FF453A"
   });
 });
