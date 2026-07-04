@@ -4,8 +4,7 @@
  * 适配：Surge iOS Information Panel
  *
  * Surge Panel 只支持 title / content / style 文本卡片。
- * 本脚本保留 8 项检测、状态颜色语义、地区标识、延迟与汇总信息，
- * 并以双列文本布局输出。
+ * 使用单列紧凑清单，避免双列文本在 iOS 面板内自动换行。
  */
 
 const COMMON_HEADERS = {
@@ -131,23 +130,17 @@ function statusMark(item) {
   return "🟢";
 }
 
-function formatCell(item) {
-  const region = item.available
-    ? (getFlagEmoji(item.region) + " " + item.region)
-    : "--";
-  const latency = item.available ? item.ms + "ms" : "ERR";
-  const label = (item.name + "        ").slice(0, 8);
-  const text = statusMark(item) + " " + label + " " + region + " " + latency;
+function formatLine(item) {
+  if (!item.available) {
+    return statusMark(item) + " " + item.name + " · 未解锁";
+  }
 
-  return (text + "                         ").slice(0, 27);
+  return statusMark(item) + " " + item.name + " · " +
+    getFlagEmoji(item.region) + " " + item.region + " · " + item.ms + "ms";
 }
 
 function renderContent(items) {
-  const lines = [];
-  for (let index = 0; index < items.length; index += 2) {
-    lines.push(formatCell(items[index]) + "  " + formatCell(items[index + 1]));
-  }
-  return lines.join("\n");
+  return items.map(formatLine).join("\n");
 }
 
 (async function () {
@@ -238,7 +231,7 @@ function renderContent(items) {
     String(now.getMinutes()).padStart(2, "0");
 
   $done({
-    title: "网络服务解锁  " + okCount + "/8 · " + time,
+    title: "网络服务解锁 · " + okCount + "/8 · " + time,
     content: renderContent(items),
     style: lockedCount === 0 ? "good" : (okCount === 0 ? "error" : "alert")
   });
