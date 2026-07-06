@@ -1,0 +1,26 @@
+﻿#!name=鏈哄満娴侀噺淇℃伅Max
+#!desc=鏄剧ず鏈哄満鍓╀綑娴侀噺淇℃伅浠ュ強濂楅鍒版湡鏃ユ湡
+#!category=鏈哄満娴侀噺淇℃伅
+#!arguments=NAME_1:绗竴涓満鍦虹殑鍚嶅瓧,URL_1:缂栫爜鍚庣殑鏈哄満璁㈤槄,RESET-Day_1:閲嶇疆鏃ユ湡,ICON_1:externaldrive.fill.badge.icloud,COLOR_1:#FFB6C1,NAME_2:#绗簩涓満鍦虹殑鍚嶅瓧,URL_2:缂栫爜鍚庣殑鏈哄満璁㈤槄,RESET-Day_2:閲嶇疆鏃ユ湡,ICON_2:internaldrive.fill,COLOR_2:#87CEFA,NAME_3:#绗笁涓満鍦虹殑鍚嶅瓧,URL_3:缂栫爜鍚庣殑鏈哄満璁㈤槄,RESET-Day_3:閲嶇疆鏃ユ湡,ICON_3:externaldrive.connected.to.line.below.fill,COLOR_3:#E980AB,NAME_4:#绗洓涓満鍦虹殑鍚嶅瓧,URL_4:缂栫爜鍚庣殑鏈哄満璁㈤槄,RESET-Day_4:閲嶇疆鏃ユ湡,ICON_4:externaldrive.fill,COLOR_4:#BDDC9D
+#!arguments-desc=[鍙傛暟璁剧疆]\n\n鈸?NAME: 鍐欎綘鏈哄満鐨勫悕瀛?榛樿寮€鍚崟璁㈤槄銆俓n\n鈸?URL: 缂栫爜鍚庣殑鏈哄満璁㈤槄銆俓n\n鈸?RESET_DAY: 娴侀噺姣忔湀閲嶇疆鐨勬棩鏈?濡?6鍙峰氨鍐?6,涓嶈缃垯涓嶆樉绀烘祦閲忛噸缃棩,浠呮樉绀哄埌鏈熸棩鏈熴€俓n\n鈸?ICON: 鑷畾涔夐潰鏉垮浘鏍?闇€涓烘湁鏁堢殑SFSymbolName,濡備笉璁剧疆鍒欓粯璁ゃ€俓n\n鈸?COLOR: 鑷畾涔夊浘鏍囬鑹?闇€涓洪鑹茬殑HEX缂栫爜銆?
+# 鏇存柊鏃ユ湡锛?024.08.03
+# 鐗堟湰锛?.0
+
+[Panel]
+{{{NAME_1}}}=script-name={{{NAME_1}}},update-interval=3600
+
+{{{NAME_2}}}=script-name={{{NAME_2}}},update-interval=3600
+
+{{{NAME_3}}}=script-name={{{NAME_3}}},update-interval=3600
+
+{{{NAME_4}}}=script-name={{{NAME_4}}},update-interval=3600
+
+[Script]
+{{{NAME_1}}}=type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_1}}}&reset_day={{{RESET-Day_1}}}&title={{{NAME_1}}}&icon={{{ICON_1}}}&color={{{COLOR_1}}}
+
+{{{NAME_2}}}=type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_2}}}&reset_day={{{RESET-Day_2}}}&title={{{NAME_2}}}&icon={{{ICON_2}}}&color={{{COLOR_2}}}
+
+{{{NAME_3}}}=type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_3}}}&reset_day={{{RESET-Day_3}}}&title={{{NAME_3}}}&icon={{{ICON_3}}}&color={{{COLOR_3}}}
+
+{{{NAME_4}}}=type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_4}}}&reset_day={{{RESET-Day_4}}}&title={{{NAME_4}}}&icon={{{ICON_4}}}&color={{{COLOR_4}}}
+

@@ -1,0 +1,14 @@
+﻿#!name=Group-Panel
+#!desc=蹇€熷垏鎹㈣妭鐐?
+#!category=娣卞贩鏈夊柕鐨勬ā鍧?
+#!arguments=GROUP:绛栫暐缁勫悕绉?ICON:network,COLOR:#86ABEE
+#!arguments-desc=[鍙傛暟璁剧疆]\n\n鈸?GROUP: 鍐欑瓥鐣ョ粍鍚嶇О銆俓n\n鈸?ICON: 鑷畾涔夐潰鏉垮浘鏍?闇€涓烘湁鏁堢殑SFSymbolName,濡備笉璁剧疆鍒欓粯璁ゃ€俓n\n鈸?COLOR: 鑷畾涔夊浘鏍囬鑹?闇€涓洪鑹茬殑HEX缂栫爜銆?
+# 鏇存柊鏃ユ湡锛?024.09.09
+# 鐗堟湰锛?.3
+
+[Panel]
+Group-Panel = script-name=Group-Panel,update-interval=1
+
+[Script]
+Group-Panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E5%88%86%E7%BB%84%E9%9D%A2%E6%9D%BF/Group-Panel.js,argument=icon={{{ICON}}}&color={{{COLOR}}}&group={{{GROUP}}}
+

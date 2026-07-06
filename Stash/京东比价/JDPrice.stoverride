@@ -1,0 +1,18 @@
+﻿name: 京东历史价格
+desc: 京东历史价格
+
+http:
+  mitm:
+    - "api.m.jd.com"
+  script:
+    - match: ^https?://api\.m\.jd\.com/(client\.action|api)\?functionId=(wareBusiness|serverConfig|basicConfig|lite_wareBusiness|pingou_item)
+      name: JDPrice
+      type: response
+      require-body: true
+      timeout: 10
+      
+script-providers:
+  JDPrice:
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E4%BA%AC%E4%B8%9C%E6%AF%94%E4%BB%B7/JDPrice.js
+    interval:  86400
+

@@ -1,34 +1,23 @@
 # NetWork-Module
 
-网络模块、脚本与配置整理仓库。
+## 说明
+这是仓库根目录。
 
-## 整理范围
+当前仓库按客户端归属整理，只保留模块、面板、小组件和脚本等可复用内容，不再混放不同客户端资源。
 
-仅整理非自动化仓库中的模块、脚本、配置等内容。
-
-本次整理主要收录：
-
+## 客户端目录
 - `Surge`
-- `MySelf`
-- `Aegis`
-- `egern-module`
-- `Egerny`
-- `egern`
-- `whos`
-- `resource`
+- `Sub-Store`
+- `Egern`
+- `Loon`
+- `QuantumultX`
+- `Stash`
+- `Clash`
+- `Shadowrocket`
 
-本次未整理自动化相关仓库：
-
-- `proxy-rulesets`
-- `proxy-rulesets-builder`
-- `SurgeHub`
-- `SurgeHub-src`
-- `tv-matrix-core-tvbox-github-pages`
-
-## 目录说明
-
-- `Surge`：Surge 模块、配置、规则
-- `Egern`：Egern 模块、规则、主题、组件
-- `Configs`：Clash、Loon、Quantumult X、Shadowrocket、Stash 配置
-- `Scripts`：通用脚本整理
-- `Sub-Store`：Sub-Store 相关脚本
+## 结构规则
+- 一级目录是仓库根目录。
+- 二级目录是客户端目录。
+- 三级目录是具体模块目录。
+- 每一级目录都保留 `README.md` 说明用途和维护方式。
+- 模块目录内放同一功能的模块文件、依赖脚本和来源说明。

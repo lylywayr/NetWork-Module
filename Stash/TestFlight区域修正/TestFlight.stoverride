@@ -1,0 +1,20 @@
+﻿name: TestFlight区域限制解除
+desc: 适用于更新TestFlight App时, 提示"APP不可用"问题.⚠️本脚本功能已包含在“TestFlight账户管理”里，可不再单独安装此脚本⚠️
+
+# ⚠️请注意，本脚本功能已包含在“TestFlight账户管理”里，如仅需使用该脚本功能请务必禁用“TestFlight账户管理”，否则可能出现APP安装异常！⚠️
+
+http:
+  mitm:
+    - "testflight.apple.com"
+  script:
+    - match: ^https?:\/\/testflight\.apple\.com\/v\d\/accounts\/.+?\/install$
+      name: tf
+      type: request
+      require-body: true
+      timeout: 10
+      
+script-providers:
+  tf:
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/TestFlight%E5%8C%BA%E5%9F%9F%E4%BF%AE%E6%AD%A3/TF_Download.js
+    interval: 86400
+

@@ -1,9 +1,0 @@
-#!name=网络解锁监测
-#!desc=检测 Netflix、Disney+、ChatGPT、Claude、Gemini 解锁状态
-#!author=lylywayr
-#!version=0.2
-#!icon=antenna.radiowaves.left.and.right
-#!color=#32D74B
-
-[Panel]
-网络解锁监测 = script-path=https://raw.githubusercontent.com/lylywayr/egern/refs/heads/main/SURGE-GPT-AI.js

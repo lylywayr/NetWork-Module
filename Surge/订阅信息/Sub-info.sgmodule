@@ -1,0 +1,14 @@
+﻿#!name=鏈哄満娴侀噺淇℃伅
+#!desc=鏄剧ず鏈哄満鍓╀綑娴侀噺淇℃伅浠ュ強濂楅鍒版湡鏃ユ湡
+#!category=鏈哄満娴侀噺淇℃伅
+#!arguments=NAME:鏈哄満鍚嶅瓧,URL:缂栫爜鍚庣殑鏈哄満璁㈤槄,RESET_Day:閲嶇疆鏃ユ湡,ICON:externaldrive.fill.badge.icloud,COLOR:#FFB6C1
+#!arguments-desc=[鍙傛暟璁剧疆]\n\n鈸?NAME: 鍙慨鏀规垚浣犳満鍦虹殑鍚嶅瓧銆俓n\n鈸?URL: 缂栫爜鍚庣殑鏈哄満璁㈤槄銆俓n\n鈸?RESET_DAY: 娴侀噺姣忔湀閲嶇疆鐨勬棩鏈?濡?6鍙峰氨鍐?6,涓嶈缃垯涓嶆樉绀烘祦閲忛噸缃棩,浠呮樉绀哄埌鏈熸棩鏈熴€俓n\n鈸?ICON: 鑷畾涔夐潰鏉垮浘鏍?闇€涓烘湁鏁堢殑SFSymbolName,濡備笉璁剧疆鍒欓粯璁ゃ€俓n\n鈸?COLOR: 鑷畾涔夊浘鏍囬鑹?闇€涓洪鑹茬殑HEX缂栫爜,濡備笉璁剧疆鍒欓粯璁や负"#FFB6C1"銆?
+# 鏇存柊鏃ユ湡锛?024.08.03
+# 鐗堟湰锛?.0
+
+[Panel]
+{{{NAME}}}=script-name={{{NAME}}},update-interval=3600
+
+[Script]
+{{{NAME}}}=type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL}}}&reset_day={{{RESET_Day}}}&title={{{NAME}}}&icon={{{ICON}}}&color={{{COLOR}}}
+

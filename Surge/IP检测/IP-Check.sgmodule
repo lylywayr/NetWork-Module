@@ -1,0 +1,12 @@
+﻿#!name=IP-Check
+#!desc=鏌ョ湅鑺傜偣IP淇℃伅
+#!category=娣卞贩鏈夊柕鐨勬ā鍧?
+# 鏇存柊鏃ユ湡锛?024.09.09
+# 鐗堟湰锛?.3
+
+[Panel]
+IP-Check = script-name=IP-Check, title="鑺傜偣璇︽儏", content="璇峰埛鏂?, style=info, update-interval=1
+
+[Script]
+IP-Check = type=generic,timeout=3,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/IP%E6%A3%80%E6%B5%8B/IP-Check.js
+
