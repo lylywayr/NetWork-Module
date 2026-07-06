@@ -5,10 +5,10 @@
 @Description: 自动抓取 whos.tv Cookie，每日签到，并通过客户端本地通知结果。
 
 [rewrite_local]
-^https:\/\/whos\.tv\/api\/(login|user\/profile|user\/statistics|user\/tasks\/today-points|user\/tasks\/signin) url script-request-header https://raw.githubusercontent.com/imzwr214/whos/main/WhosTVSignin.js
+^https:\/\/whos\.tv\/api\/(login|user\/profile|user\/statistics|user\/tasks\/today-points|user\/tasks\/signin) url script-request-header https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/QuantumultX/WhosTV%E7%AD%BE%E5%88%B0/WhosTVSignin.js
 
 [task_local]
-30 8 * * * https://raw.githubusercontent.com/imzwr214/whos/main/WhosTVSignin.js, tag=WhosTV 自动签到, enabled=true
+30 8 * * * https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/QuantumultX/WhosTV%E7%AD%BE%E5%88%B0/WhosTVSignin.js, tag=WhosTV 自动签到, enabled=true
 
 [mitm]
 hostname = whos.tv

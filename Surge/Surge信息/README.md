@@ -1,14 +1,14 @@
-﻿# Surge信息
+# Surge信息
 
-## Purpose
-Show Surge runtime info and expose a quick profile reload panel.
+## 说明
+这是 `Surge` 的运行状态面板目录，用来查看运行信息并提供一键重载配置功能。
 
-## How To Use
-- Install SurgePro.sgmodule in Surge.
-- Use the panel to inspect status and reload the profile.
+## 使用方法
+- 在 `Surge` 中导入 `SurgePro.sgmodule`。
+- 刷新面板后可查看状态，点击可执行配置重载。
 
-## Upstream Module URLs
+## 上游模块地址
 - https://github.com/Rabbit-Spec/Surge/tree/Master/Module/Panel/Surge-Pro
 
-## Upstream Script URLs
+## 上游脚本地址
 - https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Surge-Pro/Moore/SurgePro.js

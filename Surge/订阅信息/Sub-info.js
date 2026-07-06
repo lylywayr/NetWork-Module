@@ -9,7 +9,7 @@
 ----------------------------------------
 
 [Script]
-Sub_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/mieqq/mieqq/master/sub_info_panel.js,script-update-interval=0,argument=url=[URL encode 后的机场节点链接]&reset_day=1&title=Nexitally&icon=externaldrive.fill.badge.icloud&color=#007aff
+Sub_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url=[URL encode 后的机场节点链接]&reset_day=1&title=Nexitally&icon=externaldrive.fill.badge.icloud&color=#007aff
 
 [Panel]
 Sub_info = script-name=Sub_info,update-interval=600

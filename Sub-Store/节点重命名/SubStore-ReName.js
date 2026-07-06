@@ -15,7 +15,7 @@
  *
  * 使用方式：
  * 在 Sub-Store 的“脚本操作”中引用本脚本，并以 URL # 片段传参：
- * https://raw.githubusercontent.com/你的用户名/仓库名/SubStore-ReName.js#参数1=值&参数2=值
+ * https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Sub-Store/%E8%8A%82%E7%82%B9%E9%87%8D%E5%91%BD%E5%90%8D/SubStore-ReName.js#参数1=值&参数2=值
  *
  * 布尔参数：1 / true 为启用；0 或不传为关闭。
  *

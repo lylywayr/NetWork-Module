@@ -1,14 +1,14 @@
-﻿# 分组面板
+# 分组面板
 
-## Purpose
-Show the current node used by a selected policy group.
+## 说明
+这是 `Surge` 的策略组面板目录，用来显示指定策略组当前正在使用的节点。
 
-## How To Use
-- Install Group-Panel.sgmodule in Surge.
-- Set the target policy group with module arguments.
+## 使用方法
+- 在 `Surge` 中导入 `Group-Panel.sgmodule`。
+- 通过模块参数填写目标策略组名称。
 
-## Upstream Module URLs
+## 上游模块地址
 - https://github.com/Rabbit-Spec/Surge/tree/Master/Module/Panel/Group-Panel
 
-## Upstream Script URLs
+## 上游脚本地址
 - https://raw.githubusercontent.com/fishingworld/something/main/groupPanel.js

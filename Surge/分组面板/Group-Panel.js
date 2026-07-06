@@ -12,7 +12,7 @@
 Group-Panel = script-name=Group-Panel,update-interval=1
 
 [Script]
-Group-Panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/fishingworld/something/main/groupPanel.js,argument=icon=network&color=#86abee&group=Master
+Group-Panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E5%88%86%E7%BB%84%E9%9D%A2%E6%9D%BF/Group-Panel.js,argument=icon=network&color=#86abee&group=Master
   对应参数：
 	icon：图标
 	color：图标颜色

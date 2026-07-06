@@ -1,14 +1,14 @@
-﻿# IP检测
+# IP检测
 
-## Purpose
-Show exit IP and region details for the current node.
+## 说明
+这是 `Surge` 的出口 IP 检测面板目录，用来查看当前节点的 IP、地区和运营商信息。
 
-## How To Use
-- Install IP-Check.sgmodule in Surge.
-- Refresh the panel to view node details.
+## 使用方法
+- 在 `Surge` 中导入 `IP-Check.sgmodule`。
+- 刷新面板后查看当前节点详情。
 
-## Upstream Module URLs
+## 上游模块地址
 - https://github.com/Rabbit-Spec/Surge/tree/Master/Module/Panel/IP-Check
 
-## Upstream Script URLs
+## 上游脚本地址
 - https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/IP-Check/Moore/IP-Check.js

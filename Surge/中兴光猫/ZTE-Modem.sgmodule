@@ -1,7 +1,6 @@
-﻿[Script]
-# 姣?5 鍒嗛挓鑷姩鏇存柊涓€娆￠潰鏉夸俊鎭?
-ZTE_Modem_Status = type=generic, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js, timeout=10
+[Script]
+# 每 5 分钟刷新一次面板信息
+ZTE_Modem_Status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js,timeout=10
 
-# 姣忓ぉ鍑屾櫒 4 鐐硅嚜鍔ㄥ鏃?
-ZTE_Time_Sync = type=cron, cronexp="0 4 * * *", script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js, argument="sync"
-
+# 每天凌晨 4 点执行一次时间同步
+ZTE_Time_Sync = type=cron,cronexp="0 4 * * *",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js,argument="sync"

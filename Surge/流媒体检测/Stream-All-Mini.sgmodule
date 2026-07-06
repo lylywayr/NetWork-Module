@@ -1,14 +1,11 @@
-﻿#!name=娴佸獟浣撹В閿佹娴?
-#!desc=Netflix, Disney+, YouTube Unlock Detection
-#!category=娣卞贩鏈夊柕鐨勬ā鍧?
-#!arguments=UPDATE_INTERVAL:7200,TITLE:娴佸獟浣撹В閿佹娴?ICON:play.tv.fill,COLOR:#FF2D55
-#!arguments-desc=[鍙傛暟璁剧疆]\n1. UPDATE_INTERVAL: 鑷畾涔夐潰鏉跨殑鍒锋柊闂撮殧鏃堕棿,鍗曚綅涓虹,榛樿姣?200绉掑埛鏂颁竴娆?\n2. TITLE: 鑷畾涔夐潰鏉挎爣棰?榛樿涓?娴佸獟浣撹В閿佹娴?;\n3. ICON: 鑷畾涔夐潰鏉垮浘鏍?榛樿涓?play.tv.fill";\n4. COLOR: 鑷畾涔夊浘鏍囬鑹?榛樿涓?#FF2D55";\n\n[妯″潡鎻忚堪]\n鈻庢湰妯″潡鐢ㄤ簬妫€娴婲etflix,Disney+,YouTube鐨勮В閿佺姸鎬佹煡璇?\n鈻庝笁绉嶇姸鎬佹樉绀?鈽?琛ㄧず鏀寔瑙ｉ攣,"鈽?琛ㄧず涓嶆敮鎸佽В閿?"N/A"琛ㄧず妫€娴嬭秴鏃舵垨寮傚父;\n鈻庡湴鍖轰唬鐮佺缉鍐欒〃绀哄凡瑙ｉ攣鍦板尯;
-# 鏇存柊鏃ユ湡锛?024.09.09
-# 鐗堟湰锛?.3
+#!name=流媒体检测 Mini
+#!desc=精简版流媒体解锁检测面板
+#!category=面板模块
+#!arguments=UPDATE_INTERVAL:7200,TITLE:流媒体检测,ICON:play.tv.fill,COLOR:#FF2D55
+#!arguments-desc=[参数说明]\n1. UPDATE_INTERVAL: 面板自动刷新间隔，单位为秒。\n2. TITLE: 面板标题。\n3. ICON: 面板图标，需为有效 SF Symbol 名称。\n4. COLOR: 图标颜色，使用十六进制颜色值。
 
 [Panel]
-Panel = script-name=娴佸獟浣撹В閿佹娴?update-interval={{{UPDATE_INTERVAL}}}
+Panel = script-name=流媒体检测,update-interval={{{UPDATE_INTERVAL}}}
 
 [Script]
-娴佸獟浣撹В閿佹娴?= type=generic,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%B5%81%E5%AA%92%E4%BD%93%E6%A3%80%E6%B5%8B/Stream-All-Mini.js,script-update-interval=0,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}
-
+流媒体检测 = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%B5%81%E5%AA%92%E4%BD%93%E6%A3%80%E6%B5%8B/Stream-All-Mini.js,script-update-interval=0,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}

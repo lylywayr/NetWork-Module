@@ -1,14 +1,14 @@
-﻿# 接口信息
+# 接口信息
 
-## Purpose
-Show interface speed and traffic info, with normal and compact variants.
+## 说明
+这是 `Surge` 的网络接口信息面板目录，用来显示接口速度和流量信息。
 
-## How To Use
-- Install interface-info-normal.sgmodule or interface-info-ncompact.sgmodule.
-- Choose the style you prefer.
+## 使用方法
+- 在 `Surge` 中导入 `interface-info-normal.sgmodule` 或 `interface-info-ncompact.sgmodule`。
+- 根据需要选择常规版或紧凑版样式。
 
-## Upstream Module URLs
+## 上游模块地址
 - https://github.com/Rabbit-Spec/Surge/tree/Master/Module/Panel/Interface-Info
 
-## Upstream Script URLs
+## 上游脚本地址
 - https://raw.githubusercontent.com/xream/scripts/main/surge/modules/interface-info/interface-info.js

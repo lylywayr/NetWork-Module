@@ -1,14 +1,11 @@
-﻿#!name=Flush DNS
-#!desc=蹇€熸竻闄urge鐨凞NS缂撳瓨
-#!category=娣卞贩鏈夊柕鐨勬ā鍧?
+#!name=Flush DNS
+#!desc=快速清理 Surge DNS 缓存
+#!category=面板模块
 #!arguments=TITLE:DNS Flush,ICON:cube,COLOR:#AFE59A
-#!arguments-desc=[鍙傛暟璁剧疆]\n\n鈸?TITLE: 鑷畾涔夐潰鏉挎爣棰樸€俓n\n鈸?ICON: 鑷畾涔夐潰鏉垮浘鏍?闇€涓烘湁鏁堢殑SFSymbolName,濡備笉璁剧疆鍒欓粯璁ゃ€俓n\n鈸?COLOR: 鑷畾涔夊浘鏍囬鑹?闇€涓洪鑹茬殑HEX缂栫爜銆?
-# 鏇存柊鏃ユ湡锛?024.09.09
-# 鐗堟湰锛?.2
+#!arguments-desc=[参数说明]\n1. TITLE: 面板标题。\n2. ICON: 面板图标，需为有效 SF Symbol 名称。\n3. COLOR: 图标颜色，使用十六进制颜色值。
 
 [Panel]
 FlushDNS = script-name=FlushDNS,update-interval=600
 
 [Script]
 FlushDNS = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E5%88%B7%E6%96%B0DNS/Flush-DNS.js,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}&server=false
-

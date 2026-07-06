@@ -1,14 +1,14 @@
-﻿# 中兴光猫
+# 中兴光猫
 
-## Purpose
-Monitor a ZTE modem and optionally run scheduled time sync.
+## 说明
+这是 `Surge` 的中兴光猫状态面板目录，用来查看光猫状态，并可按计划执行时间同步。
 
-## How To Use
-- Install ZTE-Modem.sgmodule in Surge.
-- Edit the modem IP and credentials at the top of ZTE_Panel.js before use.
+## 使用方法
+- 在 `Surge` 中导入 `ZTE-Modem.sgmodule`。
+- 使用前先修改 `ZTE_Panel.js` 顶部的光猫地址和登录信息。
 
-## Upstream Module URLs
+## 上游模块地址
 - https://github.com/Rabbit-Spec/ZTE-Modem-TimeSync-Shortcut
 
-## Upstream Script URLs
-- Local script in this repository: ZTE_Panel.js
+## 上游脚本地址
+- 当前仓库本地维护脚本：`ZTE_Panel.js`
