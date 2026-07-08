@@ -3,16 +3,16 @@
  *
  * 基于备份 3：
  * - UI 布局不变
- * - 仅保留 POLICY 和 YS 两个环境变量
+ * - 环境变量：POLICY / YS / XY
  * - POLICY：指定策略组
  * - YS=1：显示 IP 的地方启用隐私打码，例如 123.123.123.123 -> 123.123.*.*
  * - YS=0 或不设置：不打码
+ * - XY：手动指定协议，例如 VLESS / Trojan / HY2 / AnyTLS
+ * - XY 未设置：继续按原逻辑从 Egern 上下文 / 节点元数据 / 节点名尝试识别
  * - 本地网络移动数据名称通过直连出口 ISP / ASN 识别运营商
- * - 当前代理协议通过 Egern 上下文 / 节点元数据 / 节点名真实识别
- * - 识别不到协议时显示“未暴露”，不伪造
- * - UDP/QUIC 完整显示
+ * - UDP/QUIC 使用多个 HTTP/3 / QUIC 接口检测，任意一个 h3 即认为通
  *
- * 本版评分逻辑：
+ * 评分逻辑：
  * - 属性类型和风险行为分离
  * - 商业机房 / 云厂商只作为属性，不再直接重罚
  * - Tor / Abuser / 高 risk score / 多接口确认 Proxy/VPN 才强扣分
@@ -27,6 +27,7 @@ export default async function (ctx) {
   const POLICY = clean(env.POLICY);
   const POLICY_LABEL = POLICY || "默认规则";
   const MASK_IP = clean(env.YS) === "1";
+  const FORCE_PROTOCOL = clean(env.XY);
 
   const TIMEOUT = 4500;
   const REFRESH_MINUTES = 15;
@@ -52,7 +53,10 @@ export default async function (ctx) {
   const FONT_SCALE = clamp(UI_SCALE, 0.9, 1.045);
 
   const CURRENT_PROXY = getCurrentProxyInfo(ctx);
-  const NODE_PROTOCOL = CURRENT_PROXY.protocol || "未暴露";
+  const NODE_PROTOCOL =
+    protocolFromXY(FORCE_PROTOCOL) ||
+    CURRENT_PROXY.protocol ||
+    "未暴露";
 
   const MAINLAND_LATENCY_URLS = [
     "http://connect.rom.miui.com/generate_204",
@@ -67,6 +71,14 @@ export default async function (ctx) {
     "https://www.gstatic.com/generate_204",
     "https://www.google.com/generate_204",
     "https://www.cloudflare.com/favicon.ico"
+  ];
+
+  const QUIC_TRACE_URLS = [
+    "https://cloudflare-quic.com/cdn-cgi/trace",
+    "https://cloudflare.com/cdn-cgi/trace",
+    "https://www.cloudflare.com/cdn-cgi/trace",
+    "https://one.one.one.one/cdn-cgi/trace",
+    "https://1.1.1.1/cdn-cgi/trace"
   ];
 
   const device = ctx.device || {};
@@ -650,25 +662,44 @@ export default async function (ctx) {
   }
 
   async function getQuic() {
-    const result = await getText(
-      "https://cloudflare-quic.com/cdn-cgi/trace?_=" + Date.now()
+    const urls = QUIC_TRACE_URLS.map(function (url) {
+      return url + "?_=" + Date.now() + randomAlphaNum(5);
+    });
+
+    const results = await Promise.all(
+      urls.map(function (url) {
+        return getText(url);
+      })
     );
 
-    if (!result.ok) {
-      return {
-        value: "×/×",
-        tone: "red"
-      };
+    let hasH3 = false;
+    let hasReachable = false;
+
+    for (let index = 0; index < results.length; index += 1) {
+      const item = results[index];
+
+      if (!item || !item.ok) {
+        continue;
+      }
+
+      hasReachable = true;
+
+      const trace = parseTrace(item.text);
+      const protocol = clean(trace.http).toLowerCase();
+
+      if (
+        protocol === "h3" ||
+        protocol === "http3" ||
+        protocol === "http/3" ||
+        protocol.includes("h3") ||
+        protocol.includes("http/3")
+      ) {
+        hasH3 = true;
+        break;
+      }
     }
 
-    const trace = parseTrace(result.text);
-    const protocol = clean(trace.http).toLowerCase();
-
-    if (
-      protocol === "h3" ||
-      protocol === "http/3" ||
-      protocol.includes("h3")
-    ) {
+    if (hasH3) {
       return {
         value: "✓/✓",
         tone: "green"
@@ -677,7 +708,7 @@ export default async function (ctx) {
 
     return {
       value: "×/×",
-      tone: "red"
+      tone: hasReachable ? "amber" : "red"
     };
   }
 
@@ -2338,6 +2369,16 @@ function findProxyNameInObject(object) {
   walk(object, "", 0);
 
   return found[0] || "";
+}
+
+function protocolFromXY(value) {
+  const raw = clean(value);
+
+  if (!raw) {
+    return "";
+  }
+
+  return normalizeProxyProtocol(raw) || raw;
 }
 
 function normalizeProxyProtocol(value) {
