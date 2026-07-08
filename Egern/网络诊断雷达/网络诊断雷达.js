@@ -3,7 +3,10 @@
  *
  * 基于备份 3：
  * - UI 布局不变
- * - 仅保留 POLICY 一个环境变量，用于指定策略组
+ * - 仅保留 POLICY 和 YS 两个环境变量
+ * - POLICY：指定策略组
+ * - YS=1：显示 IP 的地方启用隐私打码，例如 123.123.123.123 -> 123.123.*.*
+ * - YS=0 或不设置：不打码
  * - 本地网络移动数据名称通过直连出口 ISP / ASN 识别运营商
  * - 当前代理协议通过 Egern 上下文 / 节点元数据 / 节点名真实识别
  * - 识别不到协议时显示“未暴露”，不伪造
@@ -14,6 +17,14 @@ export default async function (ctx) {
   const env = ctx.env || {};
   const C = palette();
   const SCHEME = detectScheme(ctx);
+
+  const POLICY = clean(env.POLICY);
+  const POLICY_LABEL = POLICY || "默认规则";
+  const MASK_IP = clean(env.YS) === "1";
+
+  const TIMEOUT = 4500;
+  const REFRESH_MINUTES = 15;
+  const FORCE_LOCAL_MAINLAND = true;
 
   const SCREEN_W = numberInRange(
     pick(getScreenMetric(ctx, "width"), 440),
@@ -33,12 +44,6 @@ export default async function (ctx) {
   const HEIGHT_SCALE = SCREEN_H / 956;
   const UI_SCALE = clamp(WIDTH_SCALE * 0.88 + HEIGHT_SCALE * 0.12, 0.9, 1.06);
   const FONT_SCALE = clamp(UI_SCALE, 0.9, 1.045);
-
-  const POLICY = clean(env.POLICY);
-  const POLICY_LABEL = POLICY || "默认规则";
-  const TIMEOUT = 4500;
-  const REFRESH_MINUTES = 15;
-  const FORCE_LOCAL_MAINLAND = true;
 
   const CURRENT_PROXY = getCurrentProxyInfo(ctx);
   const NODE_PROTOCOL = CURRENT_PROXY.protocol || "未暴露";
@@ -102,6 +107,10 @@ export default async function (ctx) {
   function FS(value) {
     if (typeof value !== "number") return value;
     return Math.round(value * FONT_SCALE * 100) / 100;
+  }
+
+  function displayIP(value) {
+    return MASK_IP ? maskIP(value) : value;
   }
 
   function scaleStyle(object) {
@@ -1159,7 +1168,7 @@ export default async function (ctx) {
                   { gap: 3 }
                 ),
 
-                text(localIP, 8, "medium", C.subtext, {
+                text(displayIP(localIP), 8, "medium", C.subtext, {
                   maxLines: 1,
                   minScale: 0.72
                 }),
@@ -1190,7 +1199,7 @@ export default async function (ctx) {
             metricBox(
               "router.fill",
               "网关",
-              gatewayLabel(gateway),
+              gatewayLabel(displayIP(gateway)),
               C.blue,
               {
                 valueSize: 5.4,
@@ -2084,6 +2093,35 @@ function carrierByMCCMNC(value) {
   if (broadnet.includes(code)) return "中国广电";
 
   return "";
+}
+
+function maskIP(value) {
+  const raw = clean(value);
+
+  if (!raw || raw === "未获取" || raw === "—" || raw === "-") {
+    return raw;
+  }
+
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(raw)) {
+    const parts = raw.split(".");
+    return parts[0] + "." + parts[1] + ".*.*";
+  }
+
+  if (raw.includes(".")) {
+    return raw.replace(
+      /(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}/g,
+      "$1.$2.*.*"
+    );
+  }
+
+  if (raw.includes(":")) {
+    const parts = raw.split(":").filter(Boolean);
+    if (parts.length >= 2) {
+      return parts[0] + ":" + parts[1] + ":****:****";
+    }
+  }
+
+  return raw;
 }
 
 function purityGaugeSVG(score, colors) {
