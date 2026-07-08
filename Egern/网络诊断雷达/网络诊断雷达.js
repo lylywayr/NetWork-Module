@@ -1,30 +1,19 @@
 /**
- * Egern「网络诊断雷达」完整脚本
+ * Egern「网络诊断雷达」
  *
- * 当前版本：
- * 1. UI 基于备份 2，不改变整体布局
- * 2. 当前代理双层标签使用紧凑版，保持原来的柔和配色
- * 3. 底部属性类型改为：住宅 IP / 商业机房 / 移动网络
- * 4. 代理出口 / VPN / Tor 只影响风险等级和纯净评分，不再抢占属性类型
- * 5. DNS 改为 EDNS + Resolver IP + ASN/ISP 多层检测，降低未知概率
- * 6. 协议支持自动识别，也可通过 NODE_PROTOCOL / PROXY_PROTOCOL 手动指定
- *
- * 可选环境变量：
- * POLICY=策略组名称
- * TIMEOUT_MS=4500
- * REFRESH_MINUTES=15
- * NODE_PROTOCOL=VLESS
- * PROXY_PROTOCOL=VLESS
- * NODE_NAME=节点名称
- * PROXY_NAME=节点名称
- * COLOR_SCHEME=light 或 dark
- * LOCAL_MAINLAND=1
+ * 基于备份 3：
+ * - UI 布局不变
+ * - 仅保留 POLICY 一个环境变量，用于指定策略组
+ * - 本地网络移动数据名称通过直连出口 ISP / ASN 识别运营商
+ * - 当前代理协议通过 Egern 上下文 / 节点元数据 / 节点名真实识别
+ * - 识别不到协议时显示“未暴露”，不伪造
+ * - UDP/QUIC 完整显示
  */
 
 export default async function (ctx) {
   const env = ctx.env || {};
   const C = palette();
-  const SCHEME = detectScheme(ctx, env);
+  const SCHEME = detectScheme(ctx);
 
   const SCREEN_W = numberInRange(
     pick(getScreenMetric(ctx, "width"), 440),
@@ -47,12 +36,12 @@ export default async function (ctx) {
 
   const POLICY = clean(env.POLICY);
   const POLICY_LABEL = POLICY || "默认规则";
-  const TIMEOUT = numberInRange(env.TIMEOUT_MS, 1500, 10000, 4500);
-  const REFRESH_MINUTES = numberInRange(env.REFRESH_MINUTES, 5, 60, 15);
-  const FORCE_LOCAL_MAINLAND = clean(env.LOCAL_MAINLAND || "1") !== "0";
+  const TIMEOUT = 4500;
+  const REFRESH_MINUTES = 15;
+  const FORCE_LOCAL_MAINLAND = true;
 
-  const CURRENT_PROXY = getCurrentProxyInfo(ctx, env);
-  const NODE_PROTOCOL = CURRENT_PROXY.protocol || "未知";
+  const CURRENT_PROXY = getCurrentProxyInfo(ctx);
+  const NODE_PROTOCOL = CURRENT_PROXY.protocol || "未暴露";
 
   const MAINLAND_LATENCY_URLS = [
     "http://connect.rom.miui.com/generate_204",
@@ -71,7 +60,6 @@ export default async function (ctx) {
 
   const device = ctx.device || {};
   const wifi = device.wifi || {};
-  const cellular = device.cellular || {};
   const ipv4 = device.ipv4 || {};
   const ipv6 = device.ipv6 || {};
 
@@ -79,10 +67,7 @@ export default async function (ctx) {
     ? device.dnsServers.filter(Boolean)
     : [];
 
-  const networkName =
-    clean(wifi.ssid) ||
-    clean(cellular.carrier) ||
-    "当前网络";
+  let networkName = getLocalNetworkName(device);
 
   const localIP =
     clean(
@@ -177,7 +162,7 @@ export default async function (ctx) {
   function directRequestOptions(extra) {
     return Object.assign(
       {
-        timeout: Math.min(TIMEOUT, 4500),
+        timeout: TIMEOUT,
         redirect: "follow",
         credentials: "omit",
         policy: "DIRECT",
@@ -327,7 +312,7 @@ export default async function (ctx) {
   async function getLocalExit() {
     const results = await Promise.all([
       getJSONDirect(
-        "http://ip-api.com/json/?lang=zh-CN&fields=status,message,query,country,countryCode,regionName,city,isp,org&_=" +
+        "http://ip-api.com/json/?lang=zh-CN&fields=status,message,query,country,countryCode,regionName,city,isp,org,as,asname&_=" +
           Date.now()
       ),
       getJSONDirect("https://ipwho.is/?lang=zh-CN&_=" + Date.now()),
@@ -349,6 +334,9 @@ export default async function (ctx) {
             country: "中国",
             countryCode: "CN",
             isp: parsed.isp || "",
+            org: parsed.org || "",
+            asname: parsed.asname || "",
+            as: parsed.as || "",
             label: "中国大陆"
           };
         }
@@ -364,6 +352,9 @@ export default async function (ctx) {
       country: "中国",
       countryCode: "CN",
       isp: "",
+      org: "",
+      asname: "",
+      as: "",
       label: "中国大陆"
     };
   }
@@ -736,6 +727,23 @@ export default async function (ctx) {
     ])
   ]);
 
+  const carrierByDirectISP = carrierFromISP(
+    [
+      localExit.isp,
+      localExit.org,
+      localExit.asname,
+      localExit.as
+    ].join(" ")
+  );
+
+  if (!networkName && carrierByDirectISP) {
+    networkName = carrierByDirectISP;
+  }
+
+  if (!networkName) {
+    networkName = "移动数据";
+  }
+
   const dns = chooseDNSProvider(baseDNS, verifiedDNS);
   const dnsLabel = dnsTinyLabel(dns.short || dns.full);
   const localArea = localExit.label || "中国大陆";
@@ -961,15 +969,17 @@ export default async function (ctx) {
     const options = extra || {};
     const valueSize = options.valueSize || 6.1;
     const valueMinScale = options.valueMinScale || 0.35;
+    const labelSize = options.labelSize || 5;
+    const labelMinScale = options.labelMinScale || 0.72;
 
     return col(
       [
         row(
           [
             image(symbol, tone, 7, 7),
-            text(label, 5, "medium", C.muted, {
+            text(label, labelSize, "medium", C.muted, {
               maxLines: 1,
-              minScale: 0.78,
+              minScale: labelMinScale,
               textAlign: "center"
             })
           ],
@@ -1387,9 +1397,13 @@ export default async function (ctx) {
 
             metricBox(
               "paperplane.fill",
-              "UDP/Q",
+              "UDP/QUIC",
               quic.value,
-              quicColor
+              quicColor,
+              {
+                labelSize: 4.25,
+                labelMinScale: 0.38
+              }
             ),
 
             metricBox(
@@ -1398,8 +1412,8 @@ export default async function (ctx) {
               NODE_PROTOCOL,
               C.purple,
               {
-                valueSize: 5.8,
-                valueMinScale: 0.45
+                valueSize: 5.4,
+                valueMinScale: 0.34
               }
             )
           ],
@@ -1867,6 +1881,211 @@ function palette() {
   };
 }
 
+function getLocalNetworkName(device) {
+  const wifi = (device && device.wifi) || {};
+  const cellular = (device && device.cellular) || {};
+
+  const wifiName = firstMeaningful(
+    wifi.ssid,
+    wifi.name,
+    wifi.networkName,
+    getAt(device, "network.ssid"),
+    getAt(device, "wifiSSID")
+  );
+
+  if (wifiName) {
+    return wifiName;
+  }
+
+  const carrierName = firstMeaningful(
+    cellular.carrier,
+    cellular.carrierName,
+    cellular.operator,
+    cellular.operatorName,
+    cellular.network,
+    cellular.networkName,
+    cellular.provider,
+    cellular.serviceProvider,
+
+    getAt(device, "carrier"),
+    getAt(device, "carrierName"),
+    getAt(device, "operator"),
+    getAt(device, "operatorName"),
+    getAt(device, "network.carrier"),
+    getAt(device, "network.carrierName"),
+    getAt(device, "network.operator"),
+    getAt(device, "telephony.carrier"),
+    getAt(device, "telephony.carrierName"),
+    getAt(device, "cellularProvider")
+  );
+
+  if (carrierName) {
+    return normalizeCarrierName(carrierName);
+  }
+
+  const code = firstMeaningful(
+    cellular.mccmnc,
+    cellular.mccMnc,
+    cellular.plmn,
+    cellular.operatorCode,
+    getAt(device, "network.mccmnc"),
+    getAt(device, "network.plmn"),
+    getAt(device, "telephony.mccmnc")
+  );
+
+  const byCode = carrierByMCCMNC(code);
+
+  if (byCode) {
+    return byCode;
+  }
+
+  const mcc = firstMeaningful(
+    cellular.mcc,
+    cellular.mobileCountryCode,
+    getAt(device, "network.mcc"),
+    getAt(device, "telephony.mobileCountryCode")
+  );
+
+  const mnc = firstMeaningful(
+    cellular.mnc,
+    cellular.mobileNetworkCode,
+    getAt(device, "network.mnc"),
+    getAt(device, "telephony.mobileNetworkCode")
+  );
+
+  const byMccMnc = carrierByMCCMNC(clean(mcc) + clean(mnc));
+
+  if (byMccMnc) {
+    return byMccMnc;
+  }
+
+  return "";
+}
+
+function firstMeaningful() {
+  for (let index = 0; index < arguments.length; index += 1) {
+    const value = clean(arguments[index]);
+
+    if (isMeaningful(value)) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+function isMeaningful(value) {
+  const v = clean(value);
+  const lower = v.toLowerCase();
+
+  if (!v) return false;
+  if (v === "--") return false;
+  if (v === "-") return false;
+  if (v === "—") return false;
+  if (lower === "null") return false;
+  if (lower === "undefined") return false;
+  if (lower === "unknown") return false;
+  if (lower === "unknow") return false;
+  if (lower === "none") return false;
+  if (lower === "n/a") return false;
+  if (lower === "wifi") return false;
+  if (lower === "wlan") return false;
+  if (lower === "5g") return false;
+  if (lower === "4g") return false;
+  if (lower === "lte") return false;
+  if (lower === "nr") return false;
+
+  return true;
+}
+
+function normalizeCarrierName(value) {
+  const raw = clean(value);
+  const lower = raw.toLowerCase();
+
+  if (!raw) return "";
+
+  if (
+    raw.includes("中国移动") ||
+    lower.includes("china mobile") ||
+    lower.includes("cmcc") ||
+    lower.includes("cmnet") ||
+    lower.includes("cmi")
+  ) {
+    return "中国移动";
+  }
+
+  if (
+    raw.includes("中国联通") ||
+    lower.includes("china unicom") ||
+    lower.includes("unicom") ||
+    lower.includes("cucc")
+  ) {
+    return "中国联通";
+  }
+
+  if (
+    raw.includes("中国电信") ||
+    lower.includes("china telecom") ||
+    lower.includes("chinanet") ||
+    lower.includes("telecom") ||
+    lower.includes("ctc")
+  ) {
+    return "中国电信";
+  }
+
+  if (
+    raw.includes("中国广电") ||
+    lower.includes("china broadnet") ||
+    lower.includes("cbn") ||
+    lower.includes("broadnet") ||
+    lower.includes("broadcasting network")
+  ) {
+    return "中国广电";
+  }
+
+  return raw;
+}
+
+function carrierFromISP(value) {
+  return normalizeCarrierName(value);
+}
+
+function carrierByMCCMNC(value) {
+  const code = clean(value).replace(/\D/g, "");
+
+  const mobile = [
+    "46000",
+    "46002",
+    "46004",
+    "46007",
+    "46008"
+  ];
+
+  const unicom = [
+    "46001",
+    "46006",
+    "46009"
+  ];
+
+  const telecom = [
+    "46003",
+    "46005",
+    "46011",
+    "46012"
+  ];
+
+  const broadnet = [
+    "46015"
+  ];
+
+  if (mobile.includes(code)) return "中国移动";
+  if (unicom.includes(code)) return "中国联通";
+  if (telecom.includes(code)) return "中国电信";
+  if (broadnet.includes(code)) return "中国广电";
+
+  return "";
+}
+
 function purityGaugeSVG(score, colors) {
   const value = Math.max(0, Math.min(100, Number(score) || 0));
 
@@ -1902,7 +2121,6 @@ function purityGaugeSVG(score, colors) {
     "</feMerge>",
     "</filter>",
     "</defs>",
-
     '<path d="M20 85 A55 55 0 0 1 130 85" fill="none" stroke="' + safeTrack + '" stroke-width="9" stroke-linecap="round" opacity="0.75"/>',
     '<path d="M20 85 A55 55 0 0 1 130 85" fill="none" stroke="' + safeRight + '" stroke-width="8.2" stroke-linecap="round" opacity="0.95"/>',
     '<path d="M20 85 A55 55 0 0 1 130 85" fill="none" stroke="' + safeGlow + '" stroke-width="13" stroke-linecap="round" pathLength="100" stroke-dasharray="' + leftDash + '" opacity="0.16"/>',
@@ -1930,13 +2148,9 @@ function svgColor(value, fallback) {
   return fallback;
 }
 
-function getCurrentProxyInfo(ctx, env) {
+function getCurrentProxyInfo(ctx) {
   const proxyName = clean(
     pick(
-      env.NODE_NAME,
-      env.PROXY_NAME,
-      env.CURRENT_NODE,
-      env.SELECTED_NODE,
       getAt(ctx, "node.name"),
       getAt(ctx, "proxy.name"),
       getAt(ctx, "currentProxy.name"),
@@ -1947,15 +2161,13 @@ function getCurrentProxyInfo(ctx, env) {
       getAt(ctx, "policy.current.name"),
       getAt(ctx, "outbound.name"),
       getAt(ctx, "profile.currentNode.name"),
-      getAt(ctx, "profile.selectedNode.name")
+      getAt(ctx, "profile.selectedNode.name"),
+      findProxyNameInObject(ctx)
     )
   );
 
   const rawProtocol = clean(
     pick(
-      env.NODE_PROTOCOL,
-      env.PROXY_PROTOCOL,
-      env.PROTOCOL,
       getAt(ctx, "node.protocol"),
       getAt(ctx, "node.type"),
       getAt(ctx, "node.scheme"),
@@ -1983,7 +2195,8 @@ function getCurrentProxyInfo(ctx, env) {
       getAt(ctx, "profile.currentNode.protocol"),
       getAt(ctx, "profile.currentNode.type"),
       getAt(ctx, "profile.selectedNode.protocol"),
-      getAt(ctx, "profile.selectedNode.type")
+      getAt(ctx, "profile.selectedNode.type"),
+      findProtocolInObject(ctx)
     )
   );
 
@@ -1995,6 +2208,92 @@ function getCurrentProxyInfo(ctx, env) {
     name: proxyName,
     protocol: protocol
   };
+}
+
+function findProtocolInObject(object) {
+  const found = [];
+  const seen = [];
+
+  function walk(value, path, depth) {
+    if (depth > 5) return;
+    if (!value || typeof value !== "object") return;
+    if (seen.indexOf(value) >= 0) return;
+
+    seen.push(value);
+
+    Object.keys(value).forEach(function (key) {
+      const next = value[key];
+      const nextPath = path ? path + "." + key : key;
+      const lowerPath = nextPath.toLowerCase();
+
+      if (typeof next === "string") {
+        const protocol = normalizeProxyProtocol(next);
+
+        if (
+          protocol &&
+          (
+            lowerPath.includes("proxy") ||
+            lowerPath.includes("node") ||
+            lowerPath.includes("outbound") ||
+            lowerPath.includes("policy") ||
+            lowerPath.includes("protocol") ||
+            lowerPath.includes("scheme")
+          )
+        ) {
+          found.push(protocol);
+        }
+      } else if (next && typeof next === "object") {
+        walk(next, nextPath, depth + 1);
+      }
+    });
+  }
+
+  walk(object, "", 0);
+
+  return found[0] || "";
+}
+
+function findProxyNameInObject(object) {
+  const found = [];
+  const seen = [];
+
+  function walk(value, path, depth) {
+    if (depth > 5) return;
+    if (!value || typeof value !== "object") return;
+    if (seen.indexOf(value) >= 0) return;
+
+    seen.push(value);
+
+    Object.keys(value).forEach(function (key) {
+      const next = value[key];
+      const nextPath = path ? path + "." + key : key;
+      const lowerPath = nextPath.toLowerCase();
+
+      if (typeof next === "string") {
+        if (
+          isMeaningful(next) &&
+          (
+            lowerPath.includes("proxy") ||
+            lowerPath.includes("node") ||
+            lowerPath.includes("outbound") ||
+            lowerPath.includes("policy")
+          ) &&
+          (
+            lowerPath.includes("name") ||
+            lowerPath.includes("title")
+          )
+        ) {
+          found.push(next);
+        }
+      } else if (next && typeof next === "object") {
+        walk(next, nextPath, depth + 1);
+      }
+    });
+  }
+
+  walk(object, "", 0);
+
+  return found[0] || "";
 }
 
 function normalizeProxyProtocol(value) {
@@ -2623,6 +2922,9 @@ function parseLocalExit(data, forceLocalMainland) {
     region: region,
     city: city,
     isp: clean(pick(data.isp, data.org, data.organization)),
+    org: clean(data.org),
+    asname: clean(data.asname),
+    as: clean(data.as),
     label: label
   };
 }
@@ -2846,25 +3148,6 @@ function compactDNSProviderName(value) {
   return first.length > 6
     ? first.slice(0, 6)
     : first;
-}
-
-function shortDNSGeo(value) {
-  const fullProvider = providerFromText(value);
-  if (fullProvider.short) return fullProvider.short;
-
-  const parts = clean(value)
-    .split(/[-,，|/ ]+/)
-    .map(function (item) {
-      return clean(item);
-    })
-    .filter(Boolean);
-
-  for (let index = 0; index < parts.length; index += 1) {
-    const provider = providerFromText(parts[index]);
-    if (provider.short) return provider.short;
-  }
-
-  return "未知";
 }
 
 function chooseDNSProvider(baseDNS, verifiedDNS) {
@@ -3410,10 +3693,9 @@ function getScreenMetric(ctx, key) {
   return "";
 }
 
-function detectScheme(ctx, env) {
+function detectScheme(ctx) {
   const raw = clean(
     pick(
-      env.COLOR_SCHEME,
       ctx.colorScheme,
       ctx.appearance,
       ctx.theme,
