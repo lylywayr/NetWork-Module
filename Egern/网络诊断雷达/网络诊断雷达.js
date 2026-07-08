@@ -2,20 +2,15 @@
  * Egern「网络诊断雷达」完整脚本
  *
  * 存档说明：
- * - 上一稳定版已设为「存档 1」
+ * - 当前稳定布局已设为「存档 1」
  * - 后续如出现布局或功能损坏，以「存档 1」作为回退基准
  *
  * 当前版本重点：
- * 1. 仅「当前代理」区域使用效果图风格仪表
- * 2. 本地网络、流媒体、AI 检测区域保持原有结构
- * 3. 当前代理纯净度仪表：
- *    - 0 分在最左
- *    - 50 分在顶部
- *    - 100 分在最右
- *    - 左侧绿色进度
- *    - 右侧红色剩余风险
- *    - 分数文字不被弧线遮挡
- * 4. 最底部状态栏去掉外层方框和小格子边框
+ * 1. 增加 screen.width / screen.height 自适应缩放
+ * 2. 以 iPhone17 Pro Max 当前显示效果为基准
+ * 3. 不同设备会自动等比例放大 / 缩小
+ * 4. 最底部状态栏已去掉外层方框和小格子边框
+ * 5. 仅「当前代理」区域使用效果图风格纯净度仪表
  *
  * 可选环境变量：
  * POLICY=策略组名称
@@ -29,6 +24,34 @@ export default async function (ctx) {
   const env = ctx.env || {};
   const C = palette();
   const SCHEME = detectScheme(ctx, env);
+
+  /**
+   * 自适应缩放基准：
+   * iPhone17 Pro Max / 大号小组件当前效果约按 440pt 宽度调校
+   */
+  const SCREEN_W = numberInRange(
+    pick(getScreenMetric(ctx, "width"), 440),
+    320,
+    900,
+    440
+  );
+
+  const SCREEN_H = numberInRange(
+    pick(getScreenMetric(ctx, "height"), 956),
+    568,
+    1400,
+    956
+  );
+
+  const WIDTH_SCALE = SCREEN_W / 440;
+  const HEIGHT_SCALE = SCREEN_H / 956;
+
+  /**
+   * UI_SCALE 控制整体尺寸，FONT_SCALE 控制文字尺寸
+   * 限幅是为了避免小屏过度压缩、大屏过度放大
+   */
+  const UI_SCALE = clamp(WIDTH_SCALE * 0.88 + HEIGHT_SCALE * 0.12, 0.90, 1.06);
+  const FONT_SCALE = clamp(UI_SCALE, 0.90, 1.045);
 
   const POLICY = clean(env.POLICY);
   const POLICY_LABEL = POLICY || "默认规则";
@@ -75,6 +98,48 @@ export default async function (ctx) {
   const hasIPv6 = Boolean(clean(pick(ipv6.address, device.ipv6Address)));
   const baseDNS = detectDNSProvider(dnsServers);
   const now = new Date();
+
+  function S(value) {
+    if (typeof value !== "number") return value;
+    return Math.round(value * UI_SCALE * 100) / 100;
+  }
+
+  function FS(value) {
+    if (typeof value !== "number") return value;
+    return Math.round(value * FONT_SCALE * 100) / 100;
+  }
+
+  function scaleStyle(object) {
+    if (!object || typeof object !== "object" || Array.isArray(object)) {
+      return object;
+    }
+
+    const scaled = {};
+    const scaleKeys = {
+      width: true,
+      height: true,
+      gap: true,
+      borderRadius: true,
+      borderWidth: true,
+      length: true
+    };
+
+    Object.keys(object).forEach(function (key) {
+      const value = object[key];
+
+      if (key === "padding" && Array.isArray(value)) {
+        scaled[key] = value.map(function (item) {
+          return S(item);
+        });
+      } else if (scaleKeys[key] && typeof value === "number") {
+        scaled[key] = S(value);
+      } else {
+        scaled[key] = value;
+      }
+    });
+
+    return scaled;
+  }
 
   function uiColor(value) {
     return resolveAdaptiveColor(value, SCHEME);
@@ -470,7 +535,7 @@ export default async function (ctx) {
     C.red;
 
   function merge(base, extra) {
-    return Object.assign({}, base || {}, extra || {});
+    return scaleStyle(Object.assign({}, base || {}, extra || {}));
   }
 
   function text(value, size, weight, color, extra) {
@@ -479,7 +544,7 @@ export default async function (ctx) {
         type: "text",
         text: String(value),
         font: {
-          size: size,
+          size: FS(size),
           weight: weight || "regular"
         },
         textColor: color || C.text
@@ -545,7 +610,7 @@ export default async function (ctx) {
   function spacer(length) {
     return length === undefined
       ? { type: "spacer" }
-      : { type: "spacer", length: length };
+      : { type: "spacer", length: S(length) };
   }
 
   function card(children, extra) {
@@ -1441,7 +1506,7 @@ export default async function (ctx) {
 
   return {
     type: "widget",
-    padding: 8,
+    padding: S(8),
     gap: 0,
     backgroundColor: C.root,
     refreshAfter: new Date(
@@ -1518,15 +1583,6 @@ function palette() {
   };
 }
 
-/**
- * 当前代理纯净度 SVG
- *
- * 已验证：
- * - 0 分：指示点在最左
- * - 50 分：指示点在顶部
- * - 100 分：指示点在最右
- * - 数字绘制在弧线之后，不会被遮挡
- */
 function purityGaugeSVG(score, colors) {
   const value = Math.max(0, Math.min(100, Number(score) || 0));
 
@@ -1608,6 +1664,30 @@ function svgColor(value, fallback) {
   return fallback;
 }
 
+function getScreenMetric(ctx, key) {
+  const candidates = [
+    getAt(ctx, "screen." + key),
+    getAt(ctx, "device.screen." + key),
+    getAt(ctx, "device.screenSize." + key)
+  ];
+
+  try {
+    if (typeof screen !== "undefined" && screen && Number(screen[key]) > 0) {
+      candidates.push(screen[key]);
+    }
+  } catch (_) {}
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const value = Number(candidates[index]);
+
+    if (Number.isFinite(value) && value > 0) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 function detectScheme(ctx, env) {
   const raw = clean(
     pick(
@@ -1648,6 +1728,16 @@ function clean(value) {
   return String(
     value === undefined || value === null ? "" : value
   ).trim();
+}
+
+function clamp(value, min, max) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return min;
+  }
+
+  return Math.max(min, Math.min(max, number));
 }
 
 function numberInRange(value, min, max, fallback) {
