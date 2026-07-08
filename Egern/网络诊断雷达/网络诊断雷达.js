@@ -11,6 +11,12 @@
  * - 当前代理协议通过 Egern 上下文 / 节点元数据 / 节点名真实识别
  * - 识别不到协议时显示“未暴露”，不伪造
  * - UDP/QUIC 完整显示
+ *
+ * 本版评分逻辑：
+ * - 属性类型和风险行为分离
+ * - 商业机房 / 云厂商只作为属性，不再直接重罚
+ * - Tor / Abuser / 高 risk score / 多接口确认 Proxy/VPN 才强扣分
+ * - 正常 Oracle / AWS / Azure 等 VPS 不再直接 0 分
  */
 
 export default async function (ctx) {
@@ -304,7 +310,7 @@ export default async function (ctx) {
         country: "",
         countryCode: "",
         isp: "未知组织",
-        kind: "未知",
+        kind: "未知网络",
         flags: {}
       };
     }
@@ -772,8 +778,8 @@ export default async function (ctx) {
   const quicColor = toneColor(quic.tone, C);
 
   const purityColor =
-    purity.score >= 85 ? C.green :
-    purity.score >= 65 ? C.amber :
+    purity.score >= 75 ? C.green :
+    purity.score >= 45 ? C.amber :
     C.red;
 
   const riskColor =
@@ -1291,7 +1297,7 @@ export default async function (ctx) {
       clean(exit.country) ||
       "未知地区";
 
-    const tagOne = exit.kind || "未知";
+    const tagOne = exit.kind || "未知网络";
 
     const tagTwo =
       clean(exit.cloudProvider) ||
@@ -2638,7 +2644,9 @@ function parseProxyCheck(data, ip) {
       typeLower.includes("tor"),
 
     abuser:
-      false,
+      typeLower.includes("abuse") ||
+      typeLower.includes("blacklist") ||
+      typeLower.includes("spam"),
 
     mobile:
       typeLower.includes("mobile"),
@@ -2685,7 +2693,7 @@ function mergeExitSources(sources) {
       country: "",
       countryCode: "",
       isp: "未知组织",
-      kind: "未知",
+      kind: "未知网络",
       flags: {}
     };
   }
@@ -2715,39 +2723,56 @@ function mergeExitSources(sources) {
 
   const cloud = cloudProviderFromText(allText);
 
-  const mergedFlags = {
-    datacenter: false,
-    hosting: false,
-    cloud: cloud.hit,
-    proxy: false,
-    vpn: false,
-    tor: false,
-    abuser: false,
-    mobile: false,
-    residential: false,
-    risk: null
+  const evidence = {
+    sourceCount: sameIP.length,
+    datacenterCount: 0,
+    hostingCount: 0,
+    cloudCount: cloud.hit ? 1 : 0,
+    proxyCount: 0,
+    vpnCount: 0,
+    torCount: 0,
+    abuserCount: 0,
+    mobileCount: 0,
+    residentialCount: 0,
+    riskMax: null,
+    riskCount: 0
   };
 
   sameIP.forEach(function (item) {
     const flags = item.flags || {};
 
-    mergedFlags.datacenter = mergedFlags.datacenter || Boolean(flags.datacenter);
-    mergedFlags.hosting = mergedFlags.hosting || Boolean(flags.hosting);
-    mergedFlags.cloud = mergedFlags.cloud || Boolean(flags.cloud);
-    mergedFlags.proxy = mergedFlags.proxy || Boolean(flags.proxy);
-    mergedFlags.vpn = mergedFlags.vpn || Boolean(flags.vpn);
-    mergedFlags.tor = mergedFlags.tor || Boolean(flags.tor);
-    mergedFlags.abuser = mergedFlags.abuser || Boolean(flags.abuser);
-    mergedFlags.mobile = mergedFlags.mobile || Boolean(flags.mobile);
-    mergedFlags.residential = mergedFlags.residential || Boolean(flags.residential);
+    if (flags.datacenter) evidence.datacenterCount += 1;
+    if (flags.hosting) evidence.hostingCount += 1;
+    if (flags.cloud) evidence.cloudCount += 1;
+    if (flags.proxy) evidence.proxyCount += 1;
+    if (flags.vpn) evidence.vpnCount += 1;
+    if (flags.tor) evidence.torCount += 1;
+    if (flags.abuser) evidence.abuserCount += 1;
+    if (flags.mobile) evidence.mobileCount += 1;
+    if (flags.residential) evidence.residentialCount += 1;
 
     if (Number.isFinite(Number(flags.risk))) {
-      mergedFlags.risk = Math.max(
-        Number(mergedFlags.risk || 0),
+      evidence.riskCount += 1;
+      evidence.riskMax = Math.max(
+        Number(evidence.riskMax || 0),
         Number(flags.risk)
       );
     }
   });
+
+  const mergedFlags = {
+    datacenter: evidence.datacenterCount > 0,
+    hosting: evidence.hostingCount > 0,
+    cloud: evidence.cloudCount > 0,
+    proxy: evidence.proxyCount > 0,
+    vpn: evidence.vpnCount > 0,
+    tor: evidence.torCount > 0,
+    abuser: evidence.abuserCount > 0,
+    mobile: evidence.mobileCount > 0,
+    residential: evidence.residentialCount > 0,
+    risk: evidence.riskMax,
+    evidence: evidence
+  };
 
   if (cloud.hit) {
     mergedFlags.datacenter = true;
@@ -2779,10 +2804,6 @@ function mergeExitSources(sources) {
 function classifyExitKind(flags) {
   const f = flags || {};
 
-  if (f.datacenter || f.hosting || f.cloud) {
-    return "商业机房";
-  }
-
   if (f.mobile) {
     return "移动网络";
   }
@@ -2791,11 +2812,15 @@ function classifyExitKind(flags) {
     return "住宅 IP";
   }
 
+  if (f.datacenter || f.hosting || f.cloud) {
+    return "商业机房";
+  }
+
   if (f.proxy || f.vpn) {
     return "住宅 IP";
   }
 
-  return "住宅 IP";
+  return "未知网络";
 }
 
 function cloudProviderFromText(value) {
@@ -3341,61 +3366,125 @@ function dnsTinyLabel(value) {
 
 function purityScore(exit) {
   const flags = (exit && exit.flags) || {};
-  let score = 100;
+  const evidence = flags.evidence || {};
+  const kind = clean(exit && exit.kind);
 
-  if (flags.tor) score -= 65;
-  if (flags.abuser) score -= 32;
-  if (flags.proxy) score -= 26;
-  if (flags.vpn) score -= 22;
-  if (flags.datacenter) score -= 30;
-  if (flags.hosting) score -= 15;
-  if (flags.cloud) score -= 10;
+  let score;
 
-  if (flags.mobile && !flags.proxy && !flags.vpn && !flags.datacenter) {
+  if (kind === "住宅 IP") {
+    score = 92;
+  } else if (kind === "移动网络") {
+    score = 92;
+  } else if (kind === "教育网络" || kind === "企业网络") {
+    score = 88;
+  } else if (kind === "商业机房") {
+    score = 78;
+  } else {
+    score = 72;
+  }
+
+  const proxyCount = Number(evidence.proxyCount || 0);
+  const vpnCount = Number(evidence.vpnCount || 0);
+  const torCount = Number(evidence.torCount || 0);
+  const abuserCount = Number(evidence.abuserCount || 0);
+  const riskValue = Number(flags.risk);
+
+  const proxyVpnEvidenceCount = proxyCount + vpnCount;
+
+  if (torCount > 0 || flags.tor) {
+    score -= 55;
+  }
+
+  if (abuserCount > 0 || flags.abuser) {
+    score -= 35;
+  }
+
+  if (proxyVpnEvidenceCount >= 2) {
+    score -= 30;
+  } else if (proxyVpnEvidenceCount === 1) {
+    score -= 16;
+  }
+
+  if (Number.isFinite(riskValue)) {
+    if (riskValue >= 80) {
+      score -= 25;
+    } else if (riskValue >= 70) {
+      score -= 20;
+    } else if (riskValue >= 40) {
+      score -= 10;
+    } else if (riskValue >= 20) {
+      score -= 4;
+    }
+  }
+
+  if (kind === "商业机房" || flags.datacenter || flags.hosting || flags.cloud) {
+    score -= 8;
+  }
+
+  if (
+    kind === "住宅 IP" &&
+    !flags.proxy &&
+    !flags.vpn &&
+    !flags.tor &&
+    !flags.abuser
+  ) {
     score += 3;
   }
 
   if (
-    flags.residential &&
+    kind === "移动网络" &&
     !flags.proxy &&
     !flags.vpn &&
-    !flags.datacenter &&
-    !flags.hosting &&
-    !flags.cloud
+    !flags.tor &&
+    !flags.abuser
   ) {
-    score += 4;
-  }
-
-  if (Number.isFinite(Number(flags.risk))) {
-    score -= Math.min(35, Math.round(Number(flags.risk) * 0.35));
+    score += 3;
   }
 
   score = Math.max(0, Math.min(100, Math.round(score)));
 
   return {
     score: score,
-    risk: 100 - score
+    risk: 100 - score,
+    evidence: evidence
   };
 }
 
 function riskLevel(exit, purity) {
   const flags = (exit && exit.flags) || {};
+  const evidence = flags.evidence || {};
+  const score = Number(purity && purity.score);
+  const riskValue = Number(flags.risk);
+
+  const proxyVpnEvidenceCount =
+    Number(evidence.proxyCount || 0) +
+    Number(evidence.vpnCount || 0);
 
   if (
     flags.tor ||
+    Number(evidence.torCount || 0) > 0 ||
     flags.abuser ||
-    flags.proxy ||
-    flags.vpn ||
-    purity.risk >= 60
+    Number(evidence.abuserCount || 0) > 0 ||
+    riskValue >= 85 ||
+    score < 45 ||
+    (
+      proxyVpnEvidenceCount >= 2 &&
+      (
+        score < 60 ||
+        riskValue >= 70
+      )
+    )
   ) {
     return "高风险";
   }
 
   if (
+    score < 75 ||
     flags.datacenter ||
     flags.hosting ||
     flags.cloud ||
-    purity.risk >= 30
+    proxyVpnEvidenceCount > 0 ||
+    riskValue >= 40
   ) {
     return "中风险";
   }
