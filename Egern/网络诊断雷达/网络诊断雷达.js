@@ -1,22 +1,23 @@
 /**
  * Egern「网络诊断雷达」
  *
- * 基于备份 3：
- * - UI 布局不变
- * - 环境变量：POLICY / YS / XY
- * - POLICY：指定策略组
+ * 环境变量：
+ * - POLICY：最高优先级。指定后，出口、延迟、UDP/QUIC、流媒体、AI 全部统一走 POLICY
+ * - LMT：流媒体检测策略组。POLICY 为空时生效
+ * - AI：AI 检测策略组。POLICY 为空时生效
  * - YS=1：显示 IP 的地方启用隐私打码，例如 123.123.123.123 -> 123.123.*.*
  * - YS=0 或不设置：不打码
  * - XY：手动指定协议，例如 VLESS / Trojan / HY2 / AnyTLS
  * - XY 未设置：继续按原逻辑从 Egern 上下文 / 节点元数据 / 节点名尝试识别
- * - 本地网络移动数据名称通过直连出口 ISP / ASN 识别运营商
- * - UDP/QUIC 使用多个 HTTP/3 / QUIC 接口检测，任意一个 h3 即认为通
  *
- * 评分逻辑：
- * - 属性类型和风险行为分离
- * - 商业机房 / 云厂商只作为属性，不再直接重罚
- * - Tor / Abuser / 高 risk score / 多接口确认 Proxy/VPN 才强扣分
- * - 正常 Oracle / AWS / Azure 等 VPS 不再直接 0 分
+ * 策略优先级：
+ * POLICY ＞ LMT / AI ＞ 单服务内置候选策略名匹配 ＞ 不指定 policy
+ *
+ * 单服务匹配逻辑：
+ * - POLICY 为空，LMT/AI 也为空时，每个服务单独使用自己的候选策略名表
+ * - 每个服务在本轮刷新中只匹配一次
+ * - 匹配成功后缓存本轮结果
+ * - 匹配不到时该服务不传 policy，走 Widget 默认请求方式
  */
 
 export default async function (ctx) {
@@ -26,12 +27,19 @@ export default async function (ctx) {
 
   const POLICY = clean(env.POLICY);
   const POLICY_LABEL = POLICY || "默认规则";
+  const LMT_POLICY = clean(env.LMT);
+  const AI_POLICY = clean(env.AI);
   const MASK_IP = clean(env.YS) === "1";
   const FORCE_PROTOCOL = clean(env.XY);
 
   const TIMEOUT = 4500;
+  const POLICY_PROBE_TIMEOUT = 1800;
+  const POLICY_PROBE_BATCH_SIZE = 6;
   const REFRESH_MINUTES = 15;
   const FORCE_LOCAL_MAINLAND = true;
+
+  const servicePolicyCache = {};
+  const policyProbeCache = {};
 
   const SCREEN_W = numberInRange(
     pick(getScreenMetric(ctx, "width"), 440),
@@ -73,12 +81,36 @@ export default async function (ctx) {
     "https://www.cloudflare.com/favicon.ico"
   ];
 
+  const POLICY_PROBE_URLS = [
+    "https://cp.cloudflare.com/generate_204",
+    "https://www.gstatic.com/generate_204",
+    "https://www.cloudflare.com/favicon.ico"
+  ];
+
   const QUIC_TRACE_URLS = [
     "https://cloudflare-quic.com/cdn-cgi/trace",
     "https://cloudflare.com/cdn-cgi/trace",
     "https://www.cloudflare.com/cdn-cgi/trace",
     "https://one.one.one.one/cdn-cgi/trace",
     "https://1.1.1.1/cdn-cgi/trace"
+  ];
+
+  const MEDIA_SERVICE_IDS = [
+    "netflix",
+    "disney",
+    "spotify",
+    "tiktok",
+    "youtube",
+    "prime"
+  ];
+
+  const AI_SERVICE_IDS = [
+    "chatgpt",
+    "claude",
+    "gemini",
+    "deepseek",
+    "grok",
+    "perplexity"
   ];
 
   const device = ctx.device || {};
@@ -203,6 +235,48 @@ export default async function (ctx) {
     );
   }
 
+  function serviceRequestOptions(policy, extra) {
+    const options = {
+      timeout: TIMEOUT,
+      redirect: "follow",
+      credentials: "omit",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json,text/plain,*/*;q=0.8",
+        "Cache-Control": "no-cache"
+      }
+    };
+
+    const targetPolicy = clean(policy);
+
+    if (targetPolicy) {
+      options.policy = targetPolicy;
+    }
+
+    return Object.assign(options, extra || {});
+  }
+
+  function policyProbeRequestOptions(policy, extra) {
+    const options = {
+      timeout: POLICY_PROBE_TIMEOUT,
+      redirect: "follow",
+      credentials: "omit",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json,text/plain,*/*;q=0.8",
+        "Cache-Control": "no-cache"
+      }
+    };
+
+    const targetPolicy = clean(policy);
+
+    if (targetPolicy) {
+      options.policy = targetPolicy;
+    }
+
+    return Object.assign(options, extra || {});
+  }
+
   async function getJSON(url) {
     try {
       const response = await ctx.http.get(url, requestOptions());
@@ -258,13 +332,17 @@ export default async function (ctx) {
     }
   }
 
-  async function getStatus(url) {
+  async function getServiceStatus(url, servicePolicy) {
     const startedAt = Date.now();
 
     try {
-      const response = await ctx.http.get(url, requestOptions());
+      const response = await ctx.http.get(
+        url,
+        serviceRequestOptions(servicePolicy)
+      );
+
       return {
-        ok: response.status >= 200 && response.status < 400,
+        ok: response.status >= 200 && response.status < 500,
         status: response.status,
         ms: Math.max(1, Date.now() - startedAt)
       };
@@ -275,6 +353,108 @@ export default async function (ctx) {
         ms: Math.max(1, Date.now() - startedAt)
       };
     }
+  }
+
+  async function probePolicy(policy) {
+    const name = clean(policy);
+
+    if (!name) {
+      return false;
+    }
+
+    const key = name.toLowerCase();
+
+    if (!policyProbeCache[key]) {
+      policyProbeCache[key] = (async function () {
+        const urls = POLICY_PROBE_URLS.map(function (url) {
+          return url + "?_=" + Date.now() + randomAlphaNum(5);
+        });
+
+        for (let index = 0; index < urls.length; index += 1) {
+          try {
+            const response = await ctx.http.get(
+              urls[index],
+              policyProbeRequestOptions(name)
+            );
+
+            if (response.status >= 200 && response.status < 500) {
+              return true;
+            }
+          } catch (_) {}
+        }
+
+        return false;
+      })();
+    }
+
+    return await policyProbeCache[key];
+  }
+
+  async function firstWorkingPolicy(candidates) {
+    const list = dedupeCandidates(candidates);
+
+    for (let start = 0; start < list.length; start += POLICY_PROBE_BATCH_SIZE) {
+      const batch = list.slice(start, start + POLICY_PROBE_BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map(function (policy) {
+          return probePolicy(policy);
+        })
+      );
+
+      for (let index = 0; index < results.length; index += 1) {
+        if (results[index]) {
+          return batch[index];
+        }
+      }
+    }
+
+    return "";
+  }
+
+  async function resolveServicePolicy(serviceId, category) {
+    const id = clean(serviceId).toLowerCase();
+    const type = clean(category).toLowerCase();
+    const cacheKey = type + ":" + id;
+
+    if (Object.prototype.hasOwnProperty.call(servicePolicyCache, cacheKey)) {
+      return servicePolicyCache[cacheKey];
+    }
+
+    let result = "";
+
+    if (POLICY) {
+      result = POLICY;
+    } else if (type === "lmt" && LMT_POLICY) {
+      result = LMT_POLICY;
+    } else if (type === "ai" && AI_POLICY) {
+      result = AI_POLICY;
+    } else {
+      result = await firstWorkingPolicy(
+        servicePolicyCandidates(id, type)
+      );
+    }
+
+    servicePolicyCache[cacheKey] = result;
+    return result;
+  }
+
+  async function resolveServicePolicyMap(ids, category) {
+    const entries = await Promise.all(
+      ids.map(async function (id) {
+        return [
+          id,
+          await resolveServicePolicy(id, category)
+        ];
+      })
+    );
+
+    const map = {};
+
+    entries.forEach(function (entry) {
+      map[entry[0]] = entry[1];
+    });
+
+    return map;
   }
 
   async function getExit() {
@@ -712,7 +892,7 @@ export default async function (ctx) {
     };
   }
 
-  async function testService(id, name, kind, color, url) {
+  async function testService(id, name, kind, color, url, servicePolicy) {
     if (!url) {
       return {
         id: id,
@@ -724,8 +904,9 @@ export default async function (ctx) {
     }
 
     const separator = url.includes("?") ? "&" : "?";
-    const result = await getStatus(
-      url + separator + "_=" + Date.now()
+    const result = await getServiceStatus(
+      url + separator + "_=" + Date.now(),
+      servicePolicy
     );
 
     return {
@@ -733,9 +914,18 @@ export default async function (ctx) {
       name: name,
       kind: kind,
       color: color,
-      ok: result.ok
+      ok: result.ok,
+      policy: servicePolicy || ""
     };
   }
+
+  const [
+    mediaPolicyMap,
+    aiPolicyMap
+  ] = await Promise.all([
+    resolveServicePolicyMap(MEDIA_SERVICE_IDS, "lmt"),
+    resolveServicePolicyMap(AI_SERVICE_IDS, "ai")
+  ]);
 
   const [
     exit,
@@ -755,21 +945,21 @@ export default async function (ctx) {
     getQuic(),
 
     Promise.all([
-      testService("netflix", "Netflix", "netflix", C.netflix, "https://www.netflix.com/title/81215567"),
-      testService("disney", "Disney+", "disney", C.disney, "https://www.disneyplus.com/"),
-      testService("spotify", "Spotify", "spotify", C.spotify, "https://open.spotify.com/"),
-      testService("tiktok", "TikTok", "tiktok", C.tiktok, "https://www.tiktok.com/"),
-      testService("youtube", "YouTube", "youtube", C.youtube, "https://www.youtube.com/"),
-      testService("prime", "Prime", "prime", C.prime, "https://www.primevideo.com/")
+      testService("netflix", "Netflix", "netflix", C.netflix, "https://www.netflix.com/title/81215567", mediaPolicyMap.netflix),
+      testService("disney", "Disney+", "disney", C.disney, "https://www.disneyplus.com/", mediaPolicyMap.disney),
+      testService("spotify", "Spotify", "spotify", C.spotify, "https://open.spotify.com/", mediaPolicyMap.spotify),
+      testService("tiktok", "TikTok", "tiktok", C.tiktok, "https://www.tiktok.com/", mediaPolicyMap.tiktok),
+      testService("youtube", "YouTube", "youtube", C.youtube, "https://www.youtube.com/", mediaPolicyMap.youtube),
+      testService("prime", "Prime", "prime", C.prime, "https://www.primevideo.com/", mediaPolicyMap.prime)
     ]),
 
     Promise.all([
-      testService("chatgpt", "ChatGPT", "chatgpt", C.chatgpt, "https://chatgpt.com/"),
-      testService("claude", "Claude", "claude", C.claude, "https://claude.ai/"),
-      testService("gemini", "Gemini", "gemini", C.gemini, "https://gemini.google.com/"),
-      testService("deepseek", "DeepSeek", "deepseek", C.deepseek, "https://chat.deepseek.com/"),
-      testService("grok", "Grok", "grok", C.grok, "https://grok.com/"),
-      testService("perplexity", "Perplexity", "perplexity", C.perplexity, "https://www.perplexity.ai/")
+      testService("chatgpt", "ChatGPT", "chatgpt", C.chatgpt, "https://chatgpt.com/", aiPolicyMap.chatgpt),
+      testService("claude", "Claude", "claude", C.claude, "https://claude.ai/", aiPolicyMap.claude),
+      testService("gemini", "Gemini", "gemini", C.gemini, "https://gemini.google.com/", aiPolicyMap.gemini),
+      testService("deepseek", "DeepSeek", "deepseek", C.deepseek, "https://chat.deepseek.com/", aiPolicyMap.deepseek),
+      testService("grok", "Grok", "grok", C.grok, "https://grok.com/", aiPolicyMap.grok),
+      testService("perplexity", "Perplexity", "perplexity", C.perplexity, "https://www.perplexity.ai/", aiPolicyMap.perplexity)
     ])
   ]);
 
@@ -1925,6 +2115,450 @@ function palette() {
     grok: adaptive("#111827", "#F1F5FF"),
     perplexity: adaptive("#0B88A8", "#63D9FF")
   };
+}
+
+function servicePolicyCandidates(serviceId, category) {
+  const id = clean(serviceId).toLowerCase();
+  const type = clean(category).toLowerCase();
+
+  const commonLMT = [
+    "LMT",
+    "流媒体",
+    "流媒体解锁",
+    "流媒体服务",
+    "流媒体策略",
+    "流媒体节点",
+    "全球流媒体",
+    "国际流媒体",
+    "国外流媒体",
+    "海外流媒体",
+    "全球媒体",
+    "国际媒体",
+    "国外媒体",
+    "海外媒体",
+    "媒体",
+    "媒体服务",
+    "媒体解锁",
+    "影音",
+    "影音娱乐",
+    "影音解锁",
+    "视频",
+    "视频服务",
+    "视频解锁",
+    "串流",
+    "串流媒体",
+    "串流媒體",
+    "流媒體",
+    "解锁",
+    "解鎖",
+    "国际解锁",
+    "海外解锁",
+    "Global Media",
+    "International Media",
+    "Overseas Media",
+    "Media",
+    "Media Unlock",
+    "Unlock Media",
+    "Streaming",
+    "Streaming Media",
+    "Streaming Unlock",
+    "Global Streaming",
+    "International Streaming",
+    "Overseas Streaming",
+    "Proxy Media",
+    "Stream",
+    "Video",
+    "Video Streaming",
+    "TV",
+    "Movie",
+    "Movies",
+    "Entertainment",
+    "NETFLIX",
+    "Netflix",
+    "Disney",
+    "Disney+",
+    "YouTube",
+    "Spotify",
+    "Prime",
+    "Prime Video",
+    "TikTok",
+    "HBO",
+    "Max",
+    "Hulu",
+    "Apple TV",
+    "Apple TV+",
+    "Emby",
+    "Plex",
+    "動畫瘋",
+    "动画疯",
+    "Bahamut",
+    "Bilibili 港澳台",
+    "哔哩哔哩港澳台",
+    "港台番剧",
+    "港台",
+    "🎬 流媒体",
+    "📺 流媒体",
+    "🎥 流媒体",
+    "🎞 流媒体",
+    "🍿 流媒体",
+    "🎬 Streaming",
+    "📺 Streaming",
+    "🎥 Streaming",
+    "🎬 Media",
+    "📺 Media",
+    "🍿 Media"
+  ];
+
+  const commonAI = [
+    "AI",
+    "Ai",
+    "ai",
+    "人工智能",
+    "人工智能服务",
+    "AI服务",
+    "AI 服务",
+    "AI解锁",
+    "AI 解锁",
+    "AI平台",
+    "AI 平台",
+    "AI工具",
+    "AI 工具",
+    "AI策略",
+    "AI 策略",
+    "AI节点",
+    "AI 节点",
+    "AI專用",
+    "AI专用",
+    "AI国外",
+    "AI海外",
+    "全球AI",
+    "国际AI",
+    "国外AI",
+    "海外AI",
+    "AIGC",
+    "AGI",
+    "LLM",
+    "OpenAI",
+    "Open AI",
+    "ChatGPT",
+    "Chat GPT",
+    "GPT",
+    "GPT4",
+    "GPT-4",
+    "GPT-5",
+    "Claude",
+    "Anthropic",
+    "Gemini",
+    "Google AI",
+    "Bard",
+    "DeepSeek",
+    "Grok",
+    "xAI",
+    "XAI",
+    "Perplexity",
+    "Copilot",
+    "Microsoft Copilot",
+    "Poe",
+    "Notion AI",
+    "Midjourney",
+    "Sora",
+    "Cursor",
+    "AI Proxy",
+    "AI Services",
+    "AI Unlock",
+    "AI Global",
+    "Global AI",
+    "International AI",
+    "Overseas AI",
+    "Proxy AI",
+    "🤖 AI",
+    "✨ AI",
+    "🧠 AI",
+    "🤖 人工智能",
+    "✨ 人工智能",
+    "🧠 人工智能"
+  ];
+
+  const serviceMap = {
+    netflix: [
+      "Netflix",
+      "NETFLIX",
+      "NetFlix",
+      "NF",
+      "奈飞",
+      "奈飛",
+      "网飞",
+      "網飛",
+      "Netflix 解锁",
+      "Netflix 解鎖",
+      "Netflix Unlock",
+      "Netflix 专用",
+      "Netflix 專用",
+      "Netflix节点",
+      "Netflix 節点",
+      "NF解锁",
+      "NF 解锁",
+      "NF Unlock",
+      "Netflix/Disney",
+      "Netflix & Disney",
+      "Netflix Disney",
+      "奈飞节点",
+      "奈飞解锁",
+      "🎬 Netflix",
+      "🎥 Netflix",
+      "🍿 Netflix"
+    ],
+
+    disney: [
+      "Disney+",
+      "Disney",
+      "Disney Plus",
+      "DisneyPlus",
+      "D+",
+      "DPlus",
+      "迪士尼",
+      "迪士尼+",
+      "Disney 解锁",
+      "Disney+ 解锁",
+      "Disney Unlock",
+      "DisneyPlus 解锁",
+      "Disney 专用",
+      "Disney 專用",
+      "Disney 节点",
+      "Disney 節点",
+      "Disney+ 节点",
+      "Disney+ 節点",
+      "🎬 Disney+",
+      "🏰 Disney+",
+      "🎥 Disney"
+    ],
+
+    spotify: [
+      "Spotify",
+      "SPOTIFY",
+      "声破天",
+      "聲破天",
+      "Spotify 解锁",
+      "Spotify Unlock",
+      "Spotify Premium",
+      "Spotify 专用",
+      "Spotify 專用",
+      "Spotify 节点",
+      "Spotify 節点",
+      "音乐",
+      "音樂",
+      "Music",
+      "🎵 Spotify",
+      "🎧 Spotify"
+    ],
+
+    tiktok: [
+      "TikTok",
+      "Tik Tok",
+      "TIKTOK",
+      "TK",
+      "抖音国际版",
+      "抖音國際版",
+      "国际抖音",
+      "國際抖音",
+      "TikTok 解锁",
+      "TikTok Unlock",
+      "TikTok 专用",
+      "TikTok 專用",
+      "TikTok 节点",
+      "TikTok 節点",
+      "🎵 TikTok",
+      "🎬 TikTok"
+    ],
+
+    youtube: [
+      "YouTube",
+      "Youtube",
+      "YOUTUBE",
+      "YT",
+      "油管",
+      "YouTube 解锁",
+      "YouTube Unlock",
+      "YouTube Premium",
+      "YouTube Music",
+      "YT Premium",
+      "YT 解锁",
+      "YT Unlock",
+      "Google",
+      "Google YouTube",
+      "谷歌",
+      "谷歌服务",
+      "谷歌服務",
+      "Google Services",
+      "Google Service",
+      "🎬 YouTube",
+      "📺 YouTube",
+      "▶️ YouTube"
+    ],
+
+    prime: [
+      "Prime",
+      "Prime Video",
+      "PrimeVideo",
+      "Amazon Prime",
+      "Amazon Video",
+      "Amazon",
+      "亚马逊视频",
+      "亞馬遜視頻",
+      "亚马逊",
+      "亞馬遜",
+      "Prime 解锁",
+      "Prime Unlock",
+      "Prime Video 解锁",
+      "Prime Video Unlock",
+      "Prime 专用",
+      "Prime 專用",
+      "Prime 节点",
+      "Prime 節点",
+      "🎬 Prime",
+      "📺 Prime"
+    ],
+
+    chatgpt: [
+      "ChatGPT",
+      "Chat GPT",
+      "OpenAI",
+      "Open AI",
+      "GPT",
+      "GPT4",
+      "GPT-4",
+      "GPT5",
+      "GPT-5",
+      "OpenAI 解锁",
+      "ChatGPT 解锁",
+      "OpenAI Unlock",
+      "ChatGPT Unlock",
+      "OpenAI 专用",
+      "OpenAI 專用",
+      "ChatGPT 专用",
+      "ChatGPT 專用",
+      "OpenAI 节点",
+      "ChatGPT 节点",
+      "🤖 ChatGPT",
+      "🤖 OpenAI",
+      "✨ ChatGPT"
+    ],
+
+    claude: [
+      "Claude",
+      "Anthropic",
+      "Claude AI",
+      "Claude 解锁",
+      "Claude Unlock",
+      "Anthropic 解锁",
+      "Anthropic Unlock",
+      "Claude 专用",
+      "Claude 專用",
+      "Claude 节点",
+      "Claude 節点",
+      "🤖 Claude",
+      "🧠 Claude"
+    ],
+
+    gemini: [
+      "Gemini",
+      "Google AI",
+      "Bard",
+      "Google Bard",
+      "Gemini 解锁",
+      "Gemini Unlock",
+      "Google AI 解锁",
+      "Google AI Unlock",
+      "Gemini 专用",
+      "Gemini 專用",
+      "Gemini 节点",
+      "Gemini 節点",
+      "Google",
+      "谷歌",
+      "谷歌 AI",
+      "🤖 Gemini",
+      "✨ Gemini"
+    ],
+
+    deepseek: [
+      "DeepSeek",
+      "Deepseek",
+      "DEEPSEEK",
+      "深度求索",
+      "DeepSeek 解锁",
+      "DeepSeek Unlock",
+      "DeepSeek 专用",
+      "DeepSeek 專用",
+      "DeepSeek 节点",
+      "DeepSeek 節点",
+      "🤖 DeepSeek",
+      "🧠 DeepSeek"
+    ],
+
+    grok: [
+      "Grok",
+      "grok",
+      "GROK",
+      "xAI",
+      "XAI",
+      "X AI",
+      "Grok 解锁",
+      "Grok Unlock",
+      "xAI 解锁",
+      "xAI Unlock",
+      "Grok 专用",
+      "Grok 專用",
+      "Grok 节点",
+      "Grok 節点",
+      "X",
+      "Twitter AI",
+      "🤖 Grok",
+      "✨ Grok"
+    ],
+
+    perplexity: [
+      "Perplexity",
+      "PERPLEXITY",
+      "Perplexity AI",
+      "Perplexity 解锁",
+      "Perplexity Unlock",
+      "Perplexity 专用",
+      "Perplexity 專用",
+      "Perplexity 节点",
+      "Perplexity 節点",
+      "PPLX",
+      "PPLX AI",
+      "🤖 Perplexity",
+      "🔎 Perplexity"
+    ]
+  };
+
+  const serviceCandidates = serviceMap[id] || [];
+
+  if (type === "ai") {
+    return serviceCandidates.concat(commonAI);
+  }
+
+  return serviceCandidates.concat(commonLMT);
+}
+
+function dedupeCandidates(values) {
+  const seen = {};
+  const output = [];
+
+  (values || []).forEach(function (value) {
+    const raw = clean(value);
+    const key = raw.toLowerCase();
+
+    if (!raw || seen[key]) {
+      return;
+    }
+
+    seen[key] = true;
+    output.push(raw);
+  });
+
+  return output;
 }
 
 function getLocalNetworkName(device) {
