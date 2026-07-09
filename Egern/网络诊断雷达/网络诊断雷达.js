@@ -18,6 +18,7 @@
  * - 每个服务在本轮刷新中只匹配一次
  * - 匹配成功后缓存本轮结果
  * - 匹配不到时该服务不传 policy，走 Widget 默认请求方式
+ * - 服务小国旗来自该服务实际使用策略的出口地区，不再复用顶部当前代理出口
  */
 
 export default async function (ctx) {
@@ -40,6 +41,7 @@ export default async function (ctx) {
 
   const servicePolicyCache = {};
   const policyProbeCache = {};
+  const policyExitCache = {};
 
   const SCREEN_W = numberInRange(
     pick(getScreenMetric(ctx, "width"), 440),
@@ -353,6 +355,120 @@ export default async function (ctx) {
         ms: Math.max(1, Date.now() - startedAt)
       };
     }
+  }
+
+  async function getPolicyExit(policy) {
+    const targetPolicy = clean(policy);
+    const key = targetPolicy || "__DEFAULT__";
+
+    if (!policyExitCache[key]) {
+      policyExitCache[key] = (async function () {
+        const urls = [
+          "http://ip-api.com/json/?lang=zh-CN&fields=status,message,query,country,countryCode,regionName,city,isp,org,as,asname&_=" + Date.now(),
+          "https://ipwho.is/?lang=zh-CN&_=" + Date.now(),
+          "https://api.ipapi.is/?_=" + Date.now()
+        ];
+
+        for (let index = 0; index < urls.length; index += 1) {
+          try {
+            const response = await ctx.http.get(
+              urls[index],
+              serviceRequestOptions(targetPolicy, {
+                headers: {
+                  "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+                  Accept: "application/json,text/plain,*/*",
+                  "Cache-Control": "no-cache"
+                }
+              })
+            );
+
+            if (response.status < 200 || response.status >= 400) {
+              continue;
+            }
+
+            const parsed = parsePolicyExit(await response.json());
+
+            if (parsed && parsed.countryCode) {
+              return parsed;
+            }
+          } catch (_) {}
+        }
+
+        return {
+          ip: "",
+          country: "",
+          countryCode: "",
+          city: "",
+          region: "",
+          label: "NET"
+        };
+      })();
+    }
+
+    return await policyExitCache[key];
+  }
+
+  function parsePolicyExit(data) {
+    if (!data || typeof data !== "object") {
+      return {
+        ip: "",
+        country: "",
+        countryCode: "",
+        city: "",
+        region: "",
+        label: "NET"
+      };
+    }
+
+    const ip = clean(
+      pick(
+        data.query,
+        data.ip,
+        data.ip_address,
+        getAt(data, "location.ip")
+      )
+    );
+
+    const rawCountry = clean(
+      pick(
+        data.country,
+        data.country_name,
+        getAt(data, "location.country")
+      )
+    );
+
+    const code = countryCode(
+      pick(
+        data.countryCode,
+        data.country_code,
+        getAt(data, "location.country_code"),
+        rawCountry.length === 2 ? rawCountry : ""
+      )
+    );
+
+    const region = clean(
+      pick(
+        data.regionName,
+        data.region,
+        getAt(data, "location.region")
+      )
+    );
+
+    const city = clean(
+      pick(
+        data.city,
+        getAt(data, "location.city")
+      )
+    );
+
+    return {
+      ip: ip,
+      country: rawCountry,
+      countryCode: code,
+      city: city,
+      region: region,
+      label: code ? flag(code) + " " + code : "NET"
+    };
   }
 
   async function probePolicy(policy) {
@@ -893,21 +1009,36 @@ export default async function (ctx) {
   }
 
   async function testService(id, name, kind, color, url, servicePolicy) {
+    const serviceExitPromise = getPolicyExit(servicePolicy);
+
     if (!url) {
+      const emptyExit = await serviceExitPromise;
+
       return {
         id: id,
         name: name,
         kind: kind,
         color: color,
-        ok: false
+        ok: false,
+        policy: servicePolicy || "",
+        countryCode: emptyExit.countryCode || "",
+        country: emptyExit.country || "",
+        exit: emptyExit
       };
     }
 
     const separator = url.includes("?") ? "&" : "?";
-    const result = await getServiceStatus(
-      url + separator + "_=" + Date.now(),
-      servicePolicy
-    );
+
+    const [
+      result,
+      serviceExit
+    ] = await Promise.all([
+      getServiceStatus(
+        url + separator + "_=" + Date.now(),
+        servicePolicy
+      ),
+      serviceExitPromise
+    ]);
 
     return {
       id: id,
@@ -915,7 +1046,10 @@ export default async function (ctx) {
       kind: kind,
       color: color,
       ok: result.ok,
-      policy: servicePolicy || ""
+      policy: servicePolicy || "",
+      countryCode: serviceExit.countryCode || "",
+      country: serviceExit.country || "",
+      exit: serviceExit
     };
   }
 
@@ -1775,6 +1909,13 @@ export default async function (ctx) {
 
   function compactServiceTile(item) {
     const statusColor = item.ok ? C.green : C.red;
+    const serviceCountryCode =
+      countryCode(item.countryCode) ||
+      countryCode(exit.countryCode);
+
+    const serviceRegionLabel = serviceCountryCode
+      ? flag(serviceCountryCode) + " " + serviceCountryCode
+      : "NET";
 
     return row(
       [
@@ -1790,9 +1931,7 @@ export default async function (ctx) {
             row(
               [
                 text(
-                  exit.countryCode
-                    ? flag(exit.countryCode) + " " + exit.countryCode
-                    : "NET",
+                  serviceRegionLabel,
                   5,
                   "medium",
                   C.subtext,
