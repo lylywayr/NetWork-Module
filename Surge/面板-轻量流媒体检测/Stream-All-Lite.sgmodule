@@ -1,0 +1,12 @@
+#!name=轻量流媒体检测 Lite
+#!desc=检测 Netflix、Disney+、YouTube 等常见流媒体解锁状态
+#!system=ios
+#!category=面板模块
+#!arguments=UPDATE_INTERVAL:7200,TITLE:轻量流媒体检测,ICON:play.tv.fill,COLOR:#FF2D55
+#!arguments-desc=[参数说明]\n1. UPDATE_INTERVAL: 面板自动刷新间隔，单位为秒。\n2. TITLE: 面板标题。\n3. ICON: 面板图标，需为有效 SF Symbol 名称。\n4. COLOR: 图标颜色，使用十六进制颜色值。
+
+[Panel]
+Panel = script-name=轻量流媒体检测,update-interval={{{UPDATE_INTERVAL}}}
+
+[Script]
+轻量流媒体检测 = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%BD%BB%E9%87%8F%E6%B5%81%E5%AA%92%E4%BD%93%E6%A3%80%E6%B5%8B/Stream-All-Lite.js,script-update-interval=0,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}

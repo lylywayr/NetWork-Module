@@ -1,0 +1,6 @@
+[Script]
+# 每 5 分钟刷新一次面板信息
+ZTE_Modem_Status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js,timeout=10
+
+# 每天凌晨 4 点执行一次时间同步
+ZTE_Time_Sync = type=cron,cronexp="0 4 * * *",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js,argument="sync"

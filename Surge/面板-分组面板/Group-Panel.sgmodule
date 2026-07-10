@@ -1,0 +1,11 @@
+#!name=分组面板
+#!desc=显示指定策略组当前选中的节点
+#!category=面板模块
+#!arguments=GROUP:策略组名称,ICON:network,COLOR:#86ABEE
+#!arguments-desc=[参数说明]\n1. GROUP: 需要显示的策略组名称。\n2. ICON: 面板图标，需为有效 SF Symbol 名称。\n3. COLOR: 图标颜色，使用十六进制颜色值。
+
+[Panel]
+Group-Panel = script-name=Group-Panel,update-interval=1
+
+[Script]
+Group-Panel = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E5%88%86%E7%BB%84%E9%9D%A2%E6%9D%BF/Group-Panel.js,argument=icon={{{ICON}}}&color={{{COLOR}}}&group={{{GROUP}}}

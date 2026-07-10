@@ -1,0 +1,9 @@
+#!name=服务解锁概览
+#!desc=紧凑状态概览，点击刷新。
+#!system=ios
+
+[Panel]
+NetStatusPanel = title="服务解锁",content="加载服务状态...",icon=dot.radiowaves.left.and.right,icon-color=#34C759,script-name=NetStatusPanel,update-interval=300
+
+[Script]
+NetStatusPanel = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-NetStatusPanel/NetStatusPanel.js,timeout=15,engine=auto

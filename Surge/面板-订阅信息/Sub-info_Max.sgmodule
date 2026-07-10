@@ -1,0 +1,17 @@
+#!name=订阅信息 Max
+#!desc=同时显示多个订阅的剩余流量与到期时间
+#!category=面板模块
+#!arguments=NAME_1:第一个机场名称,URL_1:编码后的订阅链接,RESET-Day_1:重置日期,ICON_1:externaldrive.fill.badge.icloud,COLOR_1:#FFB6C1,NAME_2:#第二个机场名称,URL_2:编码后的订阅链接,RESET-Day_2:重置日期,ICON_2:internaldrive.fill,COLOR_2:#87CEFA,NAME_3:#第三个机场名称,URL_3:编码后的订阅链接,RESET-Day_3:重置日期,ICON_3:externaldrive.connected.to.line.below.fill,COLOR_3:#E980AB,NAME_4:#第四个机场名称,URL_4:编码后的订阅链接,RESET-Day_4:重置日期,ICON_4:externaldrive.fill,COLOR_4:#BDDC9D
+#!arguments-desc=[参数说明]\n1. NAME_x: 每个面板的显示名称。\n2. URL_x: 对应订阅链接的 URL Encode 结果。\n3. RESET-Day_x: 对应订阅的每月重置日期。\n4. ICON_x: 面板图标，需为有效 SF Symbol 名称。\n5. COLOR_x: 图标颜色，使用十六进制颜色值。
+
+[Panel]
+{{{NAME_1}}} = script-name={{{NAME_1}}},update-interval=3600
+{{{NAME_2}}} = script-name={{{NAME_2}}},update-interval=3600
+{{{NAME_3}}} = script-name={{{NAME_3}}},update-interval=3600
+{{{NAME_4}}} = script-name={{{NAME_4}}},update-interval=3600
+
+[Script]
+{{{NAME_1}}} = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_1}}}&reset_day={{{RESET-Day_1}}}&title={{{NAME_1}}}&icon={{{ICON_1}}}&color={{{COLOR_1}}}
+{{{NAME_2}}} = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_2}}}&reset_day={{{RESET-Day_2}}}&title={{{NAME_2}}}&icon={{{ICON_2}}}&color={{{COLOR_2}}}
+{{{NAME_3}}} = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_3}}}&reset_day={{{RESET-Day_3}}}&title={{{NAME_3}}}&icon={{{ICON_3}}}&color={{{COLOR_3}}}
+{{{NAME_4}}} = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%AE%A2%E9%98%85%E4%BF%A1%E6%81%AF/Sub-info.js,script-update-interval=0,argument=url={{{URL_4}}}&reset_day={{{RESET-Day_4}}}&title={{{NAME_4}}}&icon={{{ICON_4}}}&color={{{COLOR_4}}}

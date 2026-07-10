@@ -1,0 +1,12 @@
+#!name=接口信息 紧凑版
+#!desc=紧凑显示网络接口速度与流量信息
+#!category=面板模块
+#!author=@xream https://t.me/zhetengsha
+#!arguments=UPDATE-INTERVAL:1
+#!arguments-desc=[参数说明]\n1. UPDATE-INTERVAL: 面板自动刷新间隔，单位为秒。
+
+[Script]
+接口信息面板 = type=generic,timeout=120,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E6%8E%A5%E5%8F%A3%E4%BF%A1%E6%81%AF/interface-info.js,argument="icon=wifi.router&icon-color=#6699FF&STYLE=ncompact"
+
+[Panel]
+接口信息面板 = script-name=接口信息面板,update-interval={{{UPDATE-INTERVAL}}}
