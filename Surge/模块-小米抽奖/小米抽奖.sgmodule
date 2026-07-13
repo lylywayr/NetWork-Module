@@ -3,7 +3,7 @@
 #!author=MaYIHEI, lylywayr
 #!icon=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
 #!openUrl=https://shop.mi.com
-#!arguments=lottery=&signin=
+#!arguments=lottery=%20&signin=%20
 
 [MITM]
 hostname = %APPEND% shop-api.retail.mi.com

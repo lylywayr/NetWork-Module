@@ -5,12 +5,12 @@
 
 ## 使用方式
 - 在 `Surge` 中导入 `小米抽奖.sgmodule`。
-- `lottery` 默认留空，表示启用抽奖 Cookie 捕获。
-- `signin` 默认留空，表示启用定时签到。
+- `lottery` 默认值为空格，等效为启用抽奖 Cookie 捕获。
+- `signin` 默认值为空格，等效为启用定时签到。
 - 将对应参数改为 `#` 可关闭对应脚本。
 
 示例：
-- 默认：`lottery=` `signin=`
+- 默认：`lottery=%20` `signin=%20`
 - 关闭抽奖：`lottery=#`
 - 关闭签到：`signin=#`
 
