@@ -3,12 +3,12 @@
 #!author=MaYIHEI, lylywayr
 #!icon=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
 #!openUrl=https://shop.mi.com
-#!arguments=抽奖开关=,签到开关=
+#!arguments=lottery=&signin=
 
 [MITM]
 hostname = %APPEND% shop-api.retail.mi.com
 
 [Script]
-{{{抽奖开关}}}小米抽奖 Cookie = type=http-request,pattern=^https:\/\/shop-api\.retail\.mi\.com\/mtop\/navi\/venue\/batch,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/milottery.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
+%lottery%小米抽奖 Cookie = type=http-request,pattern=^https:\/\/shop-api\.retail\.mi\.com\/mtop\/navi\/venue\/batch,requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/milottery.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
 
-{{{签到开关}}}小米抽奖签到 = type=cron,cronexp=30 8 * * *,timeout=240,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/milottery.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
+%signin%小米抽奖签到 = type=cron,cronexp=30 8 * * *,timeout=240,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/milottery.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
