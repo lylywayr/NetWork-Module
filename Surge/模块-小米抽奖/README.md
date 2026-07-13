@@ -10,7 +10,7 @@
 - 将对应参数改为 `#` 可关闭对应脚本。
 
 示例：
-- 默认：`lottery=小米抽奖 Cookie` `signin=小米抽奖签到`
+- 默认：`lottery="小米抽奖 Cookie"` `signin="小米抽奖签到"`
 - 关闭抽奖：`lottery=#`
 - 关闭签到：`signin=#`
 

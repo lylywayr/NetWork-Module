@@ -3,7 +3,7 @@
 #!author=MaYIHEI, lylywayr
 #!icon=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/mishop.png
 #!openUrl=https://shop.mi.com
-#!arguments=lottery:小米抽奖 Cookie,signin:小米抽奖签到
+#!arguments=lottery:"小米抽奖 Cookie",signin:"小米抽奖签到"
 #!arguments-desc=lottery: 抽奖 Cookie 捕获脚本名称，设为 # 可关闭。\nsignin: 定时签到脚本名称，设为 # 可关闭。
 
 [MITM]
