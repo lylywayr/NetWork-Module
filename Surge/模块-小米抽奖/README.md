@@ -9,6 +9,14 @@
 - `signin` 默认值为 `小米抽奖签到`，表示启用定时签到。
 - 将对应参数改为 `#` 可关闭对应脚本。
 
+导入链接：
+- `surge:///install-module?url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96.sgmodule`
+
+抓取路径：
+- 打开小米商城 App。
+- 进入 `狂欢礼` 或对应抽奖活动页。
+- 命中请求后会保存 `Cookie` 与活动配置，之后可执行定时签到。
+
 示例：
 - 默认：`lottery="小米抽奖 Cookie"` `signin="小米抽奖签到"`
 - 关闭抽奖：`lottery=#`

@@ -87,6 +87,7 @@
 - 模块-Weibo
 - 模块-Weixin_external_links_unlock
 - 模块-WPS_checkin
+- 模块-小米抽奖
 - 模块-XiaoCan
 - 模块-X-search
 - 模块-YouTubeSubtitlesTranslation
