@@ -1,0 +1,13 @@
+#!name=扫描全能王
+#!desc=扫描全能王幸运大转盘；抓取 Cookie 后每日自动完成抽奖
+#!author=MaYIHEI, lylywayr
+#!icon=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B/camscanner.png
+#!openUrl=https://www.camscanner.com/
+
+[MITM]
+hostname = %APPEND% api-cs.intsig.net
+
+[Script]
+扫描全能王 Cookie = type=http-request,pattern=^https:\/\/api-cs\.intsig\.net\/user\/cs\/get_user_attribute,requires-body=false,max-size=0,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B/camscanner.cookie.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B/camscanner.png
+
+扫描全能王签到 = type=cron,cronexp=15 10 * * *,timeout=120,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B/camscanner.js,img-url=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B/camscanner.png

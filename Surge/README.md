@@ -75,6 +75,7 @@
 - 模块-Spotify_lyrics_translation
 - 模块-SURGE-GPT-AI
 - 模块-sxmd_sign
+- 模块-扫描全能王
 - 模块-Talkatone
 - 模块-TelegramRedirect
 - 模块-TeleSwiftgram
