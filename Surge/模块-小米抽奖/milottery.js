@@ -106,27 +106,9 @@ function capture() {
         capturedAt: Date.now(),
     };
 
-    let data = current;
-    let notify = true;
-    try {
-        const saved = JSON.parse($.getdata(CK_KEY) || "null");
-        const sameActivity = saved && saved.actId === current.actId;
-        const currentNative = !!header(current.headers, "mishop-client-id");
-        if (sameActivity && !currentNative) {
-            data = saved;
-            setHeader(data.headers, "cookie", cookie);
-            data.capturedAt = current.capturedAt;
-            notify = false;
-        } else if (sameActivity && currentNative) {
-            notify = false;
-        }
-    } catch (e) {
-        debug(`saved data parse error: ${e.message || e}`);
-    }
-
-    const ok = $.setdata(JSON.stringify(data), CK_KEY);
+    const ok = $.setdata(JSON.stringify(current), CK_KEY);
     const saved = $.getdata(CK_KEY);
-    if (ok && saved && notify) {
+    if (ok && saved) {
         $.msg($.name, "", "✅ 小米抽奖 Cookie 获取成功");
     } else if (!ok || !saved) {
         $.msg($.name, "❌ Cookie 保存失败", "请查看脚本日志后重试");
