@@ -1,0 +1,27 @@
+name: "小米抽奖"
+description: "抓取小米商城抽奖活动 Cookie，并按计划自动完成任务和抽奖。"
+author: "MaYIHEI, lylywayr"
+homepage: "https://github.com/MaYIHEI/paperclip"
+icon: "gift.fill"
+open_url: "https://shop.mi.com"
+
+auto_update:
+  interval: 86400
+
+scriptings:
+  - http_request:
+      name: "小米抽奖 Cookie"
+      match: "^https:\\/\\/shop-api\\.retail\\.mi\\.com\\/mtop\\/navi\\/venue\\/batch"
+      script_url: "https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Egern/%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/MiLottery.js"
+      body_required: true
+      max_size: 0
+      timeout: 30
+  - schedule:
+      name: "小米抽奖签到"
+      cron: "30 8 * * *"
+      script_url: "https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Egern/%E5%B0%8F%E7%B1%B3%E6%8A%BD%E5%A5%96/MiLottery.js"
+      timeout: 240
+
+mitm:
+  hostnames:
+    - "shop-api.retail.mi.com"
