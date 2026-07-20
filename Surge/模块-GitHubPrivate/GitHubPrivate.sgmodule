@@ -1,0 +1,13 @@
+#!name=GitHub Private Raw
+#!desc=为 raw.githubusercontent.com / gist.githubusercontent.com 私有资源请求注入 GitHub Token，用于 Surge 引用私有仓库规则集、模块、脚本等资源。
+#!category=Third Party Module
+#!arguments=USERNAME:lylywayr,TOKEN:GITHUB_TOKEN
+#!arguments-desc=USERNAME: GitHub 用户名或组织名，默认 lylywayr\nTOKEN: GitHub Personal Access Token，至少需要目标私有仓库 Contents Read 权限。\n\n启用后，私有 raw 链接可使用不带 token 的普通地址，例如 https://raw.githubusercontent.com/lylywayr/Surge-AppPrivacy-Private-Rules/main/rule/Surge/AppPrivacyMerged/AI.list
+
+[Header Rewrite]
+http-request ^https?:\/\/(raw|gist)\.githubusercontent\.com\/{{{USERNAME}}} header-del Authorization
+http-request ^https?:\/\/(raw|gist)\.githubusercontent\.com\/{{{USERNAME}}} header-add Authorization "token {{{TOKEN}}}"
+http-request ^https?:\/\/(raw|gist)\.githubusercontent\.com header-replace Accept-Language en-us
+
+[MITM]
+hostname = %APPEND% raw.githubusercontent.com, gist.githubusercontent.com
