@@ -1,0 +1,114 @@
+#!name=番茄小说去广告（激进实验版）
+#!desc=Kelee + v2fly + iOS 隐私报告交叉整合。会阻断广告、日志、监控、AB/SDK 配置及疑似商业化资源，可能影响听书、活动、登录或同步；请按分组排障。
+#!author=可莉/Kelee、v2fly domain-list-community；Minis 整合
+#!homepage=https://github.com/lylywayr/NetWork-Module
+#!category=Advertising
+
+[Rule]
+# ===== A. 明确广告投放 / 广告签名 / 商业化接口（低风险） =====
+DOMAIN,zlink.ugsdk.cn,REJECT
+DOMAIN,ads3-normal.zijieapi.com,REJECT
+DOMAIN,ads5-normal.zijieapi.com,REJECT
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN,p3-ad-sign.byteimg.com,REJECT
+DOMAIN,p6-ad-sign.byteimg.com,REJECT
+DOMAIN,p9-ad-sign.byteimg.com,REJECT
+DOMAIN,lf-ad-ies.bytecdn.cn,REJECT
+DOMAIN,pangolin.snssdk.com,REJECT
+DOMAIN,gromore.pangolin-sdk-toutiao.com,REJECT
+DOMAIN,ether-pack.pangolin-sdk-toutiao.com,REJECT
+DOMAIN,vas.snssdk.com,REJECT
+DOMAIN,minigame3-normal.zijieapi.com,REJECT
+DOMAIN,minigame5-normal.zijieapi.com,REJECT
+DOMAIN,minigame5-normal-lq.zijieapi.com,REJECT
+DOMAIN,effect.snssdk.com,REJECT
+DOMAIN,dm.bytedance.com,REJECT
+DOMAIN,dm.pstatp.com,REJECT
+DOMAIN,dm.toutiao.com,REJECT
+
+# ===== B. 番茄日志、埋点、实时日志与监控（隐私报告实际观察到） =====
+DOMAIN,log3-applog.fqnovel.com,REJECT
+DOMAIN,log5-applog.fqnovel.com,REJECT
+DOMAIN,log3-applog-hl.fqnovel.com,REJECT
+DOMAIN,log5-applog-hl.fqnovel.com,REJECT
+DOMAIN,log3-applog-lq.fqnovel.com,REJECT
+DOMAIN,log0-applog-lq.fqnovel.com,REJECT
+DOMAIN,rtlog3-applog.fqnovel.com,REJECT
+DOMAIN,rtlog5-applog.fqnovel.com,REJECT
+DOMAIN,rtlog3-applog-hl.fqnovel.com,REJECT
+DOMAIN,rtlog5-applog-hl.fqnovel.com,REJECT
+DOMAIN,mon11-misc-lq.fqnovel.com,REJECT
+DOMAIN,mon11-misc.fqnovel.com,REJECT
+DOMAIN,mon3-misc.fqnovel.com,REJECT
+DOMAIN,mon.zijieapi.com,REJECT
+DOMAIN,mon.toutiaocloud.net,REJECT
+DOMAIN,mon.toutiaocloud.com,REJECT
+DOMAIN,log.snssdk.com,REJECT
+DOMAIN,extlog.snssdk.com,REJECT
+DOMAIN,toblog.ctobsnssdk.com,REJECT
+DOMAIN,sdfp.snssdk.com,REJECT
+
+# ===== C. AB 实验、远程配置、反馈、设备/安全 SDK（可能影响功能） =====
+DOMAIN,abtest3-misc.zijieapi.com,REJECT
+DOMAIN,abtest3-misc-lq.zijieapi.com,REJECT
+DOMAIN,gecko3.zijieapi.com,REJECT
+DOMAIN,gecko5.zijieapi.com,REJECT
+DOMAIN,feedback-c.zijieapi.com,REJECT
+DOMAIN,ma.zijieapi.com,REJECT
+DOMAIN,mssdk.zijieapi.com,REJECT
+DOMAIN,mssdk3-normal-lq.zijieapi.com,REJECT
+DOMAIN,mssdk-bu.bytedance.com,REJECT
+DOMAIN,mssdk.volces.com,REJECT
+DOMAIN,timon.zijieapi.com,REJECT
+DOMAIN,security.snssdk.com,REJECT
+DOMAIN,vcs.zijieapi.com,REJECT
+DOMAIN,tnc0-alisc1.zijieapi.com,REJECT
+DOMAIN,tnc0-aliec2.zijieapi.com,REJECT
+DOMAIN,polaris5-normal-lq.zijieapi.com,REJECT
+DOMAIN,saveu5-normal-lq.zijieapi.com,REJECT
+DOMAIN,bsync3-normal-lq.zijieapi.com,REJECT
+
+# ===== D. 听书/直播/活动开放能力及相关素材（高风险，按需保留） =====
+DOMAIN,lf-normal-gr-sourcecdn.bytegecko.com,REJECT
+DOMAIN,lf-webcast-gr-sourcecdn.bytegecko.com,REJECT
+DOMAIN,p3-developer.bytemaimg.com,REJECT
+DOMAIN,webcast-open.douyin.com,REJECT
+DOMAIN,webcast5-open-lq.douyin.com,REJECT
+DOMAIN,webcast.amemv.com,REJECT
+DOMAIN,open.douyin.com,REJECT
+DOMAIN,content-open.douyin.com,REJECT
+DOMAIN,im-open.douyin.com,REJECT
+DOMAIN,p11-webcast-sign.douyinpic.com,REJECT
+DOMAIN,p3-webcast-sign.douyinpic.com,REJECT
+DOMAIN,webcast-open.douyin.com,REJECT
+
+# ===== E. 疑似电商/商业化图片资源（仅隐私报告观察；高误伤） =====
+DOMAIN,p3.ecombdimg.com,REJECT
+DOMAIN,p9-aio.ecombdimg.com,REJECT
+DOMAIN,p11.ecombdimg.com,REJECT
+
+# ===== F. Kelee 原始插件中的其余广告/资源候选（高风险） =====
+DOMAIN,i.snssdk.com,REJECT
+DOMAIN,i-lq.snssdk.com,REJECT
+DOMAIN,is.snssdk.com,REJECT
+DOMAIN,is-lq.snssdk.com,REJECT
+DOMAIN,bds.snssdk.com,REJECT
+DOMAIN,s3a.pstatp.com,REJECT
+DOMAIN,tosv.boe.byted.org,REJECT
+DOMAIN,tosv.byted.org,REJECT
+
+# 仅在完整 Host 名中命中，不封禁父域；源自 Kelee Loon 插件
+DOMAIN-KEYWORD,-ad-sign.byteimg.com,REJECT
+DOMAIN-KEYWORD,api-access.pangolin-sdk-toutiao,REJECT
+DOMAIN-KEYWORD,log-api.pangolin-sdk-toutiao,REJECT
+DOMAIN-KEYWORD,-ad.byteoversea.com,REJECT
+DOMAIN-KEYWORD,video-cn.snssdk.com,REJECT
+DOMAIN-KEYWORD,asiad.byteactivity,REJECT
+
+[URL Rewrite]
+# Kelee 原始 HTTP 广告包规则；现代 HTTPS 场景命中率可能很低。
+^http:\/\/p\d+-be-pack-sign\.pglstatp-toutiao\.com\/(ad-app-package|web\.business\.image)\/ - reject
+
+[MITM]
+# 无响应脚本，不需要 MitM。
