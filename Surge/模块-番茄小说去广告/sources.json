@@ -1,6 +1,9 @@
 {
+  "kelee_sha256": "32a52a8bce9ce9dfb2d17075a9ff1bd06ea350d97ab4f4425704ab386020f14c",
+  "kelee_ua": "loon",
+  "kelee_url": "https://kelee.one/Tool/Loon/Lpx/DragonRead_remove_ads.lpx",
   "module": "FanQieNovel-AdBlock.sgmodule",
-  "module_sha256": "3b18b4f3db2176a2cf40f58cfb923de69eec9610354721c3b97a70e585f1ae99",
+  "module_sha256": "93e19265450fb9f291d438f1dd3cda29f7d354547d5b408ee9c041934fbca131",
   "rewrite_sha256": "18995a874e41b6f3c6c8b6225ea699979e24acc8e0ff4d9db0165da3e3ba3eba",
   "rewrite_ua": "browser",
   "rewrite_url": "https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/refs/heads/master/QuantumultX/rewrite/FanQieNovel.qxrewrite",

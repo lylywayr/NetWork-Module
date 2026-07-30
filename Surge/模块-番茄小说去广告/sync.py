@@ -96,12 +96,35 @@ def convert_rewrites(text: str) -> tuple[list[str], list[str]]:
     return rewrites, hostnames
 
 
+def convert_kelee_rules(text: str) -> list[str]:
+    output: list[str] = []
+    in_rules = False
+    for raw in text.splitlines():
+        line = raw.strip()
+        if line == "[Rule]":
+            in_rules = True
+            continue
+        if in_rules and line.startswith("["):
+            break
+        if not in_rules or not line or line.startswith("#"):
+            continue
+        parts = [part.strip() for part in line.split(",")]
+        if len(parts) != 3 or parts[2].upper() != "REJECT":
+            continue
+        kind, value, _ = parts
+        if kind.upper() in {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD", "IP-CIDR", "IP-CIDR6"}:
+            add_unique(output, f"{kind.upper()},{value},REJECT")
+    if not output:
+        raise RuntimeError("未从 Kelee Loon 模块解析出可用规则")
+    return output
+
+
 def build(rules: list[str], rewrites: list[str], hostnames: list[str]) -> str:
     return "\n".join(
         [
             "#!name=番茄小说去广告",
-            "#!desc=适配自 zqzess 的 Quantumult X 番茄小说分流与重写规则。启用后会拦截广告与章末广告请求。",
-            "#!author=zqzess；Surge 适配由 NetWork-Module 维护",
+            "#!desc=合并 zqzess 与 Kelee 的番茄小说去广告规则。启用后会拦截开屏、底部、章末与听书页面广告。",
+            "#!author=zqzess、可莉；Surge 适配由 NetWork-Module 维护",
             "#!homepage=https://github.com/zqzess/rule_for_quantumultX",
             "#!category=Advertising",
             "",
@@ -126,7 +149,10 @@ def main() -> int:
         source_data = json.loads(SOURCES.read_text(encoding="utf-8"))
         snippet, snippet_ua = fetch(source_data["snippet_url"], source_data.get("snippet_ua"))
         rewrite, rewrite_ua = fetch(source_data["rewrite_url"], source_data.get("rewrite_ua"))
+        kelee, kelee_ua = fetch(source_data["kelee_url"], source_data.get("kelee_ua"))
         rules = convert_rules(snippet)
+        for rule in convert_kelee_rules(kelee):
+            add_unique(rules, rule)
         rewrites, hostnames = convert_rewrites(rewrite)
         module = build(rules, rewrites, hostnames)
         changed = not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != module
@@ -142,6 +168,8 @@ def main() -> int:
                 "snippet_ua": snippet_ua,
                 "rewrite_sha256": hashlib.sha256(rewrite.encode("utf-8")).hexdigest(),
                 "rewrite_ua": rewrite_ua,
+                "kelee_sha256": hashlib.sha256(kelee.encode("utf-8")).hexdigest(),
+                "kelee_ua": kelee_ua,
             }
         )
         old_source_data = json.loads(SOURCES.read_text(encoding="utf-8"))

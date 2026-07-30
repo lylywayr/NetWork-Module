@@ -1,6 +1,6 @@
 # 番茄小说去广告
 
-将 zqzess 的 Quantumult X 番茄小说分流与重写规则适配为 Surge 模块。
+合并 zqzess 的 Quantumult X 规则与 Kelee 的 Loon 规则，适配为 Surge 模块。
 
 安装链接：
 
@@ -12,3 +12,4 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 
 - https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/QuantumultX/snippet/FanQieNovel.snippet
 - https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/refs/heads/master/QuantumultX/rewrite/FanQieNovel.qxrewrite
+- https://kelee.one/Tool/Loon/Lpx/DragonRead_remove_ads.lpx（使用 Loon UA）
