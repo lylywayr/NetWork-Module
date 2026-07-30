@@ -119,6 +119,19 @@ def convert_kelee_rules(text: str) -> list[str]:
     return output
 
 
+def read_existing_sections() -> tuple[list[str], list[str], list[str]]:
+    if not OUTPUT.exists():
+        return [], [], []
+    text = OUTPUT.read_text(encoding="utf-8-sig")
+    try:
+        rules = [line for line in text.split("[Rule]\n", 1)[1].split("\n[URL Rewrite]", 1)[0].splitlines() if line.strip()]
+        rewrites = [line for line in text.split("[URL Rewrite]\n", 1)[1].split("\n[MITM]", 1)[0].splitlines() if line.strip()]
+        hosts = text.split("hostname = %APPEND% ", 1)[1].strip().split(", ")
+    except IndexError as exc:
+        raise RuntimeError("现有番茄小说模块结构不完整，拒绝覆盖") from exc
+    return rules, rewrites, hosts
+
+
 def build(rules: list[str], rewrites: list[str], hostnames: list[str]) -> str:
     return "\n".join(
         [
@@ -150,10 +163,19 @@ def main() -> int:
         snippet, snippet_ua = fetch(source_data["snippet_url"], source_data.get("snippet_ua"))
         rewrite, rewrite_ua = fetch(source_data["rewrite_url"], source_data.get("rewrite_ua"))
         kelee, kelee_ua = fetch(source_data["kelee_url"], source_data.get("kelee_ua"))
-        rules = convert_rules(snippet)
+        existing_rules, existing_rewrites, existing_hosts = read_existing_sections()
+        rules = list(existing_rules)
+        for rule in convert_rules(snippet):
+            add_unique(rules, rule)
         for rule in convert_kelee_rules(kelee):
             add_unique(rules, rule)
-        rewrites, hostnames = convert_rewrites(rewrite)
+        source_rewrites, source_hosts = convert_rewrites(rewrite)
+        rewrites = list(existing_rewrites)
+        hostnames = list(existing_hosts)
+        for item in source_rewrites:
+            add_unique(rewrites, item)
+        for item in source_hosts:
+            add_unique(hostnames, item)
         module = build(rules, rewrites, hostnames)
         changed = not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != module
         if args.dry_run:
