@@ -1,0 +1,11 @@
+{
+  "module": "FanQieNovel-AdBlock.sgmodule",
+  "module_sha256": "3b18b4f3db2176a2cf40f58cfb923de69eec9610354721c3b97a70e585f1ae99",
+  "rewrite_sha256": "18995a874e41b6f3c6c8b6225ea699979e24acc8e0ff4d9db0165da3e3ba3eba",
+  "rewrite_ua": "browser",
+  "rewrite_url": "https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/refs/heads/master/QuantumultX/rewrite/FanQieNovel.qxrewrite",
+  "snippet_sha256": "ef5cbf1a094d6398fee9ece03c80de6a3723b0510665a2d68fc6dae4941e68b2",
+  "snippet_ua": "browser",
+  "snippet_url": "https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/QuantumultX/snippet/FanQieNovel.snippet",
+  "version": 1
+}

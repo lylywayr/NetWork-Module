@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+"""Synchronize the upstream Quantumult X FanQieNovel rules as a Surge module."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import time
+import urllib.request
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parent
+OUTPUT = ROOT / "FanQieNovel-AdBlock.sgmodule"
+SOURCES = ROOT / "sources.json"
+UA_CANDIDATES = [
+    ("browser", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"),
+    ("loon", "Loon/3.0.0 CFNetwork/1496.0.7 Darwin/23.5.0"),
+    ("surge", "Surge iOS/5.0 CFNetwork/1496.0.7 Darwin/23.5.0"),
+    ("egern", "Egern/1.0 CFNetwork/1496.0.7 Darwin/23.5.0"),
+]
+
+
+def log(message: str) -> None:
+    print(f"[信息] {message}")
+
+
+def fetch(url: str, preferred: str | None) -> tuple[str, str]:
+    candidates = UA_CANDIDATES
+    if preferred:
+        candidates = [entry for entry in UA_CANDIDATES if entry[0] == preferred] + [
+            entry for entry in UA_CANDIDATES if entry[0] != preferred
+        ]
+    errors: list[str] = []
+    for ua_name, user_agent in candidates:
+        for attempt in range(1, 4):
+            try:
+                request = urllib.request.Request(url, headers={"User-Agent": user_agent, "Accept": "text/plain,*/*"})
+                with urllib.request.urlopen(request, timeout=60) as response:
+                    text = response.read().decode("utf-8-sig")
+                if not text.strip():
+                    raise RuntimeError("empty response")
+                return text, ua_name
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"{ua_name}#{attempt}: {exc}")
+                if attempt < 3:
+                    time.sleep(attempt)
+    raise RuntimeError(" ; ".join(errors))
+
+
+def add_unique(items: list[str], value: str) -> None:
+    if value not in items:
+        items.append(value)
+
+
+def convert_rules(text: str) -> list[str]:
+    output: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith((";", "#")):
+            continue
+        parts = [part.strip() for part in line.split(",")]
+        if len(parts) != 3 or parts[2].lower() != "reject":
+            continue
+        kind, value, _ = parts
+        if kind == "host":
+            if value.startswith("*"):
+                add_unique(output, f"DOMAIN-SUFFIX,{value.lstrip('*.')},REJECT")
+            else:
+                add_unique(output, f"DOMAIN,{value},REJECT")
+        elif kind == "host-suffix":
+            add_unique(output, f"DOMAIN-SUFFIX,{value},REJECT")
+        elif kind == "ip-cidr":
+            add_unique(output, f"IP-CIDR,{value},REJECT,no-resolve")
+    if not output:
+        raise RuntimeError("未解析出可用分流规则")
+    return output
+
+
+def convert_rewrites(text: str) -> tuple[list[str], list[str]]:
+    rewrites: list[str] = []
+    hostnames: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.lower().startswith("hostname") and "=" in line:
+            for hostname in line.split("=", 1)[1].split(","):
+                if hostname.strip():
+                    add_unique(hostnames, hostname.strip())
+        elif line.endswith(" url reject"):
+            add_unique(rewrites, f"{line[: -len(' url reject')].strip()} _ reject")
+    if not rewrites or not hostnames:
+        raise RuntimeError("未解析出 URL 重写或 MITM 主机")
+    return rewrites, hostnames
+
+
+def build(rules: list[str], rewrites: list[str], hostnames: list[str]) -> str:
+    return "\n".join(
+        [
+            "#!name=番茄小说去广告",
+            "#!desc=适配自 zqzess 的 Quantumult X 番茄小说分流与重写规则。启用后会拦截广告与章末广告请求。",
+            "#!author=zqzess；Surge 适配由 NetWork-Module 维护",
+            "#!homepage=https://github.com/zqzess/rule_for_quantumultX",
+            "#!category=Advertising",
+            "",
+            "[Rule]",
+            *rules,
+            "",
+            "[URL Rewrite]",
+            *rewrites,
+            "",
+            "[MITM]",
+            "hostname = %APPEND% " + ", ".join(hostnames),
+            "",
+        ]
+    )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="同步番茄小说 Surge 模块。")
+    parser.add_argument("--dry-run", action="store_true", help="只下载和转换，不写入文件。")
+    args = parser.parse_args()
+    try:
+        source_data = json.loads(SOURCES.read_text(encoding="utf-8"))
+        snippet, snippet_ua = fetch(source_data["snippet_url"], source_data.get("snippet_ua"))
+        rewrite, rewrite_ua = fetch(source_data["rewrite_url"], source_data.get("rewrite_ua"))
+        rules = convert_rules(snippet)
+        rewrites, hostnames = convert_rewrites(rewrite)
+        module = build(rules, rewrites, hostnames)
+        changed = not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != module
+        if args.dry_run:
+            log(f"dry-run：规则 {len(rules)} 条，重写 {len(rewrites)} 条，MITM 主机 {len(hostnames)} 个，内容变更 {changed}")
+            return 0
+        if changed:
+            OUTPUT.write_text(module, encoding="utf-8", newline="\n")
+        source_data.update(
+            {
+                "module_sha256": hashlib.sha256(module.encode("utf-8")).hexdigest(),
+                "snippet_sha256": hashlib.sha256(snippet.encode("utf-8")).hexdigest(),
+                "snippet_ua": snippet_ua,
+                "rewrite_sha256": hashlib.sha256(rewrite.encode("utf-8")).hexdigest(),
+                "rewrite_ua": rewrite_ua,
+            }
+        )
+        old_source_data = json.loads(SOURCES.read_text(encoding="utf-8"))
+        if source_data != old_source_data:
+            SOURCES.write_text(json.dumps(source_data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+        log(f"番茄小说模块已同步：规则 {len(rules)} 条，重写 {len(rewrites)} 条，MITM 主机 {len(hostnames)} 个，内容变更 {changed}")
+        return 0
+    except Exception as exc:  # noqa: BLE001
+        print(f"[错误] {exc}", file=__import__("sys").stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
