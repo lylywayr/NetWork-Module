@@ -2,6 +2,8 @@
   "kelee_sha256": "32a52a8bce9ce9dfb2d17075a9ff1bd06ea350d97ab4f4425704ab386020f14c",
   "kelee_ua": "loon",
   "kelee_url": "https://kelee.one/Tool/Loon/Lpx/DragonRead_remove_ads.lpx",
+  "loon_module": "Loon/模块-番茄小说去广告/FanQieNovel-AdBlock.plugin",
+  "loon_module_sha256": "bab63c0ba0bab6025408e87a722380b8b0fe81eee7ae66ffcbffa1fe4fbdb4cf",
   "module": "FanQieNovel-AdBlock.sgmodule",
   "module_sha256": "93e19265450fb9f291d438f1dd3cda29f7d354547d5b408ee9c041934fbca131",
   "rewrite_sha256": "18995a874e41b6f3c6c8b6225ea699979e24acc8e0ff4d9db0165da3e3ba3eba",

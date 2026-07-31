@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synchronize the upstream Quantumult X FanQieNovel rules as a Surge module."""
+"""Synchronize merged FanQieNovel rules as Surge and Loon modules."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "FanQieNovel-AdBlock.sgmodule"
+LOON_OUTPUT = ROOT.parents[1] / "Loon" / "模块-番茄小说去广告" / "FanQieNovel-AdBlock.plugin"
 SOURCES = ROOT / "sources.json"
 UA_CANDIDATES = [
     ("browser", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"),
@@ -132,12 +133,13 @@ def read_existing_sections() -> tuple[list[str], list[str], list[str]]:
     return rules, rewrites, hosts
 
 
-def build(rules: list[str], rewrites: list[str], hostnames: list[str]) -> str:
+def build(rules: list[str], rewrites: list[str], hostnames: list[str], *, platform: str) -> str:
+    hostname_prefix = "hostname = %APPEND% " if platform == "Surge" else "hostname = "
     return "\n".join(
         [
             "#!name=番茄小说去广告",
             "#!desc=合并 zqzess 与 Kelee 的番茄小说去广告规则。启用后会拦截开屏、底部、章末与听书页面广告。",
-            "#!author=zqzess、可莉；Surge 适配由 NetWork-Module 维护",
+            f"#!author=zqzess、可莉；{platform} 适配由 NetWork-Module 维护",
             "#!homepage=https://github.com/zqzess/rule_for_quantumultX",
             "#!category=Advertising",
             "",
@@ -148,14 +150,14 @@ def build(rules: list[str], rewrites: list[str], hostnames: list[str]) -> str:
             *rewrites,
             "",
             "[MITM]",
-            "hostname = %APPEND% " + ", ".join(hostnames),
+            hostname_prefix + ", ".join(hostnames),
             "",
         ]
     )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="同步番茄小说 Surge 模块。")
+    parser = argparse.ArgumentParser(description="同步番茄小说 Surge 与 Loon 模块。")
     parser.add_argument("--dry-run", action="store_true", help="只下载和转换，不写入文件。")
     args = parser.parse_args()
     try:
@@ -176,16 +178,24 @@ def main() -> int:
             add_unique(rewrites, item)
         for item in source_hosts:
             add_unique(hostnames, item)
-        module = build(rules, rewrites, hostnames)
-        changed = not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != module
+        surge_module = build(rules, rewrites, hostnames, platform="Surge")
+        loon_module = build(rules, rewrites, hostnames, platform="Loon")
+        surge_changed = not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != surge_module
+        loon_changed = not LOON_OUTPUT.exists() or LOON_OUTPUT.read_text(encoding="utf-8") != loon_module
+        changed = surge_changed or loon_changed
         if args.dry_run:
-            log(f"dry-run：规则 {len(rules)} 条，重写 {len(rewrites)} 条，MITM 主机 {len(hostnames)} 个，内容变更 {changed}")
+            log(f"dry-run：规则 {len(rules)} 条，重写 {len(rewrites)} 条，MITM 主机 {len(hostnames)} 个，Surge 变更 {surge_changed}，Loon 变更 {loon_changed}")
             return 0
-        if changed:
-            OUTPUT.write_text(module, encoding="utf-8", newline="\n")
+        if surge_changed:
+            OUTPUT.write_text(surge_module, encoding="utf-8", newline="\n")
+        if loon_changed:
+            LOON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+            LOON_OUTPUT.write_text(loon_module, encoding="utf-8", newline="\n")
         source_data.update(
             {
-                "module_sha256": hashlib.sha256(module.encode("utf-8")).hexdigest(),
+                "module_sha256": hashlib.sha256(surge_module.encode("utf-8")).hexdigest(),
+                "loon_module": str(LOON_OUTPUT.relative_to(ROOT.parents[1])).replace("\\", "/"),
+                "loon_module_sha256": hashlib.sha256(loon_module.encode("utf-8")).hexdigest(),
                 "snippet_sha256": hashlib.sha256(snippet.encode("utf-8")).hexdigest(),
                 "snippet_ua": snippet_ua,
                 "rewrite_sha256": hashlib.sha256(rewrite.encode("utf-8")).hexdigest(),
