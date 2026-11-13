@@ -1,7 +1,7 @@
 #!name=网易严选签到
 #!desc=打开严选 App 的签到活动页（act.you.163.com/act/pub/ssr/HysmFsmeKj88.html）即可抓登录态。每日自动签到，参数里可关闭抓取、改时间或通知。
 #!author=脚本 ddgksf2013 / 模块 lylywayr
-#!category=签到
+#!category=任务签到
 #!arguments=cookie:true,hour:9,minute:10,notify:true
 #!arguments-desc=cookie：是否自动抓取登录态，打开严选 App 的签到活动页 act.you.163.com/act/pub/ssr/HysmFsmeKj88.html 即可触发（抓到一次后可填 false 关闭）；hour / minute：每日定时执行的时、分（默认 9:10）；notify：是否推送通知，填 false 只写日志。布尔参数填 true / false。
 
