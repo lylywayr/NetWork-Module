@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五菱汽车签到模块 · 使用说明</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --line:#e5e8ed; --text:#20242b;
+    --muted:#6b7280; --blue:#185fa5; --blue-bg:#e6f1fb;
+    --green:#0f6e56; --green-bg:#e1f5ee;
+    --amber:#854f0b; --amber-bg:#faeeda; --red:#a32d2d; --red-bg:#fcebeb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.75}
+  .wrap{max-width:760px;margin:0 auto;padding:36px 20px 72px}
+  header{margin-bottom:26px}
+  h1{font-size:24px;font-weight:600;margin:0 0 8px}
+  .lead{color:var(--muted);margin:0}
+  .hero{background:var(--blue-bg);border:1px solid #cfe3f7;border-radius:12px;
+    padding:18px 20px;margin:22px 0 30px}
+  .hero strong{color:var(--blue)}
+  h2{font-size:17px;font-weight:600;margin:34px 0 14px;padding-bottom:8px;
+    border-bottom:1px solid var(--line)}
+  h3{font-size:15px;font-weight:600}
+  .step{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .step.done{opacity:.55}
+  .num{flex:0 0 28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;
+    cursor:pointer;user-select:none}
+  .step.done .num{background:var(--green)}
+  .step-body{flex:1;min-width:0}
+  .step h3{margin:2px 0 6px}
+  .step p{margin:0 0 6px;color:#404650}
+  .step p:last-child{margin-bottom:0}
+  .path{background:#f3f5f8;border-radius:6px;padding:1px 6px;font-size:13px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;color:#31415a}
+  .tag{display:inline-block;background:var(--green-bg);color:var(--green);
+    border-radius:5px;padding:1px 8px;font-size:12px;margin-top:6px}
+  ul{margin:8px 0 0;padding-left:22px}
+  li{margin:5px 0}
+  .box{border-radius:12px;padding:16px 20px;margin:16px 0;border:1px solid}
+  .box.warn{background:var(--amber-bg);border-color:#f0d9a8;color:#5c3a08}
+  .box.danger{background:var(--red-bg);border-color:#f3cfcf;color:#7a2222}
+  .box.info{background:var(--green-bg);border-color:#bfe6d6;color:#0b4c3c}
+  .box h3{margin:0 0 6px}
+  .box p{margin:0 0 6px}
+  .box p:last-child{margin-bottom:0}
+  code{background:#eef1f5;border-radius:4px;padding:1px 5px;font-size:13px;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  table{width:100%;border-collapse:collapse;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);
+    font-size:13px;vertical-align:top}
+  th{background:#f3f5f8;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:12px}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:12px 16px;margin-bottom:10px}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  details p{margin:10px 0 0;color:#404650}
+  footer{margin-top:40px;color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>五菱汽车签到模块 · 使用说明</h1>
+  <p class="lead">抓包分析已完成，接口已填进模块。这一页讲怎么装、以及哪些事它做不到。</p>
+</header>
+
+<div class="hero">
+  <strong>结论：</strong>接口依据 2026-11-11 的 Surge iOS 抓包（274 条请求）实测配置完成，开箱即用。
+  不需要手工填写任何凭证 —— <strong>打开一次 App 的签到页，之后就交给定时脚本。</strong><br>
+  <strong>模块文件里不含任何账号凭证</strong>：真实值在运行时由脚本现抓，只存在设备本机的
+  <code>$persistentStore</code>，不写进代码、不上传。
+  <p style="margin:10px 0 0"><strong>2026-11-13 00:09 已实测通过</strong>：当天未打开 App 的情况下手动运行脚本，签到成功且 <code>date_his</code> 回查确认，模块可完全独立签到。</p>
+</div>
+
+<h2>抓包里发现了什么</h2>
+<p>签到和积分其实是一套嵌在 App 里的 H5 页面，域名是 <code>operation.wuling.com</code>。这套页面用的接口是：</p>
+<table>
+  <tr><th>用途</th><th>接口</th><th>说明</th></tr>
+  <tr><td>查签到状态</td><td><code>POST /sign2023/api/info</code></td><td>返回 date_his，用于判断是否已签</td></tr>
+  <tr><td>执行签到</td><td><code>POST /sign2023/api/sign</code></td><td>点「立即签到」时调用，无额外参数</td></tr>
+  <tr><td>任务列表</td><td><code>POST /task2021/api/task-list</code></td><td>返回 daily 任务及 can_pick_num</td></tr>
+  <tr><td>领取积分</td><td><code>POST /task2021/api/get-point</code></td><td>带 taskid / logid 与极验风控参数</td></tr>
+</table>
+<p style="margin-top:12px">所有请求都是 <code>application/x-www-form-urlencoded</code>，表单固定带三个值：
+<code>scene</code>、<code>originalToken</code>、<code>userIdStr</code>。返回体用
+<code>success</code> + <code>errcode</code> 判定结果。</p>
+
+<div class="box info">
+  <h3>凭证不用你抄，模块自己抓</h3>
+  <p>页面源码里的 <code>openMsgToken()</code> 说明：App 打开 H5 时通过 JSBridge 注入
+  <code>accessToken</code> 和 <code>userId</code>，页面再拼成上面那两个表单字段。
+  模块的第一条脚本会在请求经过 Surge 时自动截下它们，连同 Cookie 一起存进本机。</p>
+  <p>顺带一提：抓包里 <code>authorization</code>、<code>llbtoken</code>、<code>appid</code> 三个头其实都是空的，
+  真正生效的是表单凭证加 <code>210220fg0776_session</code> Cookie——所以别被那些看起来很像凭证的头名误导。</p>
+</div>
+
+<h2>4 步开始用</h2>
+
+<div class="step"><div class="num">1</div><div class="step-body">
+  <h3>粘贴一个链接安装模块</h3>
+  <p>Surge → <span class="path">模块 → 安装新模块</span> → 粘贴下面地址 → 完成：</p>
+  <p><code>https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WulingSign/WulingSign.sgmodule</code></p>
+  <p>三个脚本会从同一模块目录以 raw 地址自动下载，<strong>不用手动拷贝任何文件到手机</strong>。</p>
+  <p class="tag">仓库为 Public，raw 链接可匿名访问</p>
+</div></div>
+
+<div class="step"><div class="num">2</div><div class="step-body">
+  <h3>生成并信任 MITM 证书</h3>
+  <p>Surge → <span class="path">设置 → MITM → 生成 CA 证书 → 安装描述文件</span>，
+  再去 iOS <span class="path">设置 → 通用 → VPN 与设备管理</span> 安装，
+  最后到 <span class="path">设置 → 通用 → 关于本机 → 证书信任设置</span> 打开「完全信任」。</p>
+  <p>少了最后这步，HTTPS 请求看到的还是密文，凭证就抓不到。</p>
+</div></div>
+
+<div class="step"><div class="num">3</div><div class="step-body">
+  <h3>启用模块，打开一次签到页</h3>
+  <p>Surge → <span class="path">模块</span> → 打开「五菱汽车 · 自动签到」。
+  然后打开五菱汽车 App 的<strong>签到 / 任务中心</strong>页面，确认处于登录状态，停两三秒。</p>
+  <p>这一步是为了让抓凭证脚本拿到 <code>originalToken</code> 和 Cookie，只需要做一次。</p>
+</div></div>
+
+<div class="step"><div class="num">4</div><div class="step-body">
+  <h3>验证并手动跑一次</h3>
+  <p>在 Surge 脚本页<strong>长按「wuling-status」→ 运行</strong>，通知显示「凭证已抓到」即就绪。
+  再长按「wuling-signin」手动跑一次，看通知里的签到结果。</p>
+  <p>之后每天 8/11/14/17/20/23 点会自动检查，漏掉某次不影响，成功过当天就锁定。</p>
+</div></div>
+
+<h2>和社区同类模块对照</h2>
+<p>社区里成熟的自动签到模块（NobyDa 的 <code>GetCookie.sgmodule</code>、chavyleung 的 10010、漫蛙签到等）
+都是同一套结构。对照一下，这个模块并没有另起炉灶：</p>
+<table>
+  <tr><th>社区常见做法</th><th>本模块</th></tr>
+  <tr><td><code>http-request</code> 抓 Cookie，写 <code>$persistentStore</code></td><td>同：<code>wuling-capture</code> 抓 originalToken / userIdStr / Cookie</td></tr>
+  <tr><td><code>cron</code> 脚本读出持久化凭证去签到</td><td>同：<code>wuling-signin</code></td></tr>
+  <tr><td>抓到后可以把抓 Cookie 脚本关掉</td><td>可以，Surge 脚本页单独关 <code>wuling-capture</code>；但建议常开，每次打开 App 自动刷新凭证</td></tr>
+  <tr><td>凭证过期 → 重新进一次页面</td><td>同，且自动清当天锁、下一次触发补跑</td></tr>
+  <tr><td><code>#!arguments</code> 让签到时间可配置</td><td>同，模块设置里直接改，不用碰代码</td></tr>
+</table>
+
+<div class="box info">
+  <h3>模块设置里能改的三项</h3>
+  <p>Surge → 模块 → 点开「五菱汽车 · 自动签到」，可以直接改：</p>
+  <ul>
+    <li><code>CronExp</code>：签到检查时间，默认 <code>0 8-23/3 * * *</code></li>
+    <li><code>Host</code>：接口域名，一般不用动</li>
+    <li><code>AutoPick</code>：<code>1</code> 自动领可领积分，<code>0</code> 只签到不领</li>
+  </ul>
+  <p>改完不用编辑任何文件，也不用重新抓包。凭证刷新跟这三参数无关。</p>
+</div>
+
+<h2>2026-11-12 抓包复核</h2>
+<p>第二份抓包的对照条件很干净：当天此前从未打开过 App，<strong>06:08:11 的冷启动是今天第一次打开</strong>，随后又打开了一次。补了五个关键认知：</p>
+<table>
+  <tr><th>发现</th><th>对模块的影响</th></tr>
+  <tr><td>App 启动瞬间会调 <code>api.00bang.cn/llb/account/signIn</code> 自动签到；请求体是加密 <code>sd</code>，还带 <code>signature</code> / <code>nonce</code> / <code>timestamp</code> 签名</td><td>原生接口无法用纯脚本复刻，模块继续走 H5 明文接口（这也是当初选它的原因）</td></tr>
+  <tr><td>两次打开 H5 页面都没有 <code>/sign2023/api/sign</code> 请求，因为 App 已经签过了</td><td>当时该接口仅由 JS 推断，因此模块加了签到后回查 <code>info</code> 的 <code>date_his</code> 自证机制；<strong>2026-11-13 00:09 已实测该接口能独立签到并通过回查</strong></td></tr>
+  <tr><td><code>cur_sign_count</code> 与 <code>max_sign_count</code> 在连续签到时始终相等（11-11 是 1/1，11-12 是 2/2）</td><td>删掉了拿它判断「今天是否已签」的逻辑，只认 <code>date_his</code>；否则模块会永远跳过签到</td></tr>
+  <tr><td>第二次打开（约 06:08:35 起）不再发 <code>signIn</code>，两次 H5 响应完全一致</td><td>服务端幂等生效；<code>date_his</code> 是权威状态，模块读到含今天就安静跳过，不会重复签到</td></tr>
+  <tr><td><code>originalToken</code> 跨两天完全一致，Cookie 会刷新</td><td>凭证长期有效；常驻抓凭证脚本每次打开 App 自动刷新 Cookie，无需手工维护</td></tr>
+</table>
+
+<div class="box info">
+  <h3>今天的签到是 App 自己完成的</h3>
+  <p>今天第一次打开 App 时，原生 <code>signIn</code> 就自动签到了；抓包内 <code>/sign2023/api/sign</code> 为 0 次，
+  说明模块没有参与，也不是在后台偷偷签的。这同时验证了模块的幂等判断是对的。</p>
+  <p>所以模块的用武之地是<strong>整天不打开 App 的那些日子</strong>；只要当天打开过一次 App，签到本来就已经完成了。</p>
+</div>
+
+<div class="box info">
+  <h3>已实测通过（2026-11-13 00:09）</h3>
+  <p>当天未打开五菱 App、服务端 <code>date_his</code> 尚不含当天时，手动运行 <code>wuling-signin</code>，
+  控制台输出「签到成功并经 info 回查确认」「本轮：签到：成功（date_his 已确认）」。
+  这证明 H5 的 <code>sign</code> 接口确实能独立签到，而不仅仅是返回一个客气的 200；
+  <code>Result: [Null]</code> 是脚本 <code>$done()</code> 的正常返回，不是报错。</p>
+  <p>以后不用每次看控制台：系统通知出现「签到：成功（date_his 已确认）」即为当天已签。
+  想复测时，找一个当天还没打开过 App 的日子，在第一次定时检查（默认 08:00）前手动运行脚本即可。</p>
+</div>
+
+<h2>三个必须知道的限制</h2>
+
+<div class="box warn">
+  <h3>① 领任务积分可能要滑块验证</h3>
+  <p><code>get-point</code> 带极验风控参数（<code>lot_number</code>、<code>captcha_output</code>、<code>gee_token</code>）。
+  模块只会领取服务端明确标记为「可领」的任务，并且<strong>不会伪造验证结果</strong>；
+  一旦触发验证码，它会记一笔并通知你手动点一下。签到接口不在这条风控链上，可全自动。</p>
+</div>
+
+<div class="box warn">
+  <h3>② 凭证会过期</h3>
+  <p><code>originalToken</code> 来自 App 登录态，过期或被踢下线后签到会返回失效。
+  模块会清除当天标记并提醒你「打开一次 App 重新登录」，抓凭证脚本随即自动刷新，下一次定时触发会补跑。</p>
+</div>
+
+<div class="box warn">
+  <h3>③ iOS 后台唤醒不保证准时</h3>
+  <p>这是系统限制，不是脚本问题。模块已开 <code>wake-system</code>，并安排每天 6 次检查 +
+  「当天成功锁」+ 服务端 <code>date_his</code> 双重幂等：只要当天任意一次联网唤醒成功就签上，也不会重复签到。
+  长期不开机、不联网才会漏。</p>
+</div>
+
+<div class="box danger">
+  <h3>安全提醒</h3>
+  <p>凭证只存在你手机本地的 Surge 持久化区，不上传任何地方。请不要把抓包原文件、
+  <code>originalToken</code> 或完整 Cookie 发到群里、公开仓库或不明网站。
+  <code>extract-har.js</code> 生成的精简报告会自动打码，可以安全传阅。</p>
+</div>
+
+<h2>常见问题</h2>
+<details><summary>长按查状态显示「未抓到」</summary>
+  <p>依次检查：MITM 证书是否「完全信任」→ 模块开关是否打开 → 是否真的打开过 App 里的签到/任务中心页面（不是首页）。
+  还不行就在 Surge 的「最近请求」里看有没有 <code>operation.wuling.com/sign2023/api/</code> 的记录。</p>
+</details>
+<details><summary>通知里说「签到失败」</summary>
+  <p>先看失败文案：如果是「已签到」「重复」属于正常，模块会按成功处理；如果是凭证相关，重新打开一次 App；
+  如果是接口报错，把文案发我，可能是活动改版了。失败不会锁定当天，下一次触发会自动补跑。</p>
+</details>
+<details><summary>任务列表一直显示「暂无可领取项」</summary>
+  <p>正常。当前两个日常任务是「好文被推荐」「好文被加精」，都属于被动任务，
+  必须内容被官方推荐/加精后才可领取。模块不会去伪造浏览、点赞、发帖这些行为。</p>
+</details>
+<details><summary>想强制重跑 / 清空凭证</summary>
+  <p>用 iOS 快捷指令调用 <code>wuling-status</code> 并传参数：<code>reset</code> = 清除当天成功标记，
+  <code>clear</code> = 清空凭证重新抓，<code>probe</code> = 把脱敏后的接口侦察日志输出到 Surge 日志。</p>
+</details>
+
+<h2>使用边界</h2>
+<p>这套模块只用于你自己账号的每日签到与领取本就可领的积分。请勿用于批量注册、刷号、代他人刷分，
+  也不要把凭证分享出去。第三方接口随时可能调整，接口变更导致的失效需要重新抓包；相关账号风险请自行评估。</p>
+
+<footer>五菱汽车签到模块 · 接口依据 2026-11-11 Surge iOS 抓包 · 2026-11-11</footer>
+</div>
+<script>
+  var nums = document.querySelectorAll('.num');
+  for (var i = 0; i < nums.length; i++) {
+    (function (n, idx) {
+      try { if (localStorage.getItem('wuling-step-' + idx) === '1') n.parentNode.classList.add('done'); } catch (e) {}
+      n.addEventListener('click', function () {
+        var done = n.parentNode.classList.toggle('done');
+        try { localStorage.setItem('wuling-step-' + idx, done ? '1' : '0'); } catch (e) {}
+      });
+    })(nums[i], i);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+#!name=五菱汽车 · 自动签到
+#!desc=接口按 2026-11-11 的 Surge iOS 抓包实测配置：运行时自动抓取并持久化凭证，每天定时签到、查任务并领取可领积分。模块本身不含任何凭证。
+#!category=工具
+#!author=WorkBuddy
+#!arguments=CronExp:0 8-23/3 * * *,Host:operation.wuling.com,AutoPick:1
+#!arguments-desc=CronExp:签到检查时间（Cron，默认每天 8/11/14/17/20/23 点；多次检查不会重复签到）\n\nHost:签到页接口域名，一般不用改\n\nAutoPick:自动领取可领任务积分，1=开，0=关
+
+# ============================================================
+# 安装：Surge → 模块 → 安装新模块，粘贴本文件 raw 链接，无需手动拷贝任何脚本。
+# 1. 模块本身【不含任何凭证】。首次使用请打开一次五菱汽车 App 的签到/任务中心并登录，
+#    抓凭证脚本会在请求经过时现抓 originalToken / userIdStr / Cookie，
+#    写进本机 $persistentStore；签到脚本运行时再读出来，与社区同类模块写法一致。
+# 2. 三个 JS 从本模块目录以 raw 地址加载（中文目录已 URL 编码）；
+#    已设置 script-update-interval=3600，仓库更新后 1 小时内自动生效（默认缓存是 24 小时）。
+#    想立即生效可关闭再打开模块开关。
+# 3. 抓到凭证后可在 Surge 脚本页单独关闭 wuling-capture 以省 MITM；
+#    但建议常开，这样每次打开 App 都会自动刷新凭证，过期无需手动开关。
+# 4. 详细说明与已知限制见同目录 GUIDE.html。
+# ============================================================
+
+[MITM]
+# %APPEND% 表示追加到主配置，不会覆盖你原有的 MITM 域名。
+# 域名来自抓包实测：签到/任务 H5 走 operation.wuling.com，其余为 App 主接口。
+hostname = %APPEND% operation.wuling.com, operation-static.wuling.com, api.00bang.cn, carc.baojun.net
+
+[Script]
+# ① 抓凭证：只读取请求头，不放行拦截、不修改任何流量。
+#    requires-body 用于读取表单里的 originalToken；full-header-mode 用于保留全部 Cookie。
+wuling-capture = type=http-request,pattern=^https://operation\.wuling\.com/(sign2023|task2021)/api/,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WulingSign/wuling-capture.js,requires-body=true,max-size=65536,full-header-mode=true,timeout=10,script-update-interval=3600,argument=Host={{{Host}}}
+
+# ② 定时签到：每天 8/11/14/17/20/23 点各检查一次。
+#    多次触发是为了对抗 iOS 后台唤醒不准；脚本内部有"当天成功锁"，不会重复签到。
+#    wake-system=true 让系统用静默通知唤醒 Surge，iOS 必需，Mac 会忽略。
+#    签到时间、域名、自动领奖开关都能在模块设置里改，无需编辑本文件。
+wuling-signin = type=cron,cronexp="{{{CronExp}}}",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WulingSign/wuling-signin.js,timeout=120,wake-system=true,script-update-interval=3600,argument=Host={{{Host}}}&AutoPick={{{AutoPick}}}
+
+# ③ 查状态：在 Surge 里长按此脚本手动运行，用通知弹出凭证与签到结果。
+#    快捷指令调用时可传参数 reset（清除当天成功标记，强制重跑）或 clear（清空凭证）。
+wuling-status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WulingSign/wuling-status.js,timeout=10,script-update-interval=3600
+
+# ------------------------------------------------------------
+# 安装链接（Surge → 模块 → 安装新模块 → 粘贴）：
+#   https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WulingSign/WulingSign.sgmodule
+#
+# 若 Surge 仍在使用旧版脚本：关闭再打开模块开关，或调小 script-update-interval。
+# 私有仓库的 raw 链接无法匿名访问，本模块所在仓库为 Public，可直接安装。
+# ------------------------------------------------------------
