@@ -1,6 +1,6 @@
 #!name=五菱汽车 · 自动签到
 #!desc=接口按 2026-11-11 的 Surge iOS 抓包实测配置：运行时自动抓取并持久化凭证，每天定时签到、查任务并领取可领积分。模块本身不含任何凭证。
-#!category=工具
+#!category=任务签到
 #!author=WorkBuddy
 #!arguments=CronExp:0 8-23/3 * * *,Host:operation.wuling.com,AutoPick:1
 #!arguments-desc=CronExp:签到检查时间（Cron，默认每天 8/11/14/17/20/23 点；多次检查不会重复签到）\n\nHost:签到页接口域名，一般不用改\n\nAutoPick:自动领取可领任务积分，1=开，0=关
