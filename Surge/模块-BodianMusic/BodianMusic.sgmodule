@@ -13,29 +13,7 @@
 波点音乐-配置净化 = type=http-response,pattern=^https?://bd-api\.kuwo\.cn/api/service/conf/all,requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-BodianMusic/bodian-clean.js
 
 [URL Rewrite]
-# 开屏广告：腾讯音乐广告 SDK（配置 / 策略接口，响应为 SDK 私密加密，只能整体拦）
-^https?://mc\.tencentmusic\.com/ _ reject-dict
-
-# 开屏广告素材 CDN（实测为 1080x1920 开屏图，路径 /creatives-assets/）
-^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject-200
-
-# 广点通广告 SDK
-^https?://xs\.gdt\.qq\.com/ _ reject-dict
-
-# 旧广告域名兜底
-^https?://ad\.tencentmusic\.com/ _ reject-dict
-
-# 开屏/信息流广告数据接口
-^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject-dict
-
-# 开屏弹窗 H5 页面
-^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject-200
-
-# 腾讯广告回传
-^https?://tmeadcomm\.y\.qq\.com/ _ reject-200
-
-# 兜底：若开屏广告仍在，取消下一行注释（返回空模块列表）
-# ^https?://bd-api\.kuwo\.cn/api/service/finds/module\?moduleId _ reject-dict
-
+# 原 Loon 规则（reject-dict / reject-200）Surge 不支持，已全部删除以免每次加载都告警。
+# 如需拦截这些广告域名，请单独加 http-response 脚本，且不要覆盖 kuwo 主脚本处理的 URL（会破坏解锁）。
 [MITM]
 hostname = %APPEND% tmeadcomm.y.qq.com, bd-api.kuwo.cn, *.kuwo.cn, bd-api.kuwo.com, *.kuwo.com, h5app.kuwo.cn, bodianimgcdn.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, *.l.qq.com, xs.gdt.qq.com, ad.tencentmusic.com, mc.tencentmusic.com, ossgw.alicdn.com
