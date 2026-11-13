@@ -31,7 +31,6 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 | `Shadowrocket` | Shadowrocket（小火箭） | `.conf` + `*.js` |
 | `Clash` | Clash / Mihomo | `.yaml` |
 | `Sub-Store` | Sub-Store | `*.js` |
-| `Fanqie` | 番茄小说专项（含 Actions 同步） | `.sgmodule` |
 
 ## 结构规则
 - 一级目录是仓库根目录。
@@ -50,3 +49,6 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 - 无论仓库、客户端还是模块层级，`README.md` 默认使用中文编写。
 - 如有必要，可以补充少量英文说明，但中文应始终作为主说明语言。
 - 模块级 README 至少包含：说明、文件清单、安装地址、参数（如有）、来源、维护记录。
+
+## 变更记录
+- 2026-11-13：清空来自 Kelee 的去广告内容（`Fanqie/`、`Surge/模块-番茄小说去广告/`、`Loon/模块-番茄小说去广告/`）及对应的 GitHub Actions 定时同步。

@@ -120,7 +120,7 @@ NetWork-Module/
 2. **raw 有 2–5 分钟 CDN 缓存**：改完立刻查可能还是旧内容。加 `?t=<时间戳>` 或换 jsDelivr 交叉验证。
 3. **jsDelivr 缓存更久**：需要 `https://purge.jsdelivr.net/gh/lylywayr/NetWork-Module@main/<路径>` 手动刷新。
 4. **别凭记忆写仓库地址**：提交前先 `GET /repos/lylywayr/NetWork-Module` 确认 `full_name`、`default_branch`、`permissions.push`。
-5. **不要删除已有目录**：`Fanqie/` 和 `Surge/模块-番茄小说去广告/` 有 GitHub Actions 定时同步（`sync.py`），改路径会让 workflow 失败。
+5. **改路径前先看 `.github/workflows/`**：仓库里若存在引用某目录的定时同步（`sync.py` 之类），删除或移动该目录会让 workflow 每天报错。
 6. **大文件不要走 Contents API**：超过约 1 MB 用 Git Data API 分块或 Release 附件。
 
 ## 7. Minis / 本机环境的补充
