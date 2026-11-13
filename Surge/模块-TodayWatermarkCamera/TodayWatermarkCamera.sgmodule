@@ -1,0 +1,19 @@
+#!name=今日水印相机去广告
+#!desc=今日水印相机（XCamera 3.0.480）开屏、插屏、信息流与 RTB 广告净化；作者 TG@ZenMoFiShi，由 QX snippet 转换为 Surge 模块
+
+[URL Rewrite]
+^https?:\/\/ad\.xhey\.top\/next\/(?:app\/adx\/|promote\/operation\/appstart\/adx\/|ad\/event\/track\/).* - reject
+^https?:\/\/39\.108\.85\.131\/next\/(?:ios\/config\/cache|promote\/operation\/config\/get\/cache)(?:\?.*)?$ - reject
+^https?:\/\/sdk\.1rtb\.net\/sdk\/(?:config\/v2a|req_ad)(?:\?.*)?$ - reject
+^https?:\/\/adx-strategy-api-cn\.statisticslinks\.com\/sdk\/pl_strategy(?:\?.*)?$ - reject
+^https?:\/\/adx-micro\.statisticslinks\.com\/http_bid(?:\?.*)?$ - reject
+^https?:\/\/da\.statisticslinks\.com\/v1\/open\/da(?:\?.*)?$ - reject
+^https?:\/\/tk\.statisticslinks\.com\/v2\/open\/a_tk(?:\?.*)?$ - reject
+^https?:\/\/sdkquic\.e\.qq\.com\/launch(?:\?.*)?$ - reject
+^https?:\/\/als\.baidu\.com\/clog\/glog(?:\?.*)?$ - reject
+
+[Script]
+WatermarkCamera-Ad-Clean = type=http-response, pattern=^https?:\/\/jt-sdk-ios\.oss-cn-beijing\.aliyuncs\.com\/iOSConfig\.txt, requires-body=1, max-size=131072, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-TodayWatermarkCamera/ad-clean.js
+
+[MITM]
+hostname = %APPEND% jt-sdk-ios.oss-cn-beijing.aliyuncs.com

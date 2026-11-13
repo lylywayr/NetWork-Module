@@ -8,4 +8,4 @@
 
 ## Source
 - Modules/Utilities/SURGE-GPT-AI.sgmodule
-- https://raw.githubusercontent.com/lylywayr/egern/refs/heads/main/SURGE-GPT-AI.js
+- https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-SURGE-GPT-AI/SURGE-GPT-AI.js

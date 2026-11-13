@@ -1,0 +1,23 @@
+# 有道
+
+## 说明
+（见模块文件头部说明）
+
+## 文件
+- `Youdao.stoverride` — 模块入口
+
+## 安装
+- Stash：导入 [Youdao.stoverride](https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E6%9C%89%E9%81%93/Youdao.stoverride)
+
+```text
+https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E6%9C%89%E9%81%93/Youdao.stoverride
+```
+
+## 来源
+- 迁出仓库：`lylywayr/MySelf` → `Stash/Script/Youdao.stoverride`
+- 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
+  - https://note.youdao.com/yws/(mapi/payment|api/self
+  - https://raw.githubusercontent.com/Alex0510/Eric/master/surge/Script/ydybj.js
+
+## 维护记录
+- 2026-11-13：从 `MySelf` 迁入并按 `AGENTS.md` 整理（依赖脚本本地化、链接改写、补中文 README）。

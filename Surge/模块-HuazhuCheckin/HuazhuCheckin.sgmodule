@@ -1,0 +1,13 @@
+#!name=华住会签到
+#!desc=打开华住会 App 的签到页自动抓 Cookie，每天 00:05 自动签到。脚本来自 evilbutcher/QuantumultX。
+#!author=lylywayr
+#!category=任务签到
+#!arguments=cookie:true
+#!arguments-desc=cookie：是否抓取签到 Cookie。抓到一次后可设为 false，脚本不再抓取、也不再弹通知
+
+[MITM]
+hostname = %APPEND% appgw.huazhu.com
+
+[Script]
+华住会获取签到Cookie = type=http-request, pattern=https:\/\/appgw\.huazhu\.com\/game\/sign_header, requires-body=1, max-size=0, binary-body-mode=0, argument="{{{cookie}}}", script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-HuazhuCheckin/gate.js, script-update-interval=0
+华住会 = type=cron, cronexp=5 0 * * *, script-path=https://raw.githubusercontent.com/evilbutcher/QuantumultX/main/check_in/hzh/hzh.js

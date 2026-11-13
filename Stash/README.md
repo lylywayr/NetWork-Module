@@ -10,6 +10,20 @@
 - `京东比价`
 - `TestFlight账户管理`
 - `TestFlight区域修正`
+- `Nicegram`
+- `Notability`
+- `TikTok 台区`
+- `TikTok 日区`
+- `TikTok 美区`
+- `TikTok 韩区`
+- `VSCO`
+- `VUE Pro`
+- `YouTube 去广告`
+- `启动广告拦截`
+- `微信微博去广告`
+- `扫描全能王`
+- `有道`
+- `酷我音乐`
 
 ## 维护说明
 - 模块目录内保留 `.stoverride`、依赖脚本和 `README.md`。

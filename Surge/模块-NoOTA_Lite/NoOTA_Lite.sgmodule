@@ -1,0 +1,43 @@
+#!name=屏蔽iOS系统更新 (NoOTA 精简版)
+#!desc=仅拦截 iOS 系统更新（OTA）检测与下载域名。纯连接层拦截，无需 MITM，与 tvOS 描述文件配合作为双重防护。随时可开关。
+#!author=精简版
+
+[Rule]
+DOMAIN-SUFFIX,mesu.apple.com,REJECT
+DOMAIN-SUFFIX,gdmf.apple.com,REJECT
+DOMAIN-SUFFIX,appldnld.apple.com,REJECT
+DOMAIN-SUFFIX,updates-http.cdn-apple.com,REJECT
+DOMAIN-SUFFIX,updates.cdn-apple.com,REJECT
+DOMAIN-SUFFIX,xp.apple.com,REJECT
+DOMAIN-SUFFIX,swscan.apple.com,REJECT
+DOMAIN-SUFFIX,swcdn.apple.com,REJECT
+DOMAIN-SUFFIX,swdist.apple.com,REJECT
+DOMAIN-SUFFIX,swdownload.apple.com,REJECT
+DOMAIN-SUFFIX,swquery.apple.com,REJECT
+DOMAIN-SUFFIX,swscan-cdn.apple.com,REJECT
+DOMAIN,gg.apple.com,REJECT
+DOMAIN,gs.apple.com,REJECT
+DOMAIN,gnf-mdn.apple.com,REJECT
+DOMAIN,gnf-mr.apple.com,REJECT
+DOMAIN,ig.apple.com,REJECT
+DOMAIN,configuration.apple.com,REJECT
+
+[Host]
+mesu.apple.com = 127.0.0.1
+gdmf.apple.com = 127.0.0.1
+appldnld.apple.com = 127.0.0.1
+updates-http.cdn-apple.com = 127.0.0.1
+updates.cdn-apple.com = 127.0.0.1
+xp.apple.com = 127.0.0.1
+swscan.apple.com = 127.0.0.1
+swcdn.apple.com = 127.0.0.1
+swdist.apple.com = 127.0.0.1
+swdownload.apple.com = 127.0.0.1
+swquery.apple.com = 127.0.0.1
+swscan-cdn.apple.com = 127.0.0.1
+gg.apple.com = 127.0.0.1
+gs.apple.com = 127.0.0.1
+gnf-mdn.apple.com = 127.0.0.1
+gnf-mr.apple.com = 127.0.0.1
+ig.apple.com = 127.0.0.1
+configuration.apple.com = 127.0.0.1

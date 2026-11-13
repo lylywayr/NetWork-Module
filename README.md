@@ -52,3 +52,4 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 
 ## 变更记录
 - 2026-11-13：清空来自 Kelee 的去广告内容（`Fanqie/`、`Surge/模块-番茄小说去广告/`、`Loon/模块-番茄小说去广告/`）及对应的 GitHub Actions 定时同步。
+- 2026-11-13：从 `surge-modules`、`Surge`、`egern`、`MySelf`、`resource`、`whos` 汇总迁入 35 个模块（并补 `Egern/WhosTV签到`），依赖脚本本地化，链接统一指向本仓 raw。

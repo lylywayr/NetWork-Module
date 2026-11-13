@@ -1,0 +1,10 @@
+#!name=环回 VPN
+#!desc=用 Surge 替代 LocalDevVPN：把发往 10.7.0.1 的包在 IP 层原路弹回本机，供 Swipt / SideStore 连接本机开发者服务。启用后不要再开 LocalDevVPN（iOS 同时只允许一个 VPN）。修改后需完全关闭 VPN 再打开。
+#!system=ios
+
+[General]
+ipv6-vif = disabled
+tun-included-routes = %APPEND% 10.7.0.1/32
+
+[IP Rewrite]
+10.7.0.1 = reflect

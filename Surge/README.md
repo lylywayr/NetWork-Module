@@ -93,8 +93,23 @@
 - 模块-XiaoCan
 - 模块-X-search
 - 模块-YouTubeSubtitlesTranslation
+- 模块-BiliBiliAdsLite
+- 模块-BodianMusic
+- 模块-GitHubRawAutoCDN
+- 模块-HuazhuCheckin
+- 模块-IPPurity
+- 模块-NoOTA_Lite
+- 模块-PingMeCheckin
+- 模块-QiMaoXiaoShuo
+- 模块-SwiptLoopback
+- 模块-TodayWatermarkCamera
+- 模块-WPSCheckin
+- 模块-WPSSign
+- 模块-Wuai_Checkin
+- 模块-XiaocanCheckin
+- 模块-YanxuanCheckin
+- 模块-菜鸟包裹去广告
 
 ## 维护说明
 - 各目录来源信息仍写在各自 README.md 中。
 - 这次只做命名归类和缺失模块补回，不纳入被排除的仓库内容。
-

@@ -1,0 +1,19 @@
+#!name = 阿里云社区
+#!desc = 阿里云服务 每日签到、点赞、评论、收藏，积分可兑换实物。
+#!author = leiyiyan
+#!homepage = https://github.com/leiyiyan/resource
+#!icon = https://raw.githubusercontent.com/leiyiyan/resource/main/icons/aliyun_web.png
+#!date = 2024-03-16 13:00:00
+
+
+
+[Script]
+# 阿里云社区日常任务
+cron "0 7,13 * * *" script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Loon/%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98/aliyun_web.js, timeout=600, tag=阿里云社区日常任务
+
+# 获取Cookie
+http-response ^https?:\/\/developer\.aliyun\.com\/developer\/api\/my\/user\/getUser script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Loon/%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98/aliyun_web.js, requires-body=true, timeout=60, tag=阿里云Web Cookie
+
+  
+[MitM]
+hostname = %APPEND% developer.aliyun.com

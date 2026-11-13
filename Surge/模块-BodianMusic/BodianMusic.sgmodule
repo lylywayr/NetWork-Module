@@ -1,0 +1,41 @@
+#!name=波点音乐 高级功能
+#!desc=波点音乐：会员状态调试 / 去广告（含开屏广告）/ 歌曲下载（支持付费专辑导出）/ 付费专辑解锁
+#!author=WeiGiegie
+#!homepage=https://github.com/WeiGiegie/666
+#!category=音乐
+#!system=iOS
+
+[Script]
+# 主脚本：会员调试 / 歌曲下载 / 付费专辑解锁
+波点音乐 = type=http-response,pattern=^https?:\/\/(?:(?:bd-api|h5app|bodianyin|ab-bodian)\.kuwo\.cn\/(?:api\/(?:ucenter\/users\/(?:pub|login)|play\/(?:music\/v2\/(?:audioUrl|checkRight)|advert\/info)|service\/(?:music\/(?:info|download\/(?:info|config))|home\/module|global\/config\/(?:scene|vipEnter)|banner\/positions|advert\/config)|search\/topic\/word\/list|pay\/(?:vip\/(?:invitation\/(?:assist\/popup|swell)|lowPriceText)|sp\/actVip|audition\/url)|advert\/free\/config|popup\/start\/info|abtest\/ui\/info|rec\/feed)|abtest\/ui\/info)|us\.l\.qq\.com\/exapp|xs\.gdt\.qq\.com\/style_factory\/template_list),requires-body=true,max-size=-1,timeout=60,script-path=https://raw.githubusercontent.com/WeiGiegie/666/main/bdyy.js
+
+# 应用配置净化：删除开屏广告开关（adStartAppDialog 等）、关闭 P2P
+波点音乐-配置净化 = type=http-response,pattern=^https?://bd-api\.kuwo\.cn/api/service/conf/all,requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-BodianMusic/bodian-clean.js
+
+[URL Rewrite]
+# 开屏广告：腾讯音乐广告 SDK（配置 / 策略接口，响应为 SDK 私密加密，只能整体拦）
+^https?://mc\.tencentmusic\.com/ _ reject-dict
+
+# 开屏广告素材 CDN（实测为 1080x1920 开屏图，路径 /creatives-assets/）
+^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject-200
+
+# 广点通广告 SDK
+^https?://xs\.gdt\.qq\.com/ _ reject-dict
+
+# 旧广告域名兜底
+^https?://ad\.tencentmusic\.com/ _ reject-dict
+
+# 开屏/信息流广告数据接口
+^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject-dict
+
+# 开屏弹窗 H5 页面
+^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject-200
+
+# 腾讯广告回传
+^https?://tmeadcomm\.y\.qq\.com/ _ reject-200
+
+# 兜底：若开屏广告仍在，取消下一行注释（返回空模块列表）
+# ^https?://bd-api\.kuwo\.cn/api/service/finds/module\?moduleId _ reject-dict
+
+[MITM]
+hostname = %APPEND% tmeadcomm.y.qq.com, bd-api.kuwo.cn, *.kuwo.cn, bd-api.kuwo.com, *.kuwo.com, h5app.kuwo.cn, bodianimgcdn.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, *.l.qq.com, xs.gdt.qq.com, ad.tencentmusic.com, mc.tencentmusic.com, ossgw.alicdn.com

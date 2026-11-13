@@ -1,0 +1,45 @@
+#!name=WPS Office · 每日签到 + 福利中心任务
+#!desc=按 2026-11-12 WPS 活动页实时配置复核并翻新：自动抓 wps_sid，每天 10 点做签到、限量爆款、会员试用、打卡领会员、天天抽奖、小程序打卡并领昨日奖励。活动号与任务开关可在模块设置里改，组件号自动发现，模块本身不含任何凭证。
+#!category=工具
+#!author=WorkBuddy（任务逻辑上游 MaYIHEI/paperclip）
+#!arguments=CronExp:0 10 * * *,Tasks:all,Capture:1,ActivityNumber:HD2025031721339450,PageNumber:YM2025060910400185,Position:ios_flzx_grzxsdjg3001,AutoDiscover:1
+#!arguments-desc=CronExp:每天几点跑（Cron，默认 10:00，限量爆款 10 点开抢；改成 0 10,12 * * * 可补跑，脚本自带幂等）\n\nTasks:要做的任务，all=全部；也可只写 hot,trial,signin,fragment,lottery,clockin 中的几项，逗号分隔\n\nCapture:1=开启抓 Cookie：每次经过请求都重新抓取、写入本机并弹「抓取成功」通知；0=关闭，完全不抓不弹（已存凭证保留，定时签到照常跑）\n\nActivityNumber:福利中心活动号，WPS 换活动时在这里改，不用改脚本\n\nPageNumber:活动页编号，一般与活动号一起换\n\nPosition:活动页渠道位，一般不用改\n\nAutoDiscover:1=按业务字段自动对齐组件号，0=只用脚本内置编号
+
+# ============================================================
+# 安装：Surge → 模块 → 安装新模块，粘贴本文件 raw 链接即可，无需手动拷贝脚本。
+# 1. 模块不含任何账号凭证。首次使用打开一次 WPS App 的「签到 / 任务中心 / 福利中心」并登录，
+#    wps-cookie 会在请求经过时现抓 wps_sid，写进本机 $persistentStore。
+#    模块参数 Capture 可随时打开/关闭抓取；开启时每次命中都写入并弹通知，关闭不影响已存凭证与定时签到。
+# 2. 三个 JS 从本仓库 main 分支 wps/ 目录加载，更新仓库后 Surge 会在缓存周期内自动刷新。
+# 3. 长按 wps-status 运行可体检：凭证、登录态、今日签到、活动组件是否齐全。
+#    页面里只有编号的展示组件不算任务，不会出现在通知里。
+# 4. 详细说明见仓库 wps/WPS模块说明.html。
+# ============================================================
+
+[MITM]
+# %APPEND% 只追加，不覆盖你原有的 MITM 域名。
+# personal-act.wps.cn 是活动页接口（抓凭证必需）；moapi.wps.cn 是旧版 App 配置接口，作为备用抓凭证入口。
+hostname = %APPEND% personal-act.wps.cn, moapi.wps.cn
+
+[Script]
+# ① 抓凭证：只读请求头，不修改、不放行拦截任何流量。
+#    活动页 page_info 与旧版 App 配置接口二选一命中即可，兼容新旧版 App。
+wps-cookie = type=http-request,pattern=^https://(personal-act\.wps\.cn/activity-rubik/activity/page_info|moapi\.wps\.cn/app/ios/v1/app),script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-cookie.js,requires-body=false,max-size=0,full-header-mode=true,timeout=10,argument=Capture={{{Capture}}}
+
+# ② 定时跑全部任务：默认每天 10:00（限量爆款 10 点开抢，脚本把它排在第一位）。
+#    任务逐个串行、动作间随机间隔；每项都先查状态，已签/已领自动跳过，重复运行不会重复领。
+#    wake-system=true 让 iOS 用静默通知唤醒 Surge，Mac 会忽略。
+wps-signin = type=cron,cronexp="{{{CronExp}}}",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-signin.js,timeout=180,wake-system=true,argument=Tasks={{{Tasks}}}&ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}&AutoDiscover={{{AutoDiscover}}}
+
+# ③ 体检：在 Surge 脚本页长按运行，用通知弹出凭证、登录态、今日签到、活动组件齐全度。
+#    只有出现「带业务数据的新任务组件」才会提示，展示类组件不打扰用户。
+#    传参 clear=1 可清空本机凭证（换账号时用）。
+wps-status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-status.js,timeout=30,argument=ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}
+
+# ------------------------------------------------------------
+# 安装链接（Surge → 模块 → 安装新模块 → 粘贴）：
+#   https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/WPSSign.sgmodule
+#
+# 若 Surge 仍加载旧脚本：关闭再打开模块开关，或调小 script-update-interval。
+# 仓库为 Public，raw 链接可匿名访问。
+# ------------------------------------------------------------
