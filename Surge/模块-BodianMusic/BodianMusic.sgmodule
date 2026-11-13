@@ -12,32 +12,27 @@
 # 应用配置净化：删除开屏广告开关（adStartAppDialog 等）、关闭 P2P
 波点音乐-配置净化 = type=http-response,pattern=^https?://bd-api\.kuwo\.cn/api/service/conf/all,requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-BodianMusic/bodian-clean.js
 
-# 广告拦截：Loon 的 reject-dict/reject-200 在 Surge 里由脚本等价实现
-波点音乐-广告拦截 = type=http-response,pattern=^https?:\/\/(?:mc\.tencentmusic\.com|xs\.gdt\.qq\.com|ad\.tencentmusic\.com|tmeadcomm\.y\.qq\.com|ossgw\.alicdn\.com\/creatives-assets|h5s\.kuwo\.cn\/m\/bd_launch_popup|bd-api\.kuwo\.cn\/api\/(?:play|service|advert)\/advert),requires-body=0,max-size=0,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge%2F%E6%A8%A1%E5%9D%97-BodianMusic%2Fbodian-adblock.js,timeout=10
-
 [URL Rewrite]
-# 以下规则为 Loon 语法（reject-dict / reject-200），Surge 不支持，已由上面的脚本接管；
-# 保留原文仅为对照，实际不生效。
 # 开屏广告：腾讯音乐广告 SDK（配置 / 策略接口，响应为 SDK 私密加密，只能整体拦）
-## ^https?://mc\.tencentmusic\.com/ _ reject-dict
+^https?://mc\.tencentmusic\.com/ _ reject-dict
 
 # 开屏广告素材 CDN（实测为 1080x1920 开屏图，路径 /creatives-assets/）
-## ^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject-200
+^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject-200
 
 # 广点通广告 SDK
-## ^https?://xs\.gdt\.qq\.com/ _ reject-dict
+^https?://xs\.gdt\.qq\.com/ _ reject-dict
 
 # 旧广告域名兜底
-## ^https?://ad\.tencentmusic\.com/ _ reject-dict
+^https?://ad\.tencentmusic\.com/ _ reject-dict
 
 # 开屏/信息流广告数据接口
-## ^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject-dict
+^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject-dict
 
 # 开屏弹窗 H5 页面
-## ^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject-200
+^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject-200
 
 # 腾讯广告回传
-## ^https?://tmeadcomm\.y\.qq\.com/ _ reject-200
+^https?://tmeadcomm\.y\.qq\.com/ _ reject-200
 
 # 兜底：若开屏广告仍在，取消下一行注释（返回空模块列表）
 # ^https?://bd-api\.kuwo\.cn/api/service/finds/module\?moduleId _ reject-dict
