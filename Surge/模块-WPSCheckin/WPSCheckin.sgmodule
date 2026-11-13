@@ -1,7 +1,7 @@
 #!name=WPS 签到
 #!desc=打开 WPS App 任意活动页（任务中心 / 福利中心「天天领福利」）即可抓 Cookie。每日签到 + 福利中心任务 + 小程序打卡，参数里可关闭抓取。
 #!author=脚本 MaYIHEI / 模块 lylywayr
-#!category=签到
+#!category=任务签到
 #!arguments=cookie:true,hour:10,minute:0,hot:true,trial:true,signin:true,fragment:true,lottery:true,clockin:true,merge:false,debug:false
 #!arguments-desc=cookie：是否自动抓取 wps_sid，打开 WPS App 的任务中心 / 福利中心「天天领福利」活动页即可触发（抓到一次后可填 false 关闭）；hour / minute：每日定时执行的时、分（默认 10:00）；hot：限量爆款；trial：会员试用；signin：每日签到；fragment：打卡领会员；lottery：天天抽奖；clockin：小程序打卡；merge：合并通知，不单独推送；debug：打印接口原始响应，排错用。布尔参数填 true / false。
 
