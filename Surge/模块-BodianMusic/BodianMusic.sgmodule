@@ -13,7 +13,19 @@
 波点音乐-配置净化 = type=http-response,pattern=^https?://bd-api\.kuwo\.cn/api/service/conf/all,requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-BodianMusic/bodian-clean.js
 
 [URL Rewrite]
-# 原 Loon 规则（reject-dict / reject-200）Surge 不支持，已全部删除以免每次加载都告警。
-# 如需拦截这些广告域名，请单独加 http-response 脚本，且不要覆盖 kuwo 主脚本处理的 URL（会破坏解锁）。
+# 原 Loon 规则用了 reject-dict / reject-200，Surge 不支持，已改写为原生 reject。
+# 说明：reject 会直接断开连接（客户端看到失败），语义上比"返回 {} / 空 200"更粗暴，
+#      但对广告 SDK 来说结果一样——拿不到广告数据，自然不展示。
+# 只改写与主解锁脚本不重叠的域名，避免覆盖 bd-api.kuwo.cn 的响应（会破坏解锁）。
+^https?://mc\.tencentmusic\.com/ _ reject
+^https?://ad\.tencentmusic\.com/ _ reject
+^https?://tmeadcomm\.y\.qq\.com/ _ reject
+^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject
+
+# 以下 3 条与主解锁脚本的 pattern 重叠，若改 reject 可能连带拦掉解锁需要的响应，
+# 故保留说明、不启用：
+# ^https?://xs\.gdt\.qq\.com/ _ reject            (主脚本处理 style_factory/template_list)
+# ^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject   (与主脚本 pattern 重叠)
+# ^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject
 [MITM]
 hostname = %APPEND% tmeadcomm.y.qq.com, bd-api.kuwo.cn, *.kuwo.cn, bd-api.kuwo.com, *.kuwo.com, h5app.kuwo.cn, bodianimgcdn.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, *.l.qq.com, xs.gdt.qq.com, ad.tencentmusic.com, mc.tencentmusic.com, ossgw.alicdn.com
