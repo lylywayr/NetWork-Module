@@ -47,6 +47,12 @@ var CONFIG = {
   // 是否自动领取「服务端判定可领」的任务积分（不会伪造任务完成行为）
   autoPickTasks: true,
 
+  // 累计签到抽奖：有可抽次数时只提醒手动领取，绝不自动抽奖。
+  // 2026-11-15 抓包实证：is-need-verify 返回 isNeedLotteryVerify=true，
+  // /sign2023/api/lottery 需 lot_number / captcha_output / pass_token /
+  // gen_time / gee_token 五个极验一次性参数，纯脚本无法生成，也不绕过风控。
+  lotteryNotify: true,
+
   // 返回体里代表成功的 errcode
   okCodes: [0, '0', 200, '200', '0000'],
   // 代表凭证失效的值
@@ -83,6 +89,9 @@ if (ARGS.Host) {
 if (ARGS.AutoPick !== undefined && /^(0|false|no|off)$/i.test(String(ARGS.AutoPick))) {
   CONFIG.autoPickTasks = false;
 }
+if (ARGS.LotteryNotify !== undefined && /^(0|false|no|off)$/i.test(String(ARGS.LotteryNotify))) {
+  CONFIG.lotteryNotify = false;
+}
 
 var KEY_CRED = 'wuling_cred_v1';
 var KEY_CRED_TIME = 'wuling_cred_time_v1';
@@ -90,6 +99,7 @@ var KEY_DAY = 'wuling_day_v1';
 var KEY_TASK = 'wuling_task_v1';
 var KEY_LOG = 'wuling_sign_log_v1';
 var KEY_AUTH_NOTIFY = 'wuling_auth_notify_v1';
+var KEY_LOTTERY = 'wuling_lottery_v1';
 
 var HEADER_CASE = {
   'authorization': 'Authorization', 'llbtoken': 'llbtoken', 'appid': 'appid',
@@ -274,6 +284,14 @@ function alreadySigned(json) {
   return false;
 }
 
+/* 累计签到抽奖机会数：info 的 signData.lottery_count + lottery25_count */
+function lotteryCountOf(json) {
+  try {
+    var sd = json.result.signData || {};
+    return (Number(sd.lottery_count) || 0) + (Number(sd.lottery25_count) || 0);
+  } catch (e) { return 0; }
+}
+
 function authFailed(cred, msg) {
   write(KEY_DAY, JSON.stringify({ date: today(), ok: false, detail: ['凭证失效'], ts: Date.now() }));
   write(KEY_TASK, JSON.stringify({ date: today(), done: {} }));
@@ -309,6 +327,17 @@ function authFailed(cred, msg) {
 
   var tstate = readJSON(KEY_TASK, {});
   if (tstate.date !== day || !tstate.done) tstate = { date: day, done: {} };
+
+  function checkLottery(count) {
+    if (!CONFIG.lotteryNotify || !(count > 0)) return;
+    var st = readJSON(KEY_LOTTERY, {});
+    if (st.date === day && st.count === count) return;
+    write(KEY_LOTTERY, JSON.stringify({ date: day, count: count, ts: Date.now() }));
+    summary.push('有 ' + count + ' 次累计签到抽奖机会，请在 App 内手动领取（需极验验证，脚本不代抽）');
+    needNotify = true;
+    silent = false;
+    addLog('检测到抽奖机会 x' + count + '，已提醒手动领取');
+  }
 
   function finish() {
     if (needNotify && !silent) {
@@ -380,6 +409,7 @@ function authFailed(cred, msg) {
 
   call(CONFIG.status, cred, {}, function (err, res) {
     if (err === 'auth') { authFailed(cred, res.msg); $done(); return; }
+    if (!err) checkLottery(lotteryCountOf(res.json));
     if (!err && alreadySigned(res.json)) {
       write(KEY_DAY, JSON.stringify({ date: day, ok: true, detail: ['服务端显示已签到'], ts: Date.now() }));
       summary.push('签到：服务端显示今天已签到');
@@ -399,6 +429,7 @@ function authFailed(cred, msg) {
       // 回查自证：sign 接口从未被真实抓包验证过，只认服务端 date_his
       call(CONFIG.status, cred, {}, function (err3, res3) {
         if (err3 === 'auth') { authFailed(cred, res3.msg); $done(); return; }
+        if (!err3) checkLottery(lotteryCountOf(res3.json));
         if (err3) {
           write(KEY_DAY, JSON.stringify({ date: day, ok: false, detail: ['回查失败，稍后补跑'], ts: Date.now() }));
           summary.push('签到已提交，但状态回查失败，稍后自动补跑');

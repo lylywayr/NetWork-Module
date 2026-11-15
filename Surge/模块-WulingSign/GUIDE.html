@@ -184,6 +184,28 @@
   <code>Result: [Null]</code> 是脚本 <code>$done()</code> 的正常返回，不是报错。</p>
   <p>以后不用每次看控制台：系统通知出现「签到：成功（date_his 已确认）」即为当天已签。
   想复测时，找一个当天还没打开过 App 的日子，在第一次定时检查（默认 08:00）前手动运行脚本即可。</p>
+  <p><strong>2026-11-15 交叉验证</strong>：新抓包里 <code>date_his</code> 已连续包含
+  <code>2026-11-11</code> 至 <code>2026-11-15</code>，其中 11-13、11-14 都在，
+  说明在那段未打开 App 的验证窗口里签到确实落到了服务端日历，不只是脚本自己读到的结果。</p>
+</div>
+
+<h2>累计签到抽奖（2026-11-15 抓包）</h2>
+<p>这次抓包里完整点了一次抽奖，链路如下：</p>
+<table>
+  <tr><th>步骤</th><th>接口 / 结果</th></tr>
+  <tr><td>查奖品</td><td><code>POST /sign2023/api/gift-list25</code> → 1Ling值、2Ling值</td></tr>
+  <tr><td>风控预检</td><td><code>POST /sign2023/api/is-need-verify</code> → <code>isNeedLotteryVerify: true</code></td></tr>
+  <tr><td>过验证</td><td>极验 SDK（<code>pre_load</code> → <code>load</code> → <code>verify</code>）生成一次性参数</td></tr>
+  <tr><td>抽奖</td><td><code>POST /sign2023/api/lottery</code>，带 <code>lot_number</code> / <code>captcha_output</code> / <code>pass_token</code> / <code>gen_time</code> / <code>gee_token</code> → 「兑换成功:1Ling值」</td></tr>
+  <tr><td>次数变化</td><td><code>info</code> 的 <code>lottery_count</code> 从 1 变 0</td></tr>
+</table>
+
+<div class="box warn">
+  <h3>模块只提醒，不代抽</h3>
+  <p>那五个参数由极验 SDK 与服务端现场交互产生，纯 HTTP 脚本无法生成；伪造或绕过验证结果既不可靠也不合适。
+  因此模块只在 <code>info</code> 发现 <code>lottery_count</code> / <code>lottery25_count</code> 大于 0 时，
+  在通知里提醒「有 N 次抽奖机会，请在 App 内手动领取」，当天同一次数只提醒一次。</p>
+  <p>可在模块设置里用 <code>LotteryNotify=0</code> 关掉这个提醒。</p>
 </div>
 
 <h2>三个必须知道的限制</h2>
