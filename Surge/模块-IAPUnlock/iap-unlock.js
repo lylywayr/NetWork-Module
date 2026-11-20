@@ -188,6 +188,67 @@ function fakeReceiptEntry(pid, lifetime) {
   return e;
 }
 
+// ---- RevenueCat（大量订阅类 App 用它下发权益）----
+function fixRevenueCat(obj, url) {
+  const nowIso = new Date().toISOString();
+  const far = "2099-12-31T23:59:59Z";
+  const entIds = (Array.isArray(CFG.entitlements) && CFG.entitlements.length)
+    ? CFG.entitlements.map(String)
+    : ["pro", "premium", "vip", "plus", "lifetime", "default"];
+  const prods = (Array.isArray(CFG.products) && CFG.products.length) ? PRODUCTS : ["com.unlock.pro"];
+
+  if (!obj || typeof obj !== "object") obj = {};
+  if (!obj.subscriber || typeof obj.subscriber !== "object") obj.subscriber = {};
+  const sub = obj.subscriber;
+
+  if (!obj.request_date) obj.request_date = nowIso;
+  if (!obj.request_date_ms) obj.request_date_ms = Date.now();
+
+  if (!sub.entitlements || typeof sub.entitlements !== "object") sub.entitlements = {};
+  entIds.forEach((id) => {
+    const old = sub.entitlements[id] || {};
+    sub.entitlements[id] = Object.assign({}, old, {
+      expires_date: far,
+      purchase_date: old.purchase_date || nowIso,
+      product_identifier: old.product_identifier || prods[0],
+      store: old.store || "app_store",
+    });
+    delete sub.entitlements[id].unsubscribe_detected_at;
+    delete sub.entitlements[id].billing_issues_detected_at;
+    delete sub.entitlements[id].grace_period_expires_date;
+    changed++;
+  });
+
+  if (!sub.subscriptions || typeof sub.subscriptions !== "object") sub.subscriptions = {};
+  prods.forEach((pid) => {
+    const old = sub.subscriptions[pid] || {};
+    sub.subscriptions[pid] = Object.assign({}, old, {
+      expires_date: far,
+      purchase_date: old.purchase_date || nowIso,
+      original_purchase_date: old.original_purchase_date || nowIso,
+      store: "app_store",
+      period_type: "normal",
+      is_sandbox: false,
+      ownership_type: "PURCHASED",
+      billing_issues_detected_at: null,
+      unsubscribe_detected_at: null,
+    });
+    changed++;
+  });
+
+  if (!sub.non_subscriptions || typeof sub.non_subscriptions !== "object") sub.non_subscriptions = {};
+  if (!sub.other_purchases || typeof sub.other_purchases !== "object") sub.other_purchases = {};
+  if (!sub.first_seen) sub.first_seen = nowIso;
+  if (!sub.original_purchase_date) sub.original_purchase_date = nowIso;
+  if (!sub.original_application_version) sub.original_application_version = "1";
+  if (typeof sub.management_url === "undefined") sub.management_url = null;
+
+  // 用户 ID：优先沿用响应里的，其次从 URL 里取
+  const m = /subscribers\/([^/?#]+)/.exec(url || "");
+  if (!sub.original_app_user_id) sub.original_app_user_id = m ? decodeURIComponent(m[1]) : "$RCAnonymousID:unlock";
+  return true;
+}
+
 // 解析本次要"补"的商品：PRODUCTS > productMap[bundle_id] > product 默认值
 function resolveProduct(obj) {
   if (PRODUCTS.length) return { ids: PRODUCTS, lifetime: !!CFG.lifetime };
@@ -269,7 +330,11 @@ function fixAppleReceipt(obj) {
   if (PATHS.length && !PATHS.some((p) => url.indexOf(p) >= 0)) { $done({}); return; }
 
   let body = ($response && $response.body) || "";
-  if (!body) { $done({}); return; }
+  const isRC = /api\.revenuecat\.com/.test(url);
+  if (!body) {
+    if (!isRC) { $done({}); return; }
+    body = "{}";
+  }
 
   // 1) 直接是 JSON
   // 2) body 是 JSON 字符串（转义过）
@@ -292,7 +357,9 @@ function fixAppleReceipt(obj) {
   }
   if (!parsed || typeof parsed !== "object") { $done({}); return; }
 
-  if (/itunes\.apple\.com\/verifyReceipt/.test(url)) {
+  if (/api\.revenuecat\.com/.test(url)) {
+    fixRevenueCat(parsed, url);
+  } else if (/itunes\.apple\.com\/verifyReceipt/.test(url)) {
     fixAppleReceipt(parsed);
   } else {
     walk(parsed, "", false);
