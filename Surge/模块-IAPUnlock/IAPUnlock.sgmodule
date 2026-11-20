@@ -1,0 +1,18 @@
+#!name=内购解锁（通用）
+#!desc=按字段语义把「购买状态」改成已解锁：支持苹果 verifyReceipt（status 21007/21002→0、补收据条目）与 App 自有业务接口的 JSON（is_vip/purchased/premium、到期时间、列表锁与价格）。仅支持可被 MITM 的接口；StoreKit2 本地验签与服务端严格校验收据无效。
+#!author=lylywayr
+#!category=解锁增强
+#!system=iOS
+
+[Script]
+# ① 苹果 verifyReceipt：把失败状态改成成功并补上收据条目
+内购解锁-收据 = type=http-response,pattern=^https?://(buy|sandbox)\.itunes\.apple\.com/verifyReceipt,requires-body=1,max-size=0,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/模块-IAPUnlock/iap-unlock.js
+
+# ② App 自有业务接口：按字段语义改写（把 [[APP_API_HOST]] 换成目标 App 的接口域名）
+#    默认注释掉，避免误伤；确认目标后再启用
+# 内购解锁-业务 = type=http-response,pattern=^https?://[[APP_API_HOST]]/(api|v\d|graphql|iap|purchase|vip|member|user|pay),requires-body=1,max-size=0,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/模块-IAPUnlock/iap-unlock.js
+
+[MITM]
+# 业务接口域名由你用 %APPEND% 追加，例如：
+# hostname = %APPEND% api.example.com
+hostname = %APPEND% buy.itunes.apple.com, sandbox.itunes.apple.com
