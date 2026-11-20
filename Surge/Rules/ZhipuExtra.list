@@ -1,0 +1,16 @@
+# 智谱 AI 补充域名（VPSDance/ai-proxy-rules 未覆盖的部分）
+# 统一指向「智能助理」，保证地区判定与产品接口一致
+#
+# 已核验：
+#   bigmodel.ai          -> 页面标题「智谱丨BigModel 平台」
+#   codegeex.cn          -> CodeGeeX（智谱出品），200 可访问
+#   autoglm.aminer.cn    -> AutoGLM，解析到联通北京 IP，GEOIP 会误判直连
+#
+# 已排除：
+#   zhipu.ai / chatglm.ai -> 证书已过期，属废弃域名
+#   zhipu.com / chatglm.com / glm.com -> 无响应或停放页，无法确认归属
+#   aminer.cn 全站       -> 独立学术平台，整域代理会拖慢；只收 autoglm 子域
+
+DOMAIN-SUFFIX,bigmodel.ai
+DOMAIN-SUFFIX,codegeex.cn
+DOMAIN-SUFFIX,autoglm.aminer.cn
