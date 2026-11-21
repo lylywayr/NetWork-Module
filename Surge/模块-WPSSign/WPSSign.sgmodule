@@ -27,20 +27,20 @@ hostname = %APPEND% personal-act.wps.cn, moapi.wps.cn
 # ① 抓凭证：只读请求头，不修改、不放行拦截任何流量。
 #    经典活动页 page_info、26.11.0 的 custom_page 接口、任务中心、旧版 App 配置接口，任一命中即可抓住 wps_sid。
 #    26.11.0 的 H5 会把 Cookie 拆成多条 `cookie:` 头，脚本已做归一化与多来源兜底。
-wps-cookie = type=http-request,pattern=^https://(personal-act\.wps\.cn/activity-rubik/(activity/page_info|custom_page/info|custom_page/action|user/task_center/|rubik_extension/)|moapi\.wps\.cn/app/ios/v1/app),script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-cookie.js,requires-body=false,max-size=0,full-header-mode=true,timeout=10,argument=Capture={{{Capture}}}
+wps-cookie = type=http-request,pattern=^https://(personal-act\.wps\.cn/activity-rubik/(activity/page_info|custom_page/info|custom_page/action|user/task_center/|rubik_extension/)|moapi\.wps\.cn/app/ios/v1/app),script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-cookie.js?v=20261121d,requires-body=false,max-size=0,full-header-mode=true,timeout=10,argument=Capture={{{Capture}}}
 
 # ①.5 学动作样本：把你手动点「领取智点」时的真实请求体（custom_page/action）存到本机，
 #     定时任务下次照抄结构。只读请求体、不改流量；Learn=0 关闭。
-wps-learn = type=http-request,pattern=^https://personal-act\.wps\.cn/activity-rubik/custom_page/action,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-learn.js,requires-body=true,max-size=131072,timeout=10,argument=Learn={{{Learn}}}
+wps-learn = type=http-request,pattern=^https://personal-act\.wps\.cn/activity-rubik/custom_page/action,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-learn.js?v=20261121d,requires-body=true,max-size=131072,timeout=10,argument=Learn={{{Learn}}}
 
 # ② 定时跑全部任务：默认每天 10:00（限量爆款 10 点开抢，脚本把它排在第一位）。
 #    任务逐个串行、动作间随机间隔；每项都先查状态，已签/已领自动跳过，重复运行不会重复领。
 #    wake-system=true 让 iOS 用静默通知唤醒 Surge，Mac 会忽略。
-wps-signin = type=cron,cronexp="{{{CronExp}}}",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-signin.js,timeout=240,wake-system=true,argument=Tasks={{{Tasks}}}&ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}&ZActivityNumber={{{ZActivityNumber}}}&ZPageNumber={{{ZPageNumber}}}&AutoDiscover={{{AutoDiscover}}}
+wps-signin = type=cron,cronexp="{{{CronExp}}}",script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-signin.js?v=20261121d,timeout=240,wake-system=true,argument=Tasks={{{Tasks}}}&ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}&ZActivityNumber={{{ZActivityNumber}}}&ZPageNumber={{{ZPageNumber}}}&AutoDiscover={{{AutoDiscover}}}
 
 # ③ 体检：在 Surge 脚本页长按运行，用通知弹出凭证、登录态、签到、智点、打卡、组件、领券与样本状态。
 #    传参 clear=1 可清空本机凭证（换账号时用）。
-wps-status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-status.js,timeout=40,argument=ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}&ZActivityNumber={{{ZActivityNumber}}}&ZPageNumber={{{ZPageNumber}}}
+wps-status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-WPSSign/wps-status.js?v=20261121d,timeout=40,argument=ActivityNumber={{{ActivityNumber}}}&PageNumber={{{PageNumber}}}&Position={{{Position}}}&ZActivityNumber={{{ZActivityNumber}}}&ZPageNumber={{{ZPageNumber}}}
 
 # ------------------------------------------------------------
 # 安装链接（Surge → 模块 → 安装新模块 → 粘贴）：

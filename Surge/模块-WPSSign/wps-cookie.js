@@ -15,7 +15,7 @@
  */
 
 const $ = new Env("WPS [Cookie]");
-const JS_VER = "2026-11-21c";
+const JS_VER = "2026-11-21d";
 
 const CK_KEY = "wps_sid"; // 只存 wps_sid 这一个长效登录态(activity 接口认 wps_sids,值与 wps_sid 相同)
 
@@ -102,8 +102,13 @@ function pickSid(headers, url, body) {
                 anyHeaderHasSid: Object.keys(headers).some((k) => /wps_sids?=/.test(String(headers[k]))),
             }), "wps_cookie_dbg");
             $.log(`[WARN] 未找到 wps_sid(cookie头 ${ckCount} 个, 头名 ${names.join(",")})`);
-            $.msg("WPS", "⚠️ 未抓到 Cookie",
-                `页面请求没带 wps_sid(cookie头${ckCount}个)。请在「我的 → 任务中心」或灵犀里点一次领取后重试`);
+            // H5 页面会把 Cookie 拆成多条头,部分请求到脚本里只剩第一条;这种失败很常见,10 分钟最多提醒一次
+            const lastWarn = Number($.getdata("wps_cookie_warn") || 0);
+            if (Date.now() - lastWarn > 10 * 60 * 1000) {
+                $.setdata(String(Date.now()), "wps_cookie_warn");
+                $.msg("WPS", "⚠️ 未抓到 Cookie",
+                    `这次请求没带 wps_sid(cookie头${ckCount}个)。打开「我的 → 任务中心」或灵犀点一次领取即可`);
+            }
             $.done();
             return;
         }
