@@ -869,8 +869,13 @@ async function taskZhidian() {
             origin: ZHD.origin_name, platform: ZHD.platform_type, biz: ZHD.biz_id, ci,
         };
         const bodies = buildZhidianBodies(ctx);
+        // 没有真实样本时只试「模块键当组件键」和旧接口兜底:
+        // 实测 2026-11-21 其余结构服务端都回 empty action / module not found,多发只增加风控面。
+        const want = new Set(["learned", "module-ref", "legacy"]);
+        const attempts = bodies.filter((b) => want.has(b.name));
+        const hasSample = attempts.some((b) => b.name === "learned");
         let last = "";
-        for (const b of bodies) {
+        for (const b of attempts) {
             const r = await httpReq("POST", b.url || CUSTOM_ACTION, { body: JSON.stringify(b.body) });
             const j = safeJson(r.body);
             last = (r.body || "").slice(0, 240);
@@ -889,7 +894,7 @@ async function taskZhidian() {
             debug(`${tag} ${b.name} 未通过: ${last}`);
             await sleep(jitter([2, 4]));
         }
-        $.results.push(`❌ ${tag}:领取失败`);
+        $.results.push(hasSample ? `❌ ${tag}:领取失败` : `⏳ ${tag}:需学习(在 App 内点一次「领取智点」)`);
         $.log(`[ERROR] ${tag} 全部结构未通过,最后一次: ${last}`);
     } catch (e) {
         $.results.push(`❌ ${tag}:异常`);

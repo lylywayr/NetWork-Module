@@ -52,11 +52,12 @@ AutoDiscover：1=按业务字段自动对齐组件号；0=只用内置编号
 
 ## 智点领取怎么落到真实结构
 
-26.11.0 的 `custom_page/action` 字段只存在于二进制字符串里，服务端没有公开文档。脚本策略：
+26.11.0 的 `custom_page/action` 字段只存在于二进制字符串里，服务端没有公开文档。2026-11-21 用真实登录态实测了 20 多种结构，错误依次是 `module not found`、`empty action`、`action_param is required`——`component_ref_key` 认的是**模块键**（`zhidian_grant`）而不是组件号 `ZJ2024121714368233`，但动作名那一层没猜中。因此脚本策略：
 
-1. 若本机存过真实样本（`Learn=1` 时手动点一次「领取智点」触发 `wps-learn.js`），先按样本结构领，只替换活动号/页面号/privilege_id；
-2. 没有样本时按 4 套结构依次试探（组件号+模块键+action_param → 模块键当组件键 → 业务字段直挂 → 带 component_data），最后兜底旧 `component_action` 接口；
-3. 哪套成功就把结构记到 `wps_custom_action`，当天不再重试其余结构；重复运行靠 `status/desc/received_count` 判重，不会重复领。
+1. **优先用真实样本**：`Learn=1` 时在 App 里手动点一次「领取智点」，`wps-learn.js` 会把那次 `custom_page/action` 的完整 body 存进本机；定时任务只替换活动号/页面号/privilege_id 后原样复用，结构与客户端逐字节一致；
+2. **没有样本时**只试「模块键当组件键」和旧 `component_action` 接口兜底，避免对活动接口连发无效请求；
+3. 哪套成功就把结构记到 `wps_custom_action`；重复运行靠 `status/desc/received_count` 判重，不会重复领；
+4. 没样本又没命中时，通知里写「⏳ 智点:需学习」，不会伪装成失败。
 
 ## 验证
 
