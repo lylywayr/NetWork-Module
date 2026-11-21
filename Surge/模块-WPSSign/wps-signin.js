@@ -1,5 +1,5 @@
 /**
- * WPS · 每日签到 + 福利中心(打卡/抽奖/会员试用申请/限量爆款领取)+ 小程序每日打卡
+ * WPS · 每日签到 + 福利中心(打卡/抽奖/会员试用/限量爆款/领券)+ 智点领取 + 小程序打卡
  *
  * 上游:MaYIHEI/paperclip (app/wps/wps.js, 2026-10-28.r3), 感谢原作者。
  * 本地增强 (WorkBuddy, 2026-11-12, 依据当天 personal-act.wps.cn 活动页实测):
@@ -11,12 +11,23 @@
  *   5. 会员试用 session_id: 现网 preview 已带当天日期, 不再重复拼接
  *   6. 任务开关支持模块参数 Tasks=hot,trial,... (BoxJS 开关仍然兼容)
  *
- * 抓取:打开「WPS」APP → 进任意活动页(任务中心/福利中心)→ 自动触发 page_info,抓 wps_sid
+ * 2026-11-21 依据 WPS Office 26.11.0 (build 26.11.0193140) 逆向复核:
+ *   7. 新增「智点领取」: 26.11.0 引入 custom_page 活动体系
+ *      (custom_page/info + custom_page/action, 模块 zhidian_grant, 每日可领 AI 智点);
+ *      默认活动号 HD2026102710505525 / 页面号 YM2026102710519929, 可在模块参数里改。
+ *      action 字段来自 26.11.0 二进制(component_action / component_ref_key / module_ref_key /
+ *      action_param), 首次运行会按多套结构试探; 若装过 Learn=1 抓包脚本,
+ *      会用真实客户端点「领取」时的 body 结构优先。
+ *   8. 新增「领券」: 福利中心 privilege_grant(type 16) 里的 coupon / lottery 奖励
+ *      (优惠券、抽奖次数)自动领取; 需绑手机号的第三方券(third_coupon/fliggy)跳过不碰。
+ *   9. UA 升到 WpsiOS/26.11.0, 与新客户端一致。
+ *
+ * 抓取:打开「WPS」APP → 进任意活动页(任务中心/福利中心/智点活动)→ 自动触发,抓 wps_sid
  * 签到:cron 10 点触发,抢完限量爆款顺手做签到等其余任务,逐个串行、动作间随机间隔
  *
  * @Author: MaYIHEI <https://github.com/MaYIHEI/paperclip>
  * @Channel: Telegram 频道 https://t.me/mayihei
- * @Updated: 2026-10-28 (上游) / 2026-11-12 (本地)
+ * @Updated: 2026-10-28 (上游) / 2026-11-12 (本地) / 2026-11-21 (26.11.0 适配)
  *
  * ===== Loon =====
  * [MITM]
@@ -75,7 +86,7 @@ const CK_KEY = "wps_sid";
 function taskOff(k) {
     const v = $.getdata(k);
     if (v === false || v === 0 || v === "false" || v === "0") return true; // BoxJS 显式关闭
-    // 模块参数 Tasks=all(默认) / hot,trial,signin,fragment,lottery,clockin
+    // 模块参数 Tasks=all(默认) / hot,zhidian,signin,fragment,lottery,trial,coupon,clockin
     const raw = String(argVal("Tasks", "all") || "all").trim().toLowerCase();
     if (!raw || raw === "all" || raw === "on" || raw === "1") return false;
     const short = k.replace(/^wps_task_/, "").toLowerCase();
@@ -145,6 +156,22 @@ const FLZX = {
 // 反而返回完整业务字段,故 fetchPageInfo 会自动双通道兜底,这里只作为首选值。
 const FLZX_POSITION = argVal("Position", "ios_flzx_grzxsdjg3001");
 const AUTO_DISCOVER = String(argVal("AutoDiscover", "1")) !== "0";
+
+// ===== 智点活动(2026-11-21, WPS 26.11.0 新增的 custom_page 体系) =====
+// 26.11.0 二进制里 page_info/activity 只服务「经典活动页」, 新的轻量活动走 custom_page:
+//   GET  /activity-rubik/custom_page/info?activity_number=&page_number=&origin_name=&platform_type=&biz_id=
+//   POST /activity-rubik/custom_page/action   (字段见 buildZhidianBodies)
+// 当前投放的是「每日领取智点」(模块 zhidian_grant, privilege_grant type 16, reward_type=zhidian),
+// 活动号 HD2026102710505525 / 页面号 YM2026102710519929, 换期在模块设置里改。
+const ZHD = {
+    activity_number: argVal("ZActivityNumber", "HD2026102710505525"),
+    page_number: argVal("ZPageNumber", "YM2026102710519929"),
+    origin_name: "ios",
+    platform_type: "ios",
+    biz_id: "wps",
+};
+const CUSTOM_INFO = "https://personal-act.wps.cn/activity-rubik/custom_page/info";
+const CUSTOM_ACTION = "https://personal-act.wps.cn/activity-rubik/custom_page/action";
 let _pageUrl = null; // 本次运行已验证能拿到业务字段的 page_info 通道,避免重复探测
 // component_action(签到/领取)的 component_uniq_number 不需要 filter_params(实测不参与鉴权),故不带
 
@@ -159,7 +186,7 @@ const COMPONENTS = {
     hot: { component_number: "ZJ2025041115200788", component_node_id: "FN1744358694RbIn", type: 31 },
 };
 
-const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/26.6.1";
+const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/26.11.0";
 // 小程序打卡走微信小程序 UA(打卡接口在 personal-bus 域,不带 APP 的 Origin/Referer)
 const MINI_UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.49(0x18003123) NetType/WIFI Language/zh_CN miniProgram";
 
@@ -245,10 +272,12 @@ async function main() {
 
     const tasks = [
         ["wps_task_hot", () => taskHot()],
-        ["wps_task_trial", () => taskTrial()],
+        ["wps_task_zhidian", () => taskZhidian()],
         ["wps_task_signin", () => taskSignIn(uid)],
         ["wps_task_fragment", () => taskFragment()],
         ["wps_task_lottery", () => taskLottery()],
+        ["wps_task_trial", () => taskTrial()],
+        ["wps_task_coupon", () => taskCoupon()],
         ["wps_task_clockin", () => taskClockIn()],
     ];
     // 打印每个开关实际读到的原始值(排查 BoxJS 是否生效:null=未设置默认开)
@@ -420,8 +449,11 @@ function applyDynamicComponents(list) {
 // 活动页里只有编号的组件是图片/规则/商品展示等骨架零件,不是任务 —— 过去按「编号未见过」
 // 统计会把这 15 个误报成「可能有新任务」,制造噪音,已去掉。
 // 现在只认「带业务数据对象的组件」:已知 4 类自动对齐,出现第 5 类才提醒,且只提醒一次。
+// 展示/非任务类业务字段(订阅开关、会员日、支付、第三方卡片、样式与元信息),不算新任务
 const SKIP_FIELDS = new Set(["number", "component_node_id", "component_type", "type",
-    "component_name", "name", "ui_style_config", "style", "sort", "index"]);
+    "component_name", "name", "ui_style_config", "style", "sort", "index",
+    "subscribe", "member_day_info", "pay", "third_card", "global_info", "order_roller",
+    "ui_form_data", "style_form_data", "server_time", "risk_block", "match_user_groups", "key", "privilege_grant"]);
 
 function reportNewTaskCandidates(list) {
     if (!Array.isArray(list)) return;
@@ -702,6 +734,227 @@ async function taskTrial() {
         }
         // 三档全部到位(本次成功或之前已申请)→ 折叠成一句;有问题才逐项罗列
         $.results.push(allGood ? `✅ ${tag}:全部已申请` : `⚠️ ${tag}:${parts.join(" ")}`);
+    } catch (e) {
+        $.results.push(`❌ ${tag}:异常`);
+        $.log(`[ERROR] ${tag}: ${e}`);
+    }
+}
+
+// ============ 任务:智点领取(26.11.0 新增 custom_page 活动)============
+// WPS 26.11.0 把轻量活动从「经典活动页(page_info + component_action)」切到 custom_page:
+//   info  → GET  /activity-rubik/custom_page/info?activity_number&page_number&origin_name&platform_type&biz_id
+//   action→ POST /activity-rubik/custom_page/action
+// 当前投放「每日可领智点」(module_key=zhidian_grant, privilege_grant type 16, reward_type=zhidian)。
+// 字段名取自 26.11.0 二进制:component_action / component_ref_key / module_ref_key / action_param /
+// component_data / native_enable / web_enable;服务端真实结构未公开,故按「学到的样本 → 多套结构」顺序试探。
+function adaptPayload(tpl, ctx) {
+    if (!tpl) return null;
+    let s;
+    try { s = JSON.stringify(tpl); } catch (e) { return null; }
+    s = s.replace(/("activity_number"\s*:\s*")[^"]*(")/g, `$1${ctx.act}$2`)
+        .replace(/("page_number"\s*:\s*")[^"]*(")/g, `$1${ctx.page}$2`)
+        .replace(/("privilege_id"\s*:\s*)\d+/g, `$1${ctx.pid}`)
+        .replace(/("component_ref_key"\s*:\s*")[^"]*(")/g, `$1${ctx.ref}$2`);
+    try { return JSON.parse(s); } catch (e) { return null; }
+}
+
+function buildZhidianBodies(ctx) {
+    const list = [];
+    // ① 真实客户端样本(Learn=1 抓过 custom_page/action 才有)
+    try {
+        const sample = safeJson($.getdata("wps_custom_action") || "null");
+        if (sample && sample.body && /custom_page\/action/.test(sample.url || "") && sample.action === "privilege_grant.exec") {
+            const body = adaptPayload(sample.body, ctx);
+            if (body) list.push({ name: "learned", body });
+        }
+    } catch (e) { }
+    const base = {
+        activity_number: ctx.act,
+        page_number: ctx.page,
+        origin_name: ctx.origin,
+        platform_type: ctx.platform,
+        biz_id: ctx.biz,
+        component_action: "privilege_grant.exec",
+    };
+    // ② 组件号 + 模块键 + action_param
+    list.push({
+        name: "ref+module",
+        body: Object.assign({}, base, {
+            component_ref_key: ctx.ref,
+            module_ref_key: ctx.module,
+            native_enable: true,
+            web_enable: false,
+            action_param: { privilege_grant: { privilege_id: ctx.pid } },
+        }),
+    });
+    // ③ 模块键当组件键
+    list.push({
+        name: "module-ref",
+        body: Object.assign({}, base, {
+            component_ref_key: ctx.module,
+            module_ref_key: ctx.module,
+            action_param: { privilege_grant: { privilege_id: ctx.pid } },
+        }),
+    });
+    // ④ 业务字段直挂(对齐旧 component_action 的写法)
+    list.push({
+        name: "inline",
+        body: Object.assign({}, base, {
+            component_ref_key: ctx.ref,
+            module_ref_key: ctx.module,
+            privilege_grant: { privilege_id: ctx.pid },
+        }),
+    });
+    // ⑤ 带 component_data(整段 component_info)
+    list.push({
+        name: "component-data",
+        body: Object.assign({}, base, {
+            component_ref_key: ctx.ref,
+            module_ref_key: ctx.module,
+            component_data: ctx.ci,
+            action_param: { privilege_grant: { privilege_id: ctx.pid } },
+        }),
+    });
+    // ⑥ 兜底:旧接口 component_action(万一 custom_page/action 只做展示)
+    list.push({
+        name: "legacy",
+        url: COMPONENT,
+        body: {
+            component_uniq_number: {
+                activity_number: ctx.act,
+                page_number: ctx.page,
+                component_number: ctx.ref,
+                component_node_id: ctx.node || "",
+            },
+            component_type: 16,
+            component_action: "privilege_grant.exec",
+            privilege_grant: { privilege_id: ctx.pid },
+        },
+    });
+    return list;
+}
+
+async function taskZhidian() {
+    const tag = "智点领取";
+    try {
+        const q = `activity_number=${ZHD.activity_number}&page_number=${ZHD.page_number}` +
+            `&origin_name=${ZHD.origin_name}&platform_type=${ZHD.platform_type}&biz_id=${ZHD.biz_id}`;
+        const ir = await httpReq("GET", `${CUSTOM_INFO}?${q}`);
+        const ij = safeJson(ir.body);
+        if (!ij || ij.result !== "ok" || !ij.data) {
+            // 活动没投放到这批用户 / 已结束:不是错误,安静跳过
+            $.results.push(`ℹ️ ${tag}:活动未投放,跳过`);
+            debug(`${tag} info: ${(ir.body || "").slice(0, 200)}`);
+            return;
+        }
+        const mods = ij.data.module_data || [];
+        const mod = mods.find((m) => m && m.module_key === "zhidian_grant") ||
+            mods.find((m) => m && m.component_info && m.component_info.privilege_grant);
+        if (!mod) { $.results.push(`ℹ️ ${tag}:页面无智点组件`); return; }
+
+        const ci = mod.component_info || {};
+        const pg = ci.privilege_grant || {};
+        const cfg = (pg.privilege_config_list || [])[0] || {};
+        const desc = String(pg.desc || "");
+        const received = cfg.limit_total > 0 && cfg.received_count >= cfg.limit_total;
+        if ((pg.status !== 0 && !/can receive|can_receive/i.test(desc)) || received) {
+            $.results.push(`✅ ${tag}:今日已领${desc && !/can receive/i.test(desc) ? "(" + desc + ")" : ""}`);
+            return;
+        }
+        if (pg.stock != null && pg.stock <= 0) { $.results.push(`⚠️ ${tag}:库存已空`); return; }
+
+        const ctx = {
+            act: ZHD.activity_number, page: ZHD.page_number, pid: pg.privilege_id,
+            ref: ci.number, node: ci.component_node_id, module: mod.module_key,
+            origin: ZHD.origin_name, platform: ZHD.platform_type, biz: ZHD.biz_id, ci,
+        };
+        const bodies = buildZhidianBodies(ctx);
+        let last = "";
+        for (const b of bodies) {
+            const r = await httpReq("POST", b.url || CUSTOM_ACTION, { body: JSON.stringify(b.body) });
+            const j = safeJson(r.body);
+            last = (r.body || "").slice(0, 240);
+            if (j && j.result === "ok") {
+                // 记住能用的结构,下次直接命中(字段可能随服务端升级变,但样本会更早失效)
+                if (b.name !== "legacy") {
+                    $.setdata(JSON.stringify({ tpl: b.name, url: CUSTOM_ACTION, action: "privilege_grant.exec", body: b.body, t: Date.now() }), "wps_custom_action");
+                }
+                $.results.push(`✅ ${tag}:成功${b.name === "learned" ? "" : "(" + b.name + ")"}`);
+                return;
+            }
+            if (j && /已领|重复|上限|already|received|repeat/i.test(String(j.msg || "") + String(j.ext_msg || ""))) {
+                $.results.push(`✅ ${tag}:今日已领`);
+                return;
+            }
+            debug(`${tag} ${b.name} 未通过: ${last}`);
+            await sleep(jitter([2, 4]));
+        }
+        $.results.push(`❌ ${tag}:领取失败`);
+        $.log(`[ERROR] ${tag} 全部结构未通过,最后一次: ${last}`);
+    } catch (e) {
+        $.results.push(`❌ ${tag}:异常`);
+        $.log(`[ERROR] ${tag}: ${e}`);
+    }
+}
+
+// ============ 任务:福利中心领券(privilege_grant type 16)============
+// 活动页里 type 16 的 privilege_grant 除了会员权益,还挂着两类白拿奖励:
+//   coupon  = 优惠券(如 2026070101)          → 直接进券包
+//   lottery = 抽奖次数(如 20261026001)       → 加天天抽奖次数
+// third_coupon / fliggy 这类第三方券要求绑手机号(status 19),既领不到也没必要碰,直接跳过。
+// independent_claim=true 的组件由客户端单独走领取弹窗,风险高,也跳过。
+async function taskCoupon() {
+    const tag = "领券";
+    try {
+        const list = await fetchPageInfo();
+        if (!list) { $.results.push(`❌ ${tag}:page_info 无响应`); return; }
+
+        const targets = [];
+        const seen = new Set();
+        for (const c of list) {
+            const pg = c && c.privilege_grant;
+            if (!pg || pg.independent_claim) continue;
+            const cfgs = pg.privilege_config_list || [];
+            const hit = cfgs.find((x) => /^(coupon|lottery)$/i.test(String(x.reward_type || "")));
+            if (!hit) continue;
+            if (hit.limit_total > 0 && hit.received_count >= hit.limit_total) continue;
+            if (pg.status !== 0 && !/can receive|can_receive/i.test(String(pg.desc || ""))) continue;
+            const key = String(c.component_node_id || c.number);
+            if (seen.has(key)) continue;
+            seen.add(key);
+            targets.push({ c, pg, rt: String(hit.reward_type) });
+        }
+        if (!targets.length) { $.results.push(`✅ ${tag}:无可领券`); return; }
+
+        const parts = [];
+        let allGood = true;
+        for (const t of targets) {
+            const r = await httpReq("POST", COMPONENT, {
+                body: JSON.stringify({
+                    component_uniq_number: {
+                        activity_number: FLZX.activity_number,
+                        page_number: FLZX.page_number,
+                        component_number: t.c.number,
+                        component_node_id: t.c.component_node_id,
+                    },
+                    component_type: 16,
+                    component_action: "privilege_grant.exec",
+                    privilege_grant: { privilege_id: t.pg.privilege_id },
+                }),
+            });
+            const j = safeJson(r.body);
+            const inner = (j && j.data && j.data.privilege_grant) || {};
+            const label = t.rt === "lottery" ? "抽奖券" : "优惠券";
+            if (j && j.result === "ok" && inner.success !== false) {
+                parts.push(`${label}✓`);
+            } else {
+                const st = classify((inner.reason || (j && j.msg) || ""), "已领取");
+                parts.push(`${label}${st.e === "✅" ? "已领" : st.t}`);
+                if (st.e !== "✅") { allGood = false; debug(`${tag} ${label}: ${(r.body || "").slice(0, 200)}`); }
+            }
+            await sleep(jitter(ACTION_GAP));
+        }
+        $.results.push(allGood ? `✅ ${tag}:${parts.join(" ")}` : `⚠️ ${tag}:${parts.join(" ")}`);
     } catch (e) {
         $.results.push(`❌ ${tag}:异常`);
         $.log(`[ERROR] ${tag}: ${e}`);

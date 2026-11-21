@@ -1,11 +1,11 @@
 /**
- * WPS · 体检 / 状态自检 (WorkBuddy, 2026-11-12)
+ * WPS · 体检 / 状态自检 (WorkBuddy, 2026-11-12 / 2026-11-21 适配 26.11.0)
  *
- * 在 Surge 脚本页长按运行：核对凭证、登录态、今日签到状态、当前活动页组件，
- * 展示类组件只有编号、不是任务，不再显示；只有出现带业务数据的新组件才提示。
+ * 在 Surge 脚本页长按运行：核对凭证、登录态、今日签到、智点活动、小程序打卡、当前活动页组件、
+ * 领券机会与动作样本。展示类组件只有编号、不是任务，不再显示；只有出现带业务数据的新组件才提示。
  *
- * 参数：clear=1 清空本机凭证；ActivityNumber / PageNumber / Position 由模块设置传入。
- * 上游脚本：MaYIHEI/paperclip app/wps/
+ * 参数：clear=1 清空本机凭证；ActivityNumber / PageNumber / Position / ZActivityNumber / ZPageNumber
+ * 由模块设置传入。上游脚本：MaYIHEI/paperclip app/wps/
  */
 
 const $ = new Env("WPS 体检");
@@ -14,13 +14,19 @@ const CK_KEY = "wps_sid";
 const DEF_ACT = "HD2025031721339450";
 const DEF_PAGE = "YM2025060910400185";
 const DEF_POS = "ios_flzx_grzxsdjg3001";
+const DEF_ZACT = "HD2026102710505525";
+const DEF_ZPAGE = "YM2026102710519929";
 const BUSINESS_FIELDS = ["fragment_collect", "lottery_v2", "divide_prize", "privilege_select"];
 const SKIP_FIELDS = new Set(["number", "component_node_id", "component_type", "type",
-    "component_name", "name", "ui_style_config", "style", "sort", "index"]);
+    "component_name", "name", "ui_style_config", "style", "sort", "index",
+    "subscribe", "member_day_info", "pay", "third_card", "global_info", "order_roller",
+    "ui_form_data", "style_form_data", "server_time", "risk_block", "match_user_groups", "key", "privilege_grant"]);
 const ISLOGIN = "https://account.wps.cn/api/v3/islogin";
 const DAY_INFO = "https://personal-bus.wps.cn/sign_in/v1/day_info";
+const CLOCK_INFO = "https://personal-bus.wps.cn/activity/clock_in/v1/info";
 const PAGE_INFO = "https://personal-act.wps.cn/activity-rubik/activity/page_info";
-const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/26.6.1";
+const CUSTOM_INFO = "https://personal-act.wps.cn/activity-rubik/custom_page/info";
+const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 WpsiOS/26.11.0";
 
 function arg(k, dflt) {
     try {
@@ -109,6 +115,39 @@ function json(s) {
         lines.push("今日签到：⚠️ 查询失败");
     }
 
+    // 2.1) 智点活动（26.11.0 custom_page）
+    try {
+        const zact = arg("ZActivityNumber", DEF_ZACT);
+        const zpage = arg("ZPageNumber", DEF_ZPAGE);
+        const u = `${CUSTOM_INFO}?activity_number=${zact}&page_number=${zpage}&origin_name=ios&platform_type=ios&biz_id=wps`;
+        const j = json(await get(u, headers));
+        if (!j || j.result !== "ok") {
+            lines.push("智点活动：ℹ️ 未投放（活动号 " + zact + "）");
+        } else {
+            const mod = (j.data.module_data || []).find((m) => m && m.module_key === "zhidian_grant");
+            const pg = (mod && mod.component_info && mod.component_info.privilege_grant) || {};
+            const cfg = (pg.privilege_config_list || [])[0] || {};
+            if (!mod) lines.push("智点活动：⚠️ 已投放但无 zhidian_grant 组件");
+            else if (pg.status === 0) lines.push(`智点活动：⏳ 可领（库存 ${pg.stock}）`);
+            else lines.push(`智点活动：✅ 今日已领（${pg.desc || pg.status}）${cfg.received_count ? " 已领 " + cfg.received_count + " 次" : ""}`);
+        }
+    } catch (e) {
+        lines.push("智点活动：⚠️ 查询失败");
+    }
+
+    // 2.2) 小程序打卡
+    try {
+        const j = json(await get(CLOCK_INFO, headers));
+        const d = (j && j.data) || {};
+        if (j && j.result === "ok") {
+            lines.push(`小程序打卡：连续 ${d.continuous_days || 0} 天，累计 ${d.clock_in_total_num || 0} 人打卡${d.reward_list && (d.reward_list.list || []).length ? "，有昨日奖励待领" : ""}`);
+        } else {
+            lines.push("小程序打卡：⚠️ 查询失败");
+        }
+    } catch (e) {
+        lines.push("小程序打卡：⚠️ 查询失败");
+    }
+
     // 3) 当前活动页组件（双通道，与签到脚本一致）
     const base = `${PAGE_INFO}?activity_number=${act}&page_number=${page}`;
     const filter = encodeURIComponent(JSON.stringify({ cs_from: "", mk_key: "", position: pos }));
@@ -134,6 +173,22 @@ function json(s) {
         if (candidates.length) lines.push(`⚠️ 发现 ${candidates.length} 个带业务数据的新组件，可能是新任务`);
     } else {
         lines.push("活动页：❌ 读取失败，可能已换期或网络不通");
+    }
+
+    // 3.1) 领券机会 + 动作样本
+    if (best) {
+        const coupons = best.data.filter((c) => {
+            const pg = c && c.privilege_grant;
+            if (!pg || pg.independent_claim) return false;
+            return (pg.privilege_config_list || []).some((x) => /^(coupon|lottery)$/i.test(String(x.reward_type || "")));
+        });
+        lines.push(`领券机会：${coupons.length ? "可领 " + coupons.length + " 项" : "无"}`);
+    }
+    const sample = json($.getdata("wps_custom_action") || "null");
+    if (sample && sample.t) {
+        lines.push(`动作样本：✅ 已学习 ${new Date(Number(sample.t) + 8 * 3600 * 1000).toISOString().slice(0, 16).replace("T", " ")}${sample.tpl ? "（" + sample.tpl + "）" : ""}`);
+    } else {
+        lines.push("动作样本：未学习（在 App 里手动点一次「领取智点」即可）");
     }
 
     // 4) 最近一次运行结果与抓取时间
