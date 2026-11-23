@@ -1,15 +1,16 @@
 ﻿/**
  * =============================================================================
  * 脚本名称：Sub-Store 节点重命名脚本 (SubStore-ReName.js)
- * 版本：4.6.0
+ * 版本：4.7.0
  * 更新日期：2026-11-23
  *
  * 适用环境：Sub-Store 脚本操作（包括通过 Surge 模块运行的 Sub-Store）。
  *
  * 功能：
  * - 节点去重、地区识别、统一重命名、国旗、前缀、连续编号。
- * - 地区识别三层兜底：节点名 → server 主机名（cc / cc-城市 / 城市词 / ccTLD）
- *   → MMDB（geo=1 时需要 Sub-Store 配好 GeoLite2，按解析出的 IP 判定）。
+ * - 地区识别四层兜底：节点名（含俄语/欧洲本地语国名）→ server 主机名
+ *   （cc / cc-城市 / IATA / 城市词 / ccTLD，按标签打分取最优）→ MMDB。
+ * - 主机名多个标签都像地区时按分数取：纯两字母 > cc+数字/cc-城市/IATA > ccTLD。
  * - 提取自定义关键词、倍率、测速、解锁标签及固定线路标识。
  * - 清理订阅提示节点，按需过滤中国大陆节点。
  * - pcgn=1 时删除所有大陆节点；但“沪港、沪日、深新、北京-日本”等
@@ -43,6 +44,7 @@
  * - jjdqc=1：仅去重，其他参数均不执行。
  * - flag=1：节点名最前添加国旗。
  * - blockquic=on|off：写入 block-quic 值；不传则删除该字段。
+ * - srv=0：关闭 server 主机名推断，只按节点名判地区（默认开启）。
  * - geo=1：节点名和 server 都判不出地区时，用 MMDB（GeoLite2）按 IP 兜底。
  *   仅当 Sub-Store 已配置 SUB_STORE_MMDB_COUNTRY_PATH 时生效，否则自动跳过。
  * - debug=1：预留调试参数，当前不输出日志。
@@ -65,6 +67,7 @@ const clear = parseBool(inArg.clear);
 const addflag = parseBool(inArg.flag);
 const nm = parseBool(inArg.nm);
 const geo = parseBool(inArg.geo);
+const srv = inArg.srv === undefined ? true : parseBool(inArg.srv);
 
 let mmdb = null;
 const pcgn = parseBool(inArg.pcgn);
@@ -140,7 +143,7 @@ const unlockRegex = /\b(?:Netflix|Disney(?:\+)?|HBO|Prime\s*Video|YouTube|YouTub
 // ==========================================================================
 
 const regionRules = [
-  ["美国", /美国|美西|美东|洛杉矶|圣何塞|硅谷|俄勒冈|西雅图|达拉斯|亚特兰大|迈阿密|纽约|芝加哥|凤凰城|丹佛|拉斯维加斯|休斯顿|华盛顿|旧金山|\bUSA\b|\bUS\b|America|United States|美利坚|波特兰|哥伦布|Los Angeles|San Jose|Silicon Valley|Michigan|(深|沪|呼|京|广|杭)美/gi],
+  ["美国", /美国|美西|美东|洛杉矶|圣何塞|硅谷|俄勒冈|西雅图|达拉斯|亚特兰大|迈阿密|纽约|芝加哥|凤凰城|丹佛|拉斯维加斯|休斯顿|华盛顿|旧金山|波士顿|费城|\bUSA\b|\bUS\b|America|United States|美利坚|波特兰|哥伦布|Los Angeles|San Jose|Silicon Valley|Michigan|Boston|(深|沪|呼|京|广|杭)美/gi],
   ["加拿大", /加拿大|温哥华|多伦多|蒙特利尔|卡尔加里|渥太华|\bCA\b|Canada/gi],
   ["墨西哥", /墨西哥|墨西哥城|\bMX\b|Mexico/gi],
   ["巴西", /巴西|圣保罗|里约热内卢|巴西利亚|\bBR\b|Brazil|\bBRA\b/gi],
@@ -150,8 +153,8 @@ const regionRules = [
   ["秘鲁", /秘鲁|利马|\bPE\b|Peru/gi],
   ["委内瑞拉", /委内瑞拉|加拉加斯|\bVE\b|Venezuela/gi],
 
-  ["英国", /英国|伦敦|曼彻斯特|伯明翰|\bUK\b|\bGB\b|United Kingdom|Britain|Great Britain|大不列颠|英伦|\bGBR\b/gi],
-  ["德国", /德国|法兰克福|柏林|慕尼黑|杜塞尔多夫|\bDE\b|Germany|德意志|\bDEU\b|Frankfurt|(深|沪|呼|京|广|杭)德(?!.*(I|线))|滬德/gi],
+  ["英国", /英国|伦敦|曼彻斯特|伯明翰|爱丁堡|\bUK\b|\bGB\b|United Kingdom|Britain|Great Britain|大不列颠|英伦|\bGBR\b|Edinburgh/gi],
+  ["德国", /德国|法兰克福|柏林|慕尼黑|杜塞尔多夫|汉堡|斯图加特|\bDE\b|Germany|德意志|\bDEU\b|Frankfurt|Hamburg|(深|沪|呼|京|广|杭)德(?!.*(I|线))|滬德/gi],
   ["法国", /法国|巴黎|马赛|里昂|\bFR\b|France|法兰西|\bFRA\b/gi],
   ["荷兰", /荷兰|阿姆斯特丹|鹿特丹|\bNL\b|Netherlands/gi],
   ["瑞典", /瑞典|斯德哥尔摩|哥德堡|\bSE\b|Sweden/gi],
@@ -170,7 +173,7 @@ const regionRules = [
   ["匈牙利", /匈牙利|布达佩斯|\bHU\b|Hungary/gi],
   ["罗马尼亚", /罗马尼亚|布加勒斯特|\bRO\b|Romania/gi],
   ["乌克兰", /乌克兰|基辅|\bUA\b|Ukraine/gi],
-  ["俄罗斯", /俄罗斯|莫斯科|圣彼得堡|\bRU\b|Russia|Moscow/gi],
+  ["俄罗斯", /俄罗斯|莫斯科|圣彼得堡|新西伯利亚|叶卡捷琳堡|喀山|\bRU\b|Russia|Moscow|Novosibirsk|Kazan/gi],
   ["土耳其", /土耳其|伊斯坦布尔|安卡拉|\bTR\b|Turkey|\bTUR\b/gi],
   ["希腊", /希腊|雅典|\bGR\b|Greece/gi],
   ["白俄罗斯", /白俄罗斯|明斯克|\bBY\b|Belarus/gi],
@@ -197,14 +200,14 @@ const regionRules = [
   ["澳门", /澳门|Macao|Macau|\bMO\b/gi],
   ["台湾", /台湾|台北|新北|台中|高雄|台南|Taipei|Taiwan|\bTW\b|\bTWN\b|新台|台(?!.*线)/gi],
   ["日本", /日本|东京|大阪|名古屋|福冈|札幌|\bJP\b|Japan|东瀛|\bJPN\b|Tokyo|Osaka|(深|沪|呼|京|广|杭|中|辽)日(?!.*(I|线))|大坂/gi],
-  ["韩国", /韩国|首尔|春川|\bKR\b|Korea|南韩|\bKOR\b|Seoul|Chuncheon|韩/gi],
+  ["韩国", /韩国|首尔|春川|釜山|仁川|大邱|\bKR\b|Korea|南韩|\bKOR\b|Seoul|Chuncheon|Busan|Incheon|韩/gi],
   ["新加坡", /新加坡|狮城|\bSG\b|Singapore|\bSGP\b|(深|沪|呼|京|广|杭)新/gi],
   ["马来", /马来西亚|马来|吉隆坡|\bMY\b|Malaysia|\bMYS\b/gi],
-  ["菲律宾", /菲律宾|马尼拉|\bPH\b|Philippines|\bPHL\b/gi],
-  ["泰国", /泰国|泰國|曼谷|\bTH\b|Thailand|\bTHA\b/gi],
-  ["越南", /越南|河内|胡志明|\bVN\b|Vietnam|\bVNM\b/gi],
-  ["印尼", /印尼|印度尼西亚|雅加达|\bID\b|Indonesia|\bIDN\b/gi],
-  ["印度", /印度|孟买|新德里|班加罗尔|\bIN\b|India|Mumbai/gi],
+  ["菲律宾", /菲律宾|马尼拉|宿务|\bPH\b|Philippines|\bPHL\b|Manila|Cebu/gi],
+  ["泰国", /泰国|泰國|曼谷|清迈|普吉|芭提雅|\bTH\b|Thailand|\bTHA\b|Bangkok|Chiangmai|Phuket/gi],
+  ["越南", /越南|河内|胡志明|岘港|西贡|\bVN\b|Vietnam|\bVNM\b|Hanoi|Saigon/gi],
+  ["印尼", /印尼|印度尼西亚|雅加达|泗水|巴厘|\bID\b|Indonesia|\bIDN\b|Jakarta|Surabaya|Bali/gi],
+  ["印度", /印度|孟买|新德里|班加罗尔|海得拉巴|钦奈|\bIN\b|India|Mumbai|Hyderabad|Chennai/gi],
   ["巴基斯坦", /巴基斯坦|卡拉奇|拉合尔|\bPK\b|Pakistan/gi],
   ["孟加拉国", /孟加拉国|孟加拉|达卡|\bBD\b|Bangladesh/gi],
   ["斯里兰卡", /斯里兰卡|科伦坡|\bLK\b|Sri Lanka/gi],
@@ -233,7 +236,12 @@ const regionRules = [
   ["埃及", /埃及|开罗|亚历山大|\bEG\b|Egypt/gi],
   ["尼日利亚", /尼日利亚|拉各斯|阿布贾|\bNG\b|Nigeria/gi],
   ["肯尼亚", /肯尼亚|内罗毕|蒙巴萨|\bKE\b|Kenya/gi],
-  ["摩洛哥", /摩洛哥|卡萨布兰卡|拉巴特|\bMA\b|Morocco/gi]
+  ["摩洛哥", /摩洛哥|卡萨布兰卡|拉巴特|\bMA\b|Morocco/gi],
+  ["冰岛", /冰岛|雷克雅未克|\bIS\b|Iceland|Reykjavik/gi],
+  ["埃及", /埃及|开罗|亚历山大|\bEG\b|Egypt|Cairo/gi],
+  ["卡塔尔", /卡塔尔|多哈|\bQA\b|Qatar|Doha/gi],
+  ["阿曼", /阿曼|马斯喀特|\bOM\b|Oman|Muscat/gi],
+  ["巴林", /巴林|麦纳麦|\bBH\b|Bahrain|Manama/gi]
 ];
 
 // ==========================================================================
@@ -342,6 +350,24 @@ function isAsciiLetter(character) {
   return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
 }
 
+// 这些两字母码本身是常见英文单词/缩写，只有贴着数字或分隔符才算地区
+const AMBIGUOUS_CC = new Set([
+  "IT", "ME", "NO", "IS", "AM", "BY", "SO", "TO", "ID", "IN",
+  "AT", "BE", "MY", "DO", "TG", "PE", "LA", "MA", "PA", "HR", "IE", "RE"
+]);
+
+function looksLikeRegionTag(source, index, length) {
+  const before = source.charAt(index - 1);
+  const after = source.charAt(index + length);
+  const separators = "-_/|·.";
+
+  if (/\d/.test(before) || /\d/.test(after)) return true;
+  // IT-01 / NO_02 / US 3 这种“码 + 分隔符 + 数字”才算地区
+  if (/^[-_.\s]?\d{1,3}(?![A-Z0-9])/.test(source.slice(index + length))) return true;
+
+  return false;
+}
+
 function containsCountryCode(name, code) {
   const text = String(name || "");
   const source = text.toUpperCase();
@@ -352,7 +378,11 @@ function containsCountryCode(name, code) {
     const before = source.charAt(index - 1);
     const after = source.charAt(index + target.length);
 
-    if (!isAsciiLetter(before) && !isAsciiLetter(after)) return true;
+    if (!isAsciiLetter(before) && !isAsciiLetter(after)) {
+      if (!AMBIGUOUS_CC.has(target)) return true;
+      if (looksLikeRegionTag(source, index, target.length)) return true;
+    }
+
     index = source.indexOf(target, index + 1);
   }
 
@@ -441,6 +471,25 @@ const SERVER_CITY_WORDS = [
   ["yangon", "MM"], ["ulaanbaatar", "MN"], ["auckland", "NZ"], ["wellington", "NZ"]
 ];
 
+// 机场/服务商主机名常用的国家词干，整标签精确匹配（swed / ger / ned / fra …）
+const STEM_CC = {
+  swed: "SE", sver: "SE", norw: "NO", dan: "DK", fin: "FI", ger: "DE",
+  deut: "DE", neth: "NL", holl: "NL", belg: "BE", fran: "FR", ital: "IT",
+  espa: "ES", port: "PT", pol: "PL", czech: "CZ", slov: "SK", hung: "HU",
+  roma: "RO", bulg: "BG", gree: "GR", turk: "TR", ukr: "UA", russ: "RU",
+  bela: "BY", lith: "LT", latv: "LV", esto: "EE", mold: "MD", geor: "GE",
+  arme: "AM", azer: "AZ", kaza: "KZ", uzbe: "UZ", kirg: "KG", taji: "TJ",
+  turk: "TR", mong: "MN", chin: "CN", japa: "JP", kore: "KR", sing: "SG",
+  indi: "IN", thai: "TH", viet: "VN", indo: "ID", mala: "MY", phil: "PH",
+  camb: "KH", laos: "LA", myan: "MM", aust: "AU", zea: "NZ", braz: "BR",
+  arge: "AR", chile: "CL", peru: "PE", colo: "CO", mexi: "MX", egyp: "EG",
+  sout: "ZA", nige: "NG", keny: "KE", moro: "MA", isra: "IL", iran: "IR",
+  iraq: "IQ", jord: "JO", leba: "LB", kuwa: "KW", oman: "OM", bahra: "BH",
+  qata: "QA", cypr: "CY", malt: "MT", icel: "IS", irel: "IE", croa: "HR",
+  serb: "RS", slove: "SI", bosn: "BA", mont: "ME", alba: "AL", mace: "MK",
+  luxe: "LU", cana: "CA", amer: "US", unit: "US"
+};
+
 const IATA_CC = {
   sgp: "SG", hkg: "HK", tpe: "TW", icn: "KR", nrt: "JP", kix: "JP",
   fra: "DE", ams: "NL", lhr: "GB", cdg: "FR", syd: "AU", mel: "AU",
@@ -451,6 +500,101 @@ const IATA_CC = {
   lim: "PE", bog: "CO", mex: "MX", jnb: "ZA", cai: "EG", los: "NG",
   nbo: "KE", tlv: "IL", ruh: "SA", doh: "QA"
 };
+
+// ISO 3166-1 alpha-3 常见码（机场节点名里经常直接写 USA / GBR / DEU）
+const ALPHA3_CC = {
+  USA: "US", GBR: "GB", DEU: "DE", RUS: "RU", JPN: "JP", SGP: "SG",
+  HKG: "HK", TWN: "TW", KOR: "KR", NLD: "NL", FRA: "FR", ITA: "IT",
+  ESP: "ES", PRT: "PT", POL: "PL", SWE: "SE", FIN: "FI", NOR: "NO",
+  DNK: "DK", CHE: "CH", AUT: "AT", BEL: "BE", CZE: "CZ", SVK: "SK",
+  HUN: "HU", ROU: "RO", BGR: "BG", GRC: "GR", TUR: "TR", UKR: "UA",
+  BLR: "BY", LTU: "LT", LVA: "LV", EST: "EE", MDA: "MD", GEO: "GE",
+  ARM: "AM", AZE: "AZ", KAZ: "KZ", UZB: "UZ", KGZ: "KG", TJK: "TJ",
+  TKM: "TM", MNG: "MN", CHN: "CN", IND: "IN", PAK: "PK", BGD: "BD",
+  LKA: "LK", NPL: "NP", THA: "TH", VNM: "VN", IDN: "ID", MYS: "MY",
+  PHL: "PH", KHM: "KH", LAO: "LA", MMR: "MM", AUS: "AU", NZL: "NZ",
+  BRA: "BR", ARG: "AR", CHL: "CL", PER: "PE", COL: "CO", MEX: "MX",
+  VEN: "VE", EGY: "EG", ZAF: "ZA", NGA: "NG", KEN: "KE", MAR: "MA",
+  ISR: "IL", IRN: "IR", IRQ: "IQ", JOR: "JO", LBN: "LB", KWT: "KW",
+  OMN: "OM", BHR: "BH", QAT: "QA", CYP: "CY", MLT: "MT", ISL: "IS",
+  IRL: "IE", HRV: "HR", SRB: "RS", SVN: "SI", BIH: "BA", MNE: "ME",
+  ALB: "AL", MKD: "MK", LUX: "LU", CAN: "CA", UAE: "AE", KSA: "SA"
+};
+
+// 多词写法：两字母码没法覆盖的常见全称
+const TEXT_CC = [
+  ["united states of america", "US"], ["united states", "US"], ["u.s.a", "US"],
+  ["south korea", "KR"], ["north korea", "KP"], ["united kingdom", "GB"],
+  ["great britain", "GB"], ["hong kong", "HK"], ["hongkong", "HK"],
+  ["new zealand", "NZ"], ["south africa", "ZA"], ["saudi arabia", "SA"],
+  ["czech republic", "CZ"], ["costa rica", "CR"], ["sri lanka", "LK"],
+  ["san marino", "SM"], ["ivory coast", "CI"], ["cape verde", "CV"],
+  ["el salvador", "SV"], ["dominican republic", "DO"], ["puerto rico", "PR"],
+  ["bosnia and herzegovina", "BA"], ["trinidad and tobago", "TT"],
+  ["united arab emirates", "AE"], ["papua new guinea", "PG"],
+  ["democratic republic of the congo", "CD"], ["sierra leone", "SL"],
+  ["burkina faso", "BF"], ["equatorial guinea", "GQ"], ["timor-leste", "TL"]
+];
+
+// 中文别名 / 俗称
+const ZH_ALIAS = [
+  ["沙特阿拉伯", "SA"], ["沙特", "SA"], ["阿联酋", "AE"], ["北马其顿", "MK"],
+  ["波黑", "BA"], ["南韩", "KR"], ["北韩", "KP"], ["狮城", "SG"],
+  ["香江", "HK"], ["宝岛", "TW"], ["湾湾", "TW"], ["印尼", "ID"],
+  ["马来", "MY"], ["土澳", "AU"], ["纽村", "NZ"], ["枫叶国", "CA"],
+  ["美利坚", "US"], ["英伦", "GB"], ["德意志", "DE"], ["法兰西", "FR"],
+  ["美西", "US"], ["美东", "US"], ["欧罗巴", "EU"]
+];
+
+// 俄语 / 欧洲本地语国名与城市，来自公开机场节点名的常见写法
+const LANG_WORDS = [
+  ["новая зеландия", "NZ"], ["саудовская аравия", "SA"], ["санкт-петербург", "RU"],
+  ["нидерланды", "NL"], ["великобритания", "GB"], ["швейцария", "CH"],
+  ["черногория", "ME"], ["македония", "MK"], ["молдавия", "MD"], ["молдова", "MD"],
+  ["португалия", "PT"], ["шри-ланка", "LK"], ["индонезия", "ID"], ["австралия", "AU"],
+  ["аргентина", "AR"], ["венесуэла", "VE"], ["германия", "DE"], ["бельгия", "BE"],
+  ["франция", "FR"], ["финляндия", "FI"], ["швеция", "SE"], ["норвегия", "NO"],
+  ["дания", "DK"], ["исландия", "IS"], ["ирландия", "IE"], ["эстония", "EE"],
+  ["латвия", "LV"], ["литва", "LT"], ["польша", "PL"], ["чехия", "CZ"],
+  ["словакия", "SK"], ["венгрия", "HU"], ["румыния", "RO"], ["болгария", "BG"],
+  ["греция", "GR"], ["турция", "TR"], ["украина", "UA"], ["беларусь", "BY"],
+  ["россия", "RU"], ["сша", "US"], ["канада", "CA"], ["мексика", "MX"],
+  ["бразилия", "BR"], ["чили", "CL"], ["перу", "PE"], ["колумбия", "CO"],
+  ["египет", "EG"], ["нигерия", "NG"], ["кения", "KE"], ["марокко", "MA"],
+  ["израиль", "IL"], ["иран", "IR"], ["ирак", "IQ"], ["иордания", "JO"],
+  ["ливан", "LB"], ["кувейт", "KW"], ["оман", "OM"], ["бахрейн", "BH"],
+  ["катар", "QA"], ["кипр", "CY"], ["мальта", "MT"], ["хорватия", "HR"],
+  ["сербия", "RS"], ["словения", "SI"], ["албания", "AL"], ["грузия", "GE"],
+  ["армения", "AM"], ["азербайджан", "AZ"], ["казахстан", "KZ"], ["узбекистан", "UZ"],
+  ["киргизия", "KG"], ["таджикистан", "TJ"], ["туркменистан", "TM"], ["монголия", "MN"],
+  ["китай", "CN"], ["гонконг", "HK"], ["тайвань", "TW"], ["япония", "JP"],
+  ["корея", "KR"], ["сингапур", "SG"], ["индия", "IN"], ["пакистан", "PK"],
+  ["бангладеш", "BD"], ["непал", "NP"], ["таиланд", "TH"], ["вьетнам", "VN"],
+  ["малайзия", "MY"], ["филиппины", "PH"], ["камбоджа", "KH"], ["лаос", "LA"],
+  ["мьянма", "MM"], ["италия", "IT"], ["испания", "ES"], ["австрия", "AT"],
+  ["люксембург", "LU"], ["босния", "BA"], ["италия", "IT"],
+  ["москва", "RU"], ["петербург", "RU"], ["новосибирск", "RU"], ["владивосток", "RU"],
+  ["амстердам", "NL"], ["франкфурт", "DE"], ["берлин", "DE"], ["мюнхен", "DE"],
+  ["париж", "FR"], ["мадрид", "ES"], ["рим", "IT"], ["милан", "IT"],
+  ["варшава", "PL"], ["прага", "CZ"], ["будапешт", "HU"], ["бухарест", "RO"],
+  ["софия", "BG"], ["афины", "GR"], ["хельсинки", "FI"], ["стокгольм", "SE"],
+  ["осло", "NO"], ["копенгаген", "DK"], ["цюрих", "CH"], ["вена", "AT"],
+  ["брюссель", "BE"], ["рига", "LV"], ["таллин", "EE"], ["вильнюс", "LT"],
+  ["белград", "RS"], ["загреб", "HR"], ["скопье", "MK"], ["тирана", "AL"],
+  ["ереван", "AM"], ["баку", "AZ"], ["тбилиси", "GE"], ["ташкент", "UZ"],
+  ["алматы", "KZ"], ["астана", "KZ"], ["кишинёв", "MD"], ["кишинев", "MD"],
+  ["дубай", "AE"], ["оаэ", "AE"], ["тель-авив", "IL"], ["токио", "JP"],
+  ["сеул", "KR"], ["бангкок", "TH"], ["джакарта", "ID"], ["манила", "PH"],
+  ["юар", "ZA"], ["гонконг", "HK"], ["стамбул", "TR"], ["лондон", "GB"],
+  ["англия", "GB"], ["киев", "UA"], ["минск", "BY"],
+  // 欧洲本地语写法
+  ["deutschland", "DE"], ["österreich", "AT"], ["schweiz", "CH"], ["nederland", "NL"],
+  ["belgië", "BE"], ["belgique", "BE"], ["polska", "PL"], ["suomi", "FI"],
+  ["sverige", "SE"], ["norge", "NO"], ["danmark", "DK"], ["türkiye", "TR"],
+  ["turkiye", "TR"], ["españa", "ES"], ["italia", "IT"], ["românia", "RO"],
+  ["magyarország", "HU"], ["ελλάδα", "GR"], ["hrvatska", "HR"], ["srbija", "RS"],
+  ["slovenija", "SI"], ["българия", "BG"], ["україна", "UA"]
+];
 
 // 常见国家顶级域，最后一级兜底用；io/co/me/tv/cc 这类通用域故意不收录
 const CC_TLD = {
@@ -465,7 +609,13 @@ const CC_TLD = {
   uz: "UZ", kg: "KG", tj: "TJ", tm: "TM", mn: "MN", pk: "PK", bd: "BD",
   lk: "LK", np: "NP", kh: "KH", la: "LA", mm: "MM", za: "ZA", eg: "EG",
   ng: "NG", ke: "KE", ma: "MA", cl: "CL", pe: "PE", ec: "EC", uy: "UY",
-  py: "PY", bo: "BO", cr: "CR", pa: "PA", pr: "PR", do: "DO", gt: "GT"
+  py: "PY", bo: "BO", cr: "CR", pa: "PA", pr: "PR", do: "DO", gt: "GT",
+  is: "IS", ie: "IE", lu: "LU", mt: "MT", cy: "CY", sk: "SK", si: "SI",
+  ba: "BA", me: "ME", mk: "MK", al: "AL", jo: "JO", lb: "LB", kw: "KW",
+  om: "OM", bh: "BH", qa: "QA", ve: "VE", tt: "TT", bs: "BS", jm: "JM",
+  ht: "HT", hn: "HN", ni: "NI", sv: "SV", cu: "CU", sr: "SR", gy: "GY",
+  bz: "BZ", bm: "BM", gl: "GL", fo: "FO", ad: "AD", gi: "GI", li: "LI",
+  mc: "MC", sm: "SM", va: "VA", im: "IM"
 };
 
 function regionByCode(code, regionMap, outList) {
@@ -478,46 +628,63 @@ function regionByCode(code, regionMap, outList) {
   return mapped || regionMap[cc] || null;
 }
 
+function codeFromLabel(label) {
+  if (!label) return null;
+
+  // au / hk / sg 这种纯两字母标签，权重最高
+  let matched = label.match(/^([a-z]{2})$/);
+  if (matched && EN_SET.has(matched[1].toUpperCase())) {
+    return { cc: matched[1].toUpperCase(), score: 3 };
+  }
+
+  // au1 / sg-02 / de-fra / us-east-1 / jp-tokyo
+  // 必须有分隔符或数字，避免 node / free 这类单词被拆成国家码
+  matched = label.match(/^([a-z]{2})(?:\d{1,3}|[-_](?:\d{1,3}|[a-z]{2,12}(?:[-_]?\d{1,3})?))$/);
+  if (matched && EN_SET.has(matched[1].toUpperCase())) {
+    return { cc: matched[1].toUpperCase(), score: 2 };
+  }
+
+  // 三字 IATA 机场码：sgp / hkg / fra / ams / lhr …
+  if (IATA_CC[label]) return { cc: IATA_CC[label], score: 2 };
+
+  // 国家词干：swed / ger / ned / fran …
+  if (STEM_CC[label]) return { cc: STEM_CC[label], score: 2 };
+
+  // 标签里带城市 / 国名
+  for (let i = 0; i < SERVER_CITY_WORDS.length; i += 1) {
+    if (label.includes(SERVER_CITY_WORDS[i][0])) {
+      return { cc: SERVER_CITY_WORDS[i][1], score: 2 };
+    }
+  }
+
+  return null;
+}
+
 function regionFromServer(node, regionMap, outList) {
   const host = String(node.server || "").trim().toLowerCase().replace(/\.$/, "");
   if (!host) return null;
 
   if (!ProxyUtils.isIP(host)) {
     const labels = host.split(".");
-    const first = labels[0] || "";
-    let code = "";
-    let matched = first.match(/^([a-z]{2})$/);
+    let best = null;
 
-    // au / hk / sg 这种纯两字母标签
-    if (matched) code = matched[1];
+    labels.forEach((label, index) => {
+      const hit = codeFromLabel(label);
 
-    // au1 / sg-02 / de-fra / us-east-1 / jp-tokyo（必须有分隔符或数字，避免 node/free 这类单词误判）
-    if (!code) {
-      matched = first.match(/^([a-z]{2})(?:\d{1,3}|[-_](?:\d{1,3}|[a-z]{2,12}(?:[-_]?\d{1,3})?))$/);
-      if (matched) code = matched[1];
-    }
+      if (!hit) return;
 
-    // 三字 IATA 机场码：sgp / hkg / fra / ams / lhr …
-    if (!code && IATA_CC[first]) code = IATA_CC[first];
-
-    // 城市 / 国名关键词
-    if (!code) {
-      const flat = host.replace(/[^a-z]/g, "");
-      for (let i = 0; i < SERVER_CITY_WORDS.length; i += 1) {
-        if (flat.includes(SERVER_CITY_WORDS[i][0])) {
-          code = SERVER_CITY_WORDS[i][1];
-          break;
-        }
+      // 分数高者优先；同分取靠右的标签（更接近主域）
+      if (!best || hit.score > best.score || (hit.score === best.score && index > best.index)) {
+        best = { cc: hit.cc, score: hit.score, index };
       }
-    }
+    });
 
-    // ccTLD
-    if (!code) {
+    if (!best) {
       const tld = labels[labels.length - 1];
-      code = CC_TLD[tld] || "";
+      if (CC_TLD[tld]) best = { cc: CC_TLD[tld], score: 1 };
     }
 
-    const region = code ? regionByCode(code, regionMap, outList) : null;
+    const region = best ? regionByCode(best.cc, regionMap, outList) : null;
     if (region) return region;
   }
 
@@ -531,6 +698,59 @@ function regionFromServer(node, regionMap, outList) {
       } catch (err) {
         return null;
       }
+    }
+  }
+
+  return null;
+}
+
+function regionFromAlias(text, regionMap, outList) {
+  const raw = String(text || "");
+  if (!raw) return null;
+
+  const upper = raw.toUpperCase();
+
+  // ISO3：整词匹配，避免把普通单词里的三字母片断当国家
+  const tokens = upper.match(/(?:^|[^A-Z])[A-Z]{3}(?![A-Z])/g) || [];
+
+  for (let i = 0; i < tokens.length; i += 1) {
+    const code = tokens[i].replace(/[^A-Z]/g, "");
+    if (ALPHA3_CC[code]) {
+      const region = regionByCode(ALPHA3_CC[code], regionMap, outList);
+      if (region) return region;
+    }
+  }
+
+  if (/(?:^|[^A-Z])UK(?![A-Z])/.test(upper)) {
+    const region = regionByCode("GB", regionMap, outList);
+    if (region) return region;
+  }
+
+  for (let i = 0; i < TEXT_CC.length; i += 1) {
+    if (upper.includes(TEXT_CC[i][0].toUpperCase())) {
+      const region = regionByCode(TEXT_CC[i][1], regionMap, outList);
+      if (region) return region;
+    }
+  }
+
+  for (let i = 0; i < ZH_ALIAS.length; i += 1) {
+    if (raw.includes(ZH_ALIAS[i][0])) {
+      const region = regionByCode(ZH_ALIAS[i][1], regionMap, outList);
+      if (region) return region;
+    }
+  }
+
+  return null;
+}
+
+function regionFromLanguage(text, regionMap, outList) {
+  const source = String(text || "").toLowerCase();
+  if (!source) return null;
+
+  for (let i = 0; i < LANG_WORDS.length; i += 1) {
+    if (source.includes(LANG_WORDS[i][0])) {
+      const region = regionByCode(LANG_WORDS[i][1], regionMap, outList);
+      if (region) return region;
     }
   }
 
@@ -775,6 +995,14 @@ function operator(pro) {
     }
 
     if (!region) {
+      region = regionFromAlias(originalName, regionMap, outList);
+    }
+
+    if (!region) {
+      region = regionFromLanguage(originalName, regionMap, outList);
+    }
+
+    if (!region && srv) {
       region = regionFromServer(node, regionMap, outList);
     }
 
