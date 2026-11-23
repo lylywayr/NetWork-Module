@@ -1,13 +1,15 @@
 ﻿/**
  * =============================================================================
  * 脚本名称：Sub-Store 节点重命名脚本 (SubStore-ReName.js)
- * 版本：4.5.2
- * 更新日期：2026-06-30
+ * 版本：4.6.0
+ * 更新日期：2026-11-23
  *
  * 适用环境：Sub-Store 脚本操作（包括通过 Surge 模块运行的 Sub-Store）。
  *
  * 功能：
  * - 节点去重、地区识别、统一重命名、国旗、前缀、连续编号。
+ * - 地区识别三层兜底：节点名 → server 主机名（cc / cc-城市 / 城市词 / ccTLD）
+ *   → MMDB（geo=1 时需要 Sub-Store 配好 GeoLite2，按解析出的 IP 判定）。
  * - 提取自定义关键词、倍率、测速、解锁标签及固定线路标识。
  * - 清理订阅提示节点，按需过滤中国大陆节点。
  * - pcgn=1 时删除所有大陆节点；但“沪港、沪日、深新、北京-日本”等
@@ -41,6 +43,8 @@
  * - jjdqc=1：仅去重，其他参数均不执行。
  * - flag=1：节点名最前添加国旗。
  * - blockquic=on|off：写入 block-quic 值；不传则删除该字段。
+ * - geo=1：节点名和 server 都判不出地区时，用 MMDB（GeoLite2）按 IP 兜底。
+ *   仅当 Sub-Store 已配置 SUB_STORE_MMDB_COUNTRY_PATH 时生效，否则自动跳过。
  * - debug=1：预留调试参数，当前不输出日志。
  * =============================================================================
  */
@@ -60,6 +64,9 @@ const numone = parseBool(inArg.one);
 const clear = parseBool(inArg.clear);
 const addflag = parseBool(inArg.flag);
 const nm = parseBool(inArg.nm);
+const geo = parseBool(inArg.geo);
+
+let mmdb = null;
 const pcgn = parseBool(inArg.pcgn);
 const jdqc = parseBool(inArg.jdqc);
 const jdqcyg = parseBool(inArg.jdqcyg);
@@ -386,6 +393,150 @@ function findMappedRegion(name, regionMap, inputLists) {
   return null;
 }
 
+// ==========================================================================
+// 服务端地址推断（节点名没带地区时兜底）
+// ==========================================================================
+
+const EN_SET = new Set(EN);
+
+const CC_ALIAS = { UK: "GB", EL: "GR" };
+
+// 只收多字母、歧义小的城市 / 国名词，避免把普通单词误判成国家
+const SERVER_CITY_WORDS = [
+  ["hongkong", "HK"], ["hong-kong", "HK"], ["kowloon", "HK"],
+  ["singapore", "SG"], ["tokyo", "JP"], ["osaka", "JP"], ["hokkaido", "JP"],
+  ["seoul", "KR"], ["chuncheon", "KR"], ["taipei", "TW"], ["taiwan", "TW"],
+  ["macau", "MO"], ["macao", "MO"],
+  ["frankfurt", "DE"], ["germany", "DE"], ["berlin", "DE"], ["munich", "DE"],
+  ["amsterdam", "NL"], ["netherlands", "NL"], ["rotterdam", "NL"],
+  ["moscow", "RU"], ["russia", "RU"], ["petersburg", "RU"],
+  ["london", "GB"], ["britain", "GB"], ["england", "GB"],
+  ["paris", "FR"], ["france", "FR"], ["marseille", "FR"],
+  ["warsaw", "PL"], ["poland", "PL"], ["istanbul", "TR"], ["turkey", "TR"],
+  ["tehran", "IR"], ["iran", "IR"], ["dubai", "AE"], ["emirates", "AE"],
+  ["mumbai", "IN"], ["india", "IN"], ["delhi", "IN"],
+  ["sydney", "AU"], ["melbourne", "AU"], ["australia", "AU"],
+  ["toronto", "CA"], ["montreal", "CA"], ["canada", "CA"],
+  ["miami", "US"], ["dallas", "US"], ["seattle", "US"], ["chicago", "US"],
+  ["losangeles", "US"], ["newyork", "US"], ["siliconvalley", "US"], ["usa", "US"],
+  ["helsinki", "FI"], ["finland", "FI"], ["stockholm", "SE"], ["sweden", "SE"],
+  ["zurich", "CH"], ["switzerland", "CH"], ["vienna", "AT"], ["austria", "AT"],
+  ["madrid", "ES"], ["spain", "ES"], ["milan", "IT"], ["italy", "IT"],
+  ["lisbon", "PT"], ["portugal", "PT"], ["brussels", "BE"], ["belgium", "BE"],
+  ["copenhagen", "DK"], ["denmark", "DK"], ["oslo", "NO"], ["norway", "NO"],
+  ["prague", "CZ"], ["budapest", "HU"], ["bucharest", "RO"], ["romania", "RO"],
+  ["kyiv", "UA"], ["kiev", "UA"], ["ukraine", "UA"], ["minsk", "BY"],
+  ["riga", "LV"], ["tallinn", "EE"], ["vilnius", "LT"], ["belgrade", "RS"],
+  ["zagreb", "HR"], ["sofia", "BG"], ["athens", "GR"], ["greece", "GR"],
+  ["almaty", "KZ"], ["tashkent", "UZ"], ["baku", "AZ"], ["yerevan", "AM"],
+  ["tbilisi", "GE"], ["chisinau", "MD"], ["saopaulo", "BR"], ["brazil", "BR"],
+  ["bogota", "CO"], ["santiago", "CL"], ["buenosaires", "AR"], ["lima", "PE"],
+  ["mexico", "MX"], ["johannesburg", "ZA"], ["capetown", "ZA"], ["cairo", "EG"],
+  ["lagos", "NG"], ["nairobi", "KE"], ["casablanca", "MA"], ["telaviv", "IL"],
+  ["riyadh", "SA"], ["doha", "QA"], ["kuwait", "KW"], ["manama", "BH"],
+  ["muscat", "OM"], ["amman", "JO"], ["beirut", "LB"], ["baghdad", "IQ"],
+  ["karachi", "PK"], ["dhaka", "BD"], ["colombo", "LK"], ["kathmandu", "NP"],
+  ["bangkok", "TH"], ["hanoi", "VN"], ["hochiminh", "VN"], ["jakarta", "ID"],
+  ["kualalumpur", "MY"], ["manila", "PH"], ["phnompenh", "KH"], ["vientiane", "LA"],
+  ["yangon", "MM"], ["ulaanbaatar", "MN"], ["auckland", "NZ"], ["wellington", "NZ"]
+];
+
+const IATA_CC = {
+  sgp: "SG", hkg: "HK", tpe: "TW", icn: "KR", nrt: "JP", kix: "JP",
+  fra: "DE", ams: "NL", lhr: "GB", cdg: "FR", syd: "AU", mel: "AU",
+  yyz: "CA", dxb: "AE", bom: "IN", del: "IN", ist: "TR", svo: "RU",
+  hel: "FI", arn: "SE", zrh: "CH", vie: "AT", mad: "ES", mxp: "IT",
+  lis: "PT", bru: "BE", cph: "DK", osl: "NO", prg: "CZ", bud: "HU",
+  otp: "RO", kbp: "UA", ala: "KZ", gru: "BR", eze: "AR", scl: "CL",
+  lim: "PE", bog: "CO", mex: "MX", jnb: "ZA", cai: "EG", los: "NG",
+  nbo: "KE", tlv: "IL", ruh: "SA", doh: "QA"
+};
+
+// 常见国家顶级域，最后一级兜底用；io/co/me/tv/cc 这类通用域故意不收录
+const CC_TLD = {
+  hk: "HK", tw: "TW", mo: "MO", jp: "JP", kr: "KR", sg: "SG", cn: "CN",
+  ru: "RU", ir: "IR", de: "DE", nl: "NL", fr: "FR", uk: "GB", it: "IT",
+  es: "ES", pl: "PL", se: "SE", fi: "FI", no: "NO", dk: "DK", ch: "CH",
+  at: "AT", be: "BE", cz: "CZ", ro: "RO", ua: "UA", kz: "KZ", vn: "VN",
+  th: "TH", id: "ID", my: "MY", ph: "PH", in: "IN", au: "AU", nz: "NZ",
+  br: "BR", mx: "MX", ar: "AR", tr: "TR", ae: "AE", sa: "SA", il: "IL",
+  gr: "GR", pt: "PT", hu: "HU", bg: "BG", hr: "HR", rs: "RS", lt: "LT",
+  lv: "LV", ee: "EE", md: "MD", by: "BY", ge: "GE", am: "AM", az: "AZ",
+  uz: "UZ", kg: "KG", tj: "TJ", tm: "TM", mn: "MN", pk: "PK", bd: "BD",
+  lk: "LK", np: "NP", kh: "KH", la: "LA", mm: "MM", za: "ZA", eg: "EG",
+  ng: "NG", ke: "KE", ma: "MA", cl: "CL", pe: "PE", ec: "EC", uy: "UY",
+  py: "PY", bo: "BO", cr: "CR", pa: "PA", pr: "PR", do: "DO", gt: "GT"
+};
+
+function regionByCode(code, regionMap, outList) {
+  const cc = CC_ALIAS[code] || String(code || "").toUpperCase();
+  if (!EN_SET.has(cc)) return null;
+
+  // 优先按 outList 取（outList 与 EN 同序），不受 in= 参数影响
+  const index = EN.indexOf(cc);
+  const mapped = index >= 0 ? outList[index] : "";
+  return mapped || regionMap[cc] || null;
+}
+
+function regionFromServer(node, regionMap, outList) {
+  const host = String(node.server || "").trim().toLowerCase().replace(/\.$/, "");
+  if (!host) return null;
+
+  if (!ProxyUtils.isIP(host)) {
+    const labels = host.split(".");
+    const first = labels[0] || "";
+    let code = "";
+    let matched = first.match(/^([a-z]{2})$/);
+
+    // au / hk / sg 这种纯两字母标签
+    if (matched) code = matched[1];
+
+    // au1 / sg-02 / de-fra / us-east-1 / jp-tokyo（必须有分隔符或数字，避免 node/free 这类单词误判）
+    if (!code) {
+      matched = first.match(/^([a-z]{2})(?:\d{1,3}|[-_](?:\d{1,3}|[a-z]{2,12}(?:[-_]?\d{1,3})?))$/);
+      if (matched) code = matched[1];
+    }
+
+    // 三字 IATA 机场码：sgp / hkg / fra / ams / lhr …
+    if (!code && IATA_CC[first]) code = IATA_CC[first];
+
+    // 城市 / 国名关键词
+    if (!code) {
+      const flat = host.replace(/[^a-z]/g, "");
+      for (let i = 0; i < SERVER_CITY_WORDS.length; i += 1) {
+        if (flat.includes(SERVER_CITY_WORDS[i][0])) {
+          code = SERVER_CITY_WORDS[i][1];
+          break;
+        }
+      }
+    }
+
+    // ccTLD
+    if (!code) {
+      const tld = labels[labels.length - 1];
+      code = CC_TLD[tld] || "";
+    }
+
+    const region = code ? regionByCode(code, regionMap, outList) : null;
+    if (region) return region;
+  }
+
+  if (mmdb) {
+    const ip = node._IP || node._IPv4 || node._IPv6 || host;
+
+    if (ProxyUtils.isIP(ip)) {
+      try {
+        const region = regionByCode(mmdb.geoip(ip), regionMap, outList);
+        if (region) return region;
+      } catch (err) {
+        return null;
+      }
+    }
+  }
+
+  return null;
+}
+
 function isTransitNode(name) {
   return TRANSIT_ROUTE_REGEX.test(String(name || ""));
 }
@@ -597,6 +748,14 @@ function operator(pro) {
     });
   }
 
+  if (geo && !mmdb) {
+    try {
+      mmdb = new ProxyUtils.MMDB();
+    } catch (err) {
+      mmdb = null;
+    }
+  }
+
   const outList = getList(outputName);
   const inputLists = inname ? [getList(inname)] : [ZH, FG, QC, EN];
   const regionMap = buildRegionMap(outList);
@@ -613,6 +772,10 @@ function operator(pro) {
 
     if (!region && !inname) {
       region = findMappedRegion(normalizedName, regionMap, [ZH, FG, QC, EN]);
+    }
+
+    if (!region) {
+      region = regionFromServer(node, regionMap, outList);
     }
 
     node._originalName = originalName;
