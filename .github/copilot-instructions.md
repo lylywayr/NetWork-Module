@@ -16,4 +16,5 @@
 - 提交前跑 `python3 tools/check_repo.py`，必须 `0 error`。
 - 所有链接使用 `https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/<路径>`。
 - 模块必须可溯源：上游仓库、原作者、许可证、同步版本写进 `README.md`「来源」；本地化脚本注明相对上游的改动。
+- 派生/二改他人模块：按 `AGENTS.md` §1.4 建层级（顶层本仓版 + `上游/原版-*` + `SOURCE.md`），§1.5 六步流程执行。
 - 有上游或二改的模块：目录内建 `上游/`，原样保存上游模块与脚本（`原版-` 前缀）+ `SOURCE.md`，README 说明快照内容。

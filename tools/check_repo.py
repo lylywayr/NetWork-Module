@@ -161,8 +161,12 @@ def check_client(client, suffix):
         if os.path.isdir(up_dir):
             if not os.path.exists(os.path.join(up_dir, "SOURCE.md")):
                 err(f"{client}/{d}/上游: 缺少 SOURCE.md")
-            elif not any(x.startswith("原版-") for x in os.listdir(up_dir)):
-                err(f"{client}/{d}/上游: 只有 SOURCE.md，没有上游原版文件")
+            else:
+                ups = os.listdir(up_dir)
+                if not any(x.startswith("原版-") for x in ups):
+                    err(f"{client}/{d}/上游: 只有 SOURCE.md，没有上游原版文件")
+                if not any(x.startswith("原版-") and x.endswith(suffix) for x in ups):
+                    warn(f"{client}/{d}/上游: 缺模块本体快照（原版-*.{'/'.join(suffix)}）")
             readme_p = os.path.join(mdir, "README.md")
             if os.path.exists(readme_p) and "上游/" not in read(readme_p):
                 warn(f"{client}/{d}/README.md: 没写明上游原版保存在 上游/ 目录")
