@@ -147,6 +147,12 @@ def fetch(url):
         return r.read()
 
 
+FALLBACKS = {
+    "https://raw.githubusercontent.com/Peng-YM/Sub-Store/master/backend/dist/cron-sync-artifacts.min.js":
+    "https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/cron-sync-artifacts.min.js",
+}
+
+
 def looks_html(data):
     head = data[:400].lstrip().lower()
     return head.startswith(b"<!doctype") or head.startswith(b"<html")
@@ -165,6 +171,8 @@ def write(items):
             name = it["local_name"]
             path = os.path.join(ROOT, mdir, name)
             urls_try = [it["url"]]
+            if it["url"] in FALLBACKS:
+                urls_try.insert(0, FALLBACKS[it["url"]])
             if "/master/" in it["url"]:
                 urls_try.append(it["url"].replace("/master/", "/main/"))
             elif "/main/" in it["url"]:
@@ -182,7 +190,7 @@ def write(items):
                 failures.append((mdir, it["url"], f"{type(e).__name__}: {e}"))
                 print(f"FAIL {mdir}: {it['url']}")
                 continue
-            if looks_html(data):
+            if looks_html(data) and not it["url"].split("?")[0].endswith((".html", ".htm")):
                 failures.append((mdir, it["url"], "返回 HTML（被拦截或已失效）"))
                 print(f"HTML {mdir}: {it['url']}")
                 continue
