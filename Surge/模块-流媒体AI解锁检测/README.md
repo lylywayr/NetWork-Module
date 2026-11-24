@@ -1,0 +1,11 @@
+# SURGE-GPT-AI
+
+## Description
+检测 Netflix、Disney+、ChatGPT、Claude、Gemini 解锁状态
+
+## Files
+- `SURGE-GPT-AI.sgmodule`
+
+## Source
+- Modules/Utilities/SURGE-GPT-AI.sgmodule
+- https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%B5%81%E5%AA%92%E4%BD%93AI%E8%A7%A3%E9%94%81%E6%A3%80%E6%B5%8B/SURGE-GPT-AI.js

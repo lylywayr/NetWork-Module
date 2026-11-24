@@ -1,0 +1,25 @@
+#!name=内购解锁（通用）
+#!desc=通用解锁：① 苹果 verifyReceipt（status→0、补收据）② RevenueCat 权益接口（entitlements/subscriptions 全解锁，覆盖大量订阅类 App）③ 任意 App 自有接口的购买状态 JSON。仅对可 MITM 的接口有效；StoreKit2 本地验签与服务端严格校验收据无法绕过。
+#!author=lylywayr
+#!category=解锁增强
+#!system=iOS
+
+[Script]
+# ① 苹果 verifyReceipt：失败状态改成成功并补收据条目
+内购解锁-收据 = type=http-response,pattern=^https?://(buy|sandbox)\.itunes\.apple\.com/verifyReceipt,requires-body=1,max-size=0,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/模块-内购解锁/iap-unlock.js
+
+# ② RevenueCat：绝大多数订阅制 App 的权益都走它，改这一层等于"通用解锁"
+内购解锁-RC = type=http-response,pattern=^https?://api\.revenuecat\.com/,requires-body=1,max-size=0,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/模块-内购解锁/iap-unlock.js
+
+# ③ App 自有接口：把 [[APP_API_HOST]] 换成目标域名后取消注释
+# 内购解锁-业务 = type=http-response,pattern=^https?://[[APP_API_HOST]]/(api|v\d|graphql|iap|purchase|vip|member|user|pay),requires-body=1,max-size=0,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/模块-内购解锁/iap-unlock.js
+
+[Header Rewrite]
+# RevenueCat 会下发 ETag 让客户端用缓存，必须删掉这些头才能拿到我们改写的响应
+http-request  ^https?://api\.revenuecat\.com/ header-del If-Modified-Since
+http-request  ^https?://api\.revenuecat\.com/ header-del If-None-Match
+http-response ^https?://api\.revenuecat\.com/ header-del X-RevenueCat-ETag
+http-response ^https?://api\.revenuecat\.com/ header-del x-revenuecat-etag
+
+[MITM]
+hostname = %APPEND% buy.itunes.apple.com, sandbox.itunes.apple.com, api.revenuecat.com
