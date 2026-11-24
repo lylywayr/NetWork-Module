@@ -13,3 +13,13 @@
 ## 上游脚本地址
 - https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Stream-All/Moore/Stream-All.js
 - https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Stream-All/Moore/Stream-All-Mini.js
+
+## 轻量版
+- `Stream-All-Lite.sgmodule`：轻量流媒体检测
+- `Stream-Al-Lite.sgmodule`：轻量版（另一实现）
+
+## 维护记录
+- 2026-11-24：并入原 `面板-流媒体检测` 目录（同功能只保留一个目录）。
+
+## 上游
+- 上游原版与脚本保存在本目录 `上游/`，未做修改，用于比对与溯源（见 `上游/SOURCE.md`）。

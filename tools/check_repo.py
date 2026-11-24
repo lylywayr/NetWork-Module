@@ -15,6 +15,7 @@
     python3 tools/check_repo.py --strict   # 外链也算 error（本地化完成后启用）
 退出码 0 = 通过（可有 warning），1 = 有 error。
 """
+import hashlib
 import os
 import re
 import subprocess
@@ -134,7 +135,19 @@ def check_client(client, suffix):
     if run and run != sorted(run, key=str.casefold):
         warn(f"{client}/README.md: 清单顺序和目录排序不一致（建议按名称排序）")
 
+    bases = {}
     for d in dirs:
+        if d in RESOURCE_NAMES:
+            continue
+        base = re.sub(r"-(旧版|精简版|抓Cookie版|内存优化|增强|52pojie)$", "", d)
+        bases.setdefault(base, []).append(d)
+    for base, group in bases.items():
+        if len(group) > 1:
+            warn(f"{client}: 疑似同功能多份 {group}（§1.3 一种功能只建一个目录）")
+
+    for d in dirs:
+        if client == "Surge" and d not in RESOURCE_NAMES and re.search(r"(Sign|Checkin|CheckIn)", d):
+            warn(f"{client}/{d}: 目录名还带英文后缀 Sign/Checkin（§1.3 用中文功能词）")
         if client == "Surge" and d not in RESOURCE_NAMES and not re.search(r"[\u4e00-\u9fa5]", d):
             warn(f"{client}/{d}: 目录名缺少中文功能词（AGENTS §1.3：品牌 + 功能）")
         if d in RESOURCE_NAMES:
@@ -162,6 +175,27 @@ def check_client(client, suffix):
             if not os.path.exists(os.path.join(up_dir, "SOURCE.md")):
                 err(f"{client}/{d}/上游: 缺少 SOURCE.md")
             else:
+                src = os.path.join(up_dir, "SOURCE.md")
+                stext = read(src)
+                for url, name, sha in re.findall(
+                        r"\| (https?://[^ ]+) \| `([^`]+)` \| `([0-9a-f]{64})`", stext):
+                    loc = os.path.join(mdir, name)
+                    if not os.path.exists(loc):
+                        err(f"{client}/{d}: SOURCE 记的本地文件不存在 -> {name}")
+                    elif hashlib.sha256(open(loc, "rb").read()).hexdigest() != sha:
+                        err(f"{client}/{d}/{name}: sha256 与 SOURCE 不一致（本仓版被改过？）")
+                    snap = os.path.join(up_dir, "原版-" + name)
+                    if not os.path.exists(snap):
+                        err(f"{client}/{d}/上游: 缺脚本快照 原版-{name}")
+                    elif hashlib.sha256(open(snap, "rb").read()).hexdigest() != sha:
+                        err(f"{client}/{d}/上游/原版-{name}: 快照被改过，sha256 不一致")
+                for snap, url, sha in re.findall(
+                        r"\| `([^`]+)` \| (https?://[^ ]+) \| `([0-9a-f]{64})`", stext):
+                    p2 = os.path.join(up_dir, snap)
+                    if not os.path.exists(p2):
+                        err(f"{client}/{d}/上游: SOURCE 记的模块本体不存在 -> {snap}")
+                    elif hashlib.sha256(open(p2, "rb").read()).hexdigest() != sha:
+                        err(f"{client}/{d}/上游/{snap}: 模块本体 sha256 与 SOURCE 不一致")
                 ups = os.listdir(up_dir)
                 if not any(x.startswith("原版-") for x in ups):
                     err(f"{client}/{d}/上游: 只有 SOURCE.md，没有上游原版文件")
@@ -218,6 +252,8 @@ def check_client(client, suffix):
 def check_raw_refs():
     for rel in sorted(FILES):
         if not rel.endswith((".sgmodule", ".plugin", ".yaml", ".stoverride", ".conf", ".js")):
+            continue
+        if "/上游/" in rel.replace(os.sep, "/"):
             continue
         text = read(os.path.join(ROOT, rel))
         for owner, branch, path in RAW_REF.findall(text):

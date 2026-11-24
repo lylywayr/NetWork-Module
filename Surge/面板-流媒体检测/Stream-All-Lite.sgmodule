@@ -9,4 +9,4 @@
 Panel = script-name=轻量流媒体检测,update-interval={{{UPDATE_INTERVAL}}}
 
 [Script]
-轻量流媒体检测 = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E8%BD%BB%E9%87%8F%E6%B5%81%E5%AA%92%E4%BD%93%E6%A3%80%E6%B5%8B/Stream-All-Lite.js,script-update-interval=0,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}
+轻量流媒体检测 = type=generic,timeout=30,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E6%B5%81%E5%AA%92%E4%BD%93%E6%A3%80%E6%B5%8B/Stream-All-Lite.js,script-update-interval=0,argument=title={{{TITLE}}}&icon={{{ICON}}}&color={{{COLOR}}}

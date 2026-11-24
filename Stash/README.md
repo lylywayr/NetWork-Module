@@ -11,10 +11,7 @@
 - `Notability`
 - `TestFlight区域修正`
 - `TestFlight账户管理`
-- `TikTok 台区`
-- `TikTok 日区`
-- `TikTok 美区`
-- `TikTok 韩区`
+- `TikTok解锁`
 - `VSCO`
 - `VUE Pro`
 - `YouTube 去广告`

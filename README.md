@@ -66,6 +66,8 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 - 规则目录 README 至少包含：说明、清单表（文件 / 用途 / 来源 / 更新方式）、引用示例、维护记录。
 
 ## 变更记录
+- 2026-11-24：同功能合并（二）：`面板-流媒体检测` 并入 `面板-流媒体检测`；Stash 的 TikTok 美/日/韩/台四个目录合并为 `Stash/TikTok解锁`。
+- 2026-11-24：同功能合并：删除 吾爱破解签到-52pojie、WPS签到-抓Cookie版、小蚕霸王餐签到-内存优化、IP纯净度检测-旧版、今日水印相机去广告、菜鸟包裹去广告、微博净化 Weibo-Test，功能分别并入同名主模块或「去广告合并」。
 - 2026-11-24：统一三级目录命名：品牌 + 功能（如 `模块-五菱` → `模块-五菱签到抽奖`）。旧 raw 地址失效，迁移表见 `路径迁移记录.md`。
 - 2026-11-24：移除 LoonKissSurge 分发链模块：1.1.1.1、AppleWeatherEnhancer、BoxJs、FollowRSS_checkin、脚本-通用脚本合集-Hub，以及脚本-Sub-Store同步 的 Sub-Store 主模块（cron 同步保留）。
 - 2026-11-24：移除全部 kelee（可莉）来源模块（含本地化与二改版本）：Auto_Join_TF、Fileball_mount、Spotify 歌词翻译、TikTok 重定向、VVebo 修复、WPS_checkin、微信外链解锁、YouTube 字幕翻译、Kelee2Egern、LoonKissSurge2Egern、脚本-PluginHub、Google、QuickSearchn、UnnooQuan 去水印、sxmd_sign，以及 JD_Price 的 kelee 版。
