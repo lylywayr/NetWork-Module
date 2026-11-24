@@ -49,7 +49,7 @@ DYNAMIC_HOSTS = ("script.hub",)
 # 外部可执行资源引用（脚本 / 规则 / 模块）：都应该本地化
 EXT_EXEC = re.compile(
     r"https?://(?:raw\.githubusercontent\.com|gist\.githubusercontent\.com|"
-    r"hub\.nan\.cn|hub\.nange\.cn|kelee\.one|mirror\.ghproxy\.com)[^\s,\"')]+"
+    r"hub\.nan\.cn|hub\.nange\.cn|mirror\.ghproxy\.com)[^\s,\"')]+"
 )
 UNLOCALIZED = []
 
