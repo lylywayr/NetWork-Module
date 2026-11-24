@@ -42,6 +42,21 @@ RAW_REF = re.compile(
 # 客户端目录下的资源目录：不按模块规范检查，但必须有 README
 RESOURCE_NAMES = {"Rules"}
 
+# 聚合订阅型模块：脚本跟随上游，不做逐个快照
+AGGREGATORS = {
+    "Surge/脚本-Cookie", "Surge/脚本-Task", "Surge/脚本-Script",
+    "Surge/脚本-Script-Hub", "Surge/脚本-PluginHub", "Surge/脚本-Sub-Store",
+    "Surge/面板-Panel",
+}
+
+# 外部脚本引用
+EXT_REF = re.compile(
+    r"https?://(?:raw\.githubusercontent\.com|gist\.githubusercontent\.com|"
+    r"hub\.nan\.cn|hub\.nange\.cn|kelee\.one|script\.hub)[^\s,\"')]+"
+)
+
+missing_snap = []
+
 # 顶层允许的非客户端目录
 KNOWN_TOP = {"tools", ".github", ".git"}
 
@@ -135,6 +150,37 @@ def check_client(client, suffix):
                 files.append(os.path.relpath(os.path.join(dp, fn), mdir))
         if "README.md" not in files:
             err(f"{client}/{d}: 缺少模块 README.md")
+        # 上游快照检查
+        up_dir = os.path.join(mdir, "上游")
+        texts = []
+        for f in files:
+            if f.endswith((".sgmodule", ".plugin", ".yaml", ".stoverride", ".conf", ".js")):
+                try:
+                    texts.append(read(os.path.join(mdir, f)))
+                except Exception:
+                    pass
+        if os.path.isdir(up_dir):
+            if not os.path.exists(os.path.join(up_dir, "SOURCE.md")):
+                err(f"{client}/{d}/上游: 缺少 SOURCE.md")
+            readme_p = os.path.join(mdir, "README.md")
+            if os.path.exists(readme_p) and "上游/" not in read(readme_p):
+                warn(f"{client}/{d}/README.md: 没写明上游原版保存在 上游/ 目录")
+            for rp, _rds, rfs in os.walk(up_dir):
+                for rf in rfs:
+                    if rf == "SOURCE.md":
+                        continue
+                    if not rf.startswith("原版-"):
+                        warn(f"{client}/{d}/上游/{rf}: 快照文件未用 原版- 前缀")
+        else:
+            ext = set()
+            for t in texts:
+                for u in EXT_REF.findall(t):
+                    if "NetWork-Module" in u:
+                        continue
+                    ext.add(u)
+            if ext and f"{client}/{d}" not in AGGREGATORS:
+                missing_snap.append((f"{client}/{d}", len(ext)))
+
         mods = [f for f in files if f.endswith(suffix)]
         if not mods:
             err(f"{client}/{d}: 缺少模块文件（{' / '.join(suffix)}）")
@@ -191,6 +237,12 @@ def main():
         check_client(client, suffix)
     check_raw_refs()
 
+    if missing_snap:
+        missing_snap.sort(key=lambda x: -x[1])
+        head = ", ".join(f"{d}({n})" for d, n in missing_snap[:6])
+        warns.append(
+            f"{len(missing_snap)} 个模块有上游外链但缺 上游/ 快照，合计 {sum(n for _, n in missing_snap)} 个文件：{head} ..."
+        )
     for w in warns:
         print(f"WARN  {w}")
     for e in errors:

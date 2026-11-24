@@ -14,4 +14,5 @@
 - 客户端不只 Surge / Loon / QX / Egern / Stash / Clash / Shadowrocket / Sub-Store，新客户端按 AGENTS §1.2 登记。
 - 提交前跑 `python3 tools/check_repo.py`，`0 error` 再提交。
 - 模块必须可溯源：上游仓库 / 作者 / 许可证 / 同步版本写进模块 `README.md` 的「来源」；改写过的注明改动点。
+- 有上游或二改的模块，目录内必须有 `上游/`：上游原版模块与其脚本原样存放（`原版-` 前缀），配 `上游/SOURCE.md`；README 写明快照内容。
 - 模块内所有链接指向本仓库 raw：`https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/<路径>`。
