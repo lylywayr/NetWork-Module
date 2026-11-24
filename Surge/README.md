@@ -40,14 +40,11 @@
 ## 脚本目录
 - `脚本-Cookie`
 - `脚本-Script`
-- `脚本-Script-Hub`
 - `脚本-Sub-Store`
 - `脚本-Task`
 
 ## 模块目录
-- `模块-1.1.1.1`
 - `模块-52pojie`
-- `模块-AppleWeatherEnhancer`
 - `模块-Baidu_index`
 - `模块-Bilibili`
 - `模块-Bilibili-Login`
@@ -55,10 +52,8 @@
 - `模块-BiliBiliDailyBonus`
 - `模块-block-you`
 - `模块-BodianMusic`
-- `模块-BoxJs`
 - `模块-DNS-QUIC`
 - `模块-DoH`
-- `模块-FollowRSS_checkin`
 - `模块-GitHubPrivate`
 - `模块-GitHubRawAutoCDN`
 - `模块-GoogleRedirects`

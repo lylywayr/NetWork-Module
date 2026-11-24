@@ -1,21 +1,19 @@
-# Sub-Store
+# Sub-Store Sync
 
-## Description
-托管订阅更新
+## 说明
+Sub-Store 托管订阅的定时同步任务，提供 6 / 12 / 24 小时三档频率。
 
-## Files
+## 文件
+- `6hours.sgmodule`
 - `12hours.sgmodule`
 - `24hours.sgmodule`
-- `6hours.sgmodule`
-- `README.md`
-- `Sub-Store.sgmodule`
 
-## Source
-- Modules/Utilities/Sub-Store.sgmodule
-- https://raw.githubusercontent.com/Peng-YM/Sub-Store/master/backend/dist/cron-sync-artifacts.min.js,script-update-interval=0,wake-system=1
-- https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/Official/%E2%AD%90%EF%B8%8F%20Sub-Store.official.sgmodule
-- https://raw.githubusercontent.com/Keywos/rule/main/cname.js\n填写任意其他值关闭\n\n2️⃣
-- https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/sub-store-1.min.js,requires-body=true,timeout={{{timeout}}},ability="{{{ability}}}",engine={{{engine}}}
-- https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/sub-store-0.min.js,requires-body=true,timeout={{{timeout}}},engine={{{engine}}}
-- https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/cron-sync-artifacts.min.js,engine={{{engine}}}
-- https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/cron-sync-artifacts.min.js,engine={{{engine}}},argument="sub={{{produce_sub}}}&col={{{produce_col}}}"
+## 安装
+- Surge：按需导入其中一个 `.sgmodule`，不要同时启用多个频率。
+
+## 来源
+- 上游：`Peng-YM/Sub-Store` → `cron-sync-artifacts.min.js`
+- 原 `Sub-Store.sgmodule` 来自 LoonKissSurge 分发链，已按来源清理要求移除。
+
+## 维护记录
+- 2026-11-24：移除 LoonKissSurge 版 `Sub-Store.sgmodule`，保留 Peng-YM 的 cron 同步模块。

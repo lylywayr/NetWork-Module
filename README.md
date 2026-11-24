@@ -66,6 +66,7 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 - 规则目录 README 至少包含：说明、清单表（文件 / 用途 / 来源 / 更新方式）、引用示例、维护记录。
 
 ## 变更记录
+- 2026-11-24：移除 LoonKissSurge 分发链模块：1.1.1.1、AppleWeatherEnhancer、BoxJs、FollowRSS_checkin、脚本-Script-Hub，以及脚本-Sub-Store 的 Sub-Store 主模块（cron 同步保留）。
 - 2026-11-24：移除全部 kelee（可莉）来源模块（含本地化与二改版本）：Auto_Join_TF、Fileball_mount、Spotify 歌词翻译、TikTok 重定向、VVebo 修复、WPS_checkin、微信外链解锁、YouTube 字幕翻译、Kelee2Egern、LoonKissSurge2Egern、脚本-PluginHub、Google、QuickSearchn、UnnooQuan 去水印、sxmd_sign，以及 JD_Price 的 kelee 版。
 - 2026-11-24：补强 Agent 约定：README 三层同步、路径永久固定（链接即 API）、上游溯源；新增 `tools/check_repo.py` 自检；修正各客户端 README 清单。
 - 2026-11-13：清空来自 Kelee 的去广告内容（`Fanqie/`、`Surge/模块-番茄小说去广告/`、`Loon/模块-番茄小说去广告/`）及对应的 GitHub Actions 定时同步。
