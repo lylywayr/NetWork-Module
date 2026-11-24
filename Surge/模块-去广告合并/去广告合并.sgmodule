@@ -68,6 +68,10 @@ DOMAIN-SUFFIX,u51.me,REJECT
 ^https?:\/\/tk\.statisticslinks\.com\/v2\/open\/a_tk(?:\?.*)?$ - reject
 ^https?:\/\/sdkquic\.e\.qq\.com\/launch(?:\?.*)?$ - reject
 ^https?:\/\/als\.baidu\.com\/clog\/glog(?:\?.*)?$ - reject
+^https?:\/\/mc\.tencentmusic\.com\/ - reject
+^https?:\/\/ad\.tencentmusic\.com\/ - reject
+^https?:\/\/tmeadcomm\.y\.qq\.com\/ - reject
+^https?:\/\/ossgw\.alicdn\.com\/creatives-assets\/ - reject
 
 [Map Local]
 ^https?:\/\/cn-acs\.m\.cainiao\.com\/gw\/mtop\.cainiao\.adkeyword\.get\.cn data-type=text data="{}" status-code=200 header="Content-Type:application/json"
@@ -103,6 +107,13 @@ DOMAIN-SUFFIX,u51.me,REJECT
 ^https:\/\/m5-zb\.amap\.com\/ws\/promotion-web\/resource(\/home)?\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/m5\.amap\.com\/ws\/info_bff\/rankingCard\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/m5\.amap\.com\/ws\/shield\/search_business\/process\/marketingOperationStructured\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/bd-api\.kuwo\.cn\/api\/play\/advert\/info data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/bd-api\.kuwo\.cn\/api\/service\/banner\/positions data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/bd-api\.kuwo\.cn\/api\/service\/advert\/config data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/bd-api\.kuwo\.cn\/api\/advert\/free\/config data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/bd-api\.kuwo\.cn\/api\/popup\/start\/info data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/xs\.gdt\.qq\.com\/style_factory\/template_list data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/us\.l\.qq\.com\/exapp data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 [Body Rewrite]
 http-response-jq (?i)^https:\/\/(cn-acs\.m|e2e-mtop)\.cainiao\.com\/gw\/mtop\.cainiao\.app\.e2e\.engine\.page\.fetch 'del(.data.data.data.mainSearch.bizData.searchContents, .data.data.data.operationList)'
@@ -142,7 +153,8 @@ zhihu_10 = type=http-response, pattern=^https:\/\/appcloud2\.zhihu\.com\/v3\/con
 zhihu_11 = type=http-response, pattern=^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/config\/all\?, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/zhihu.js, requires-body=true
 zhihu_12 = type=http-response, pattern=^https:\/\/api\.zhihu\.com\/root\/tab, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/zhihu.js, requires-body=true
 watermark_abtest = type=http-response, pattern=^https?:\/\/abtest-tx-beijing-01\.saas\.sensorsdata\.cn\/api\/v2\/abtest\/online\/results\?project-key=(?:0E6053C30A799D63EFA48959776B2EE2EDC81359|EE39C73914ED208E6EBE24A7333CAF5C3FE2E89D), script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/xhey-ad-clean.js, requires-body=true, max-size=131072
+bodian_conf = type=http-response, pattern=^https?:\/\/bd-api\.kuwo\.cn\/api\/service\/conf\/all, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/bodian-clean.js, requires-body=true, max-size=2097152
 watermark_config = type=http-response, pattern=^https?:\/\/jt-sdk-ios\.oss-cn-beijing\.aliyuncs\.com\/iOSConfig\.txt(?:\?.*)?$, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/xhey-ad-clean.js, requires-body=true, max-size=131072
 
 [MITM]
-hostname = %APPEND% cn-acs.m.cainiao.com, amdc.m.taobao.com, netflow-mtop.cainiao.com, nbcps-mtop.cainiao.com, e2e-mtop.cainiao.com, longquan-mtop.cainiao.com, api.zhihu.com, www.zhihu.com, appcloud2.zhihu.com, m-cloud.zhihu.com, zhuanlan.zhihu.com, link.zhihu.com, m*.amap.com, m5.amap.com, m5-zb.amap.com, sns.amap.com, ai.amap.com, info.amap.com, center.amap.com, optimus-ads.amap.com, amap-aos-info-nogw.amap.com, abtest-tx-beijing-01.saas.sensorsdata.cn, jt-sdk-ios.oss-cn-beijing.aliyuncs.com
+hostname = %APPEND% cn-acs.m.cainiao.com, amdc.m.taobao.com, netflow-mtop.cainiao.com, nbcps-mtop.cainiao.com, e2e-mtop.cainiao.com, longquan-mtop.cainiao.com, api.zhihu.com, www.zhihu.com, appcloud2.zhihu.com, m-cloud.zhihu.com, zhuanlan.zhihu.com, link.zhihu.com, m*.amap.com, m5.amap.com, m5-zb.amap.com, sns.amap.com, ai.amap.com, info.amap.com, center.amap.com, optimus-ads.amap.com, amap-aos-info-nogw.amap.com, abtest-tx-beijing-01.saas.sensorsdata.cn, jt-sdk-ios.oss-cn-beijing.aliyuncs.com, bd-api.kuwo.cn, *.kuwo.cn, h5app.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, xs.gdt.qq.com, *.l.qq.com, mc.tencentmusic.com, ad.tencentmusic.com, tmeadcomm.y.qq.com, ossgw.alicdn.com

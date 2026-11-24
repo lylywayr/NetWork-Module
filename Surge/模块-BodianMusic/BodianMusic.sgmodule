@@ -1,32 +1,14 @@
-#!name=波点音乐 高级功能
-#!desc=波点音乐：会员状态调试 / 去广告（含开屏广告）/ 歌曲下载（支持付费专辑导出）/ 付费专辑解锁
+#!name=波点音乐 解锁
+#!desc=波点音乐：会员状态调试 / 歌曲下载（支持付费专辑导出）/ 付费专辑解锁。去广告已拆分到「去广告合并」模块
 #!author=WeiGiegie
 #!homepage=https://github.com/WeiGiegie/666
 #!category=解锁增强
 #!system=iOS
-#!desc2=响应体上限 2MB（原 -1 无限制）：超过则透传不处理，避免大响应全量进内存
+#!desc2=本模块只做解锁与下载。广告接口（advert/banner/popup/gdt）已移除，由「去广告合并」模块接管；如需回退，把对应 URL 加回下面的 pattern 即可
 
 [Script]
 # 主脚本：会员调试 / 歌曲下载 / 付费专辑解锁
-波点音乐 = type=http-response,pattern=^https?:\/\/(?:(?:bd-api|h5app|bodianyin|ab-bodian)\.kuwo\.cn\/(?:api\/(?:ucenter\/users\/(?:pub|login)|play\/(?:music\/v2\/(?:audioUrl|checkRight)|advert\/info)|service\/(?:music\/(?:info|download\/(?:info|config))|home\/module|global\/config\/(?:scene|vipEnter)|banner\/positions|advert\/config)|search\/topic\/word\/list|pay\/(?:vip\/(?:invitation\/(?:assist\/popup|swell)|lowPriceText)|sp\/actVip|audition\/url)|advert\/free\/config|popup\/start\/info|abtest\/ui\/info|rec\/feed)|abtest\/ui\/info)|us\.l\.qq\.com\/exapp|xs\.gdt\.qq\.com\/style_factory\/template_list),requires-body=true,max-size=2097152,timeout=60,script-path=https://raw.githubusercontent.com/WeiGiegie/666/main/bdyy.js
+波点音乐解锁 = type=http-response,pattern=^https?:\/\/(?:(?:bd-api|h5app|bodianyin|ab-bodian)\.kuwo\.cn\/(?:api\/(?:ucenter\/users\/(?:pub|login)|play\/music\/v2\/(?:audioUrl|checkRight)|service\/(?:music\/(?:info|download\/(?:info|config))|home\/module|global\/config\/(?:scene|vipEnter))|search\/topic\/word\/list|pay\/(?:vip\/(?:invitation\/(?:assist\/popup|swell)|lowPriceText)|sp\/actVip|audition\/url)|abtest\/ui\/info|rec\/feed)|abtest\/ui\/info)),requires-body=true,max-size=2097152,timeout=60,script-path=https://raw.githubusercontent.com/WeiGiegie/666/main/bdyy.js
 
-# 应用配置净化：删除开屏广告开关（adStartAppDialog 等）、关闭 P2P
-波点音乐-配置净化 = type=http-response,pattern=^https?://bd-api\.kuwo\.cn/api/service/conf/all,requires-body=true,max-size=2097152,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-BodianMusic/bodian-clean.js
-
-[URL Rewrite]
-# 原 Loon 规则用了 reject-dict / reject-200，Surge 不支持，已改写为原生 reject。
-# 说明：reject 会直接断开连接（客户端看到失败），语义上比"返回 {} / 空 200"更粗暴，
-#      但对广告 SDK 来说结果一样——拿不到广告数据，自然不展示。
-# 只改写与主解锁脚本不重叠的域名，避免覆盖 bd-api.kuwo.cn 的响应（会破坏解锁）。
-^https?://mc\.tencentmusic\.com/ _ reject
-^https?://ad\.tencentmusic\.com/ _ reject
-^https?://tmeadcomm\.y\.qq\.com/ _ reject
-^https?://ossgw\.alicdn\.com/creatives-assets/ _ reject
-
-# 以下 3 条与主解锁脚本的 pattern 重叠，若改 reject 可能连带拦掉解锁需要的响应，
-# 故保留说明、不启用：
-# ^https?://xs\.gdt\.qq\.com/ _ reject            (主脚本处理 style_factory/template_list)
-# ^https?://bd-api\.kuwo\.cn/api/(play|service|advert)/advert/ _ reject   (与主脚本 pattern 重叠)
-# ^https?://h5s\.kuwo\.cn/m/bd_launch_popup/ _ reject
 [MITM]
-hostname = %APPEND% tmeadcomm.y.qq.com, bd-api.kuwo.cn, *.kuwo.cn, bd-api.kuwo.com, *.kuwo.com, h5app.kuwo.cn, bodianimgcdn.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, *.l.qq.com, xs.gdt.qq.com, ad.tencentmusic.com, mc.tencentmusic.com, ossgw.alicdn.com
+hostname = %APPEND% bd-api.kuwo.cn, *.kuwo.cn, bd-api.kuwo.com, *.kuwo.com, h5app.kuwo.cn, bodianimgcdn.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn
