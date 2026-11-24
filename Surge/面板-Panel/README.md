@@ -18,3 +18,6 @@
 - https://raw.githubusercontent.com/fishingworld/something/main/YouTubeSelect/youtubecontroller.js,
 - https://raw.githubusercontent.com/fishingworld/something/main/YouTubeSelect/youtubechecker.js,script-update-interval=86400,control-api=1
 - https://raw.githubusercontent.com/fishingworld/something/main/YouTubeSelect/youtubeshortcut.js,script-update-interval=86400,control-api=1
+
+## 上游本地化
+- 本模块引用的上游脚本已下载到本目录，`script-path` 指向本仓副本；清单与 sha256 见 `上游/SOURCE.md`。

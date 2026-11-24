@@ -10,4 +10,4 @@ hostname = %APPEND% www.52pojie.cn
 
 [Script]
 吾爱破解获取Cookie = type=http-request, pattern=^https:\/\/www\.52pojie\.cn\/home\.php\?, requires-body=0, max-size=1024, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-Wuai_Checkin/wuai_cookie.js, argument="{{{cookie}}}", timeout=15, script-update-interval=0
-吾爱破解签到 = type=cron, cronexp={{{minute}}} {{{hour}}} * * *, wake-system=1, script-path=https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/52pojie.js, timeout=60, script-update-interval=0
+吾爱破解签到 = type=cron, cronexp={{{minute}}} {{{hour}}} * * *, wake-system=1, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-Wuai_Checkin/52pojie.js, timeout=60, script-update-interval=0

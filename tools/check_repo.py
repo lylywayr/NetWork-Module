@@ -170,7 +170,11 @@ def check_client(client, suffix):
         else:
             ext = set()
             for t in texts:
-                for u in EXT_EXEC.findall(t):
+                body = "\n".join(
+                    ln for ln in t.splitlines()
+                    if not ln.lstrip().startswith(("#", ";", "//"))
+                )
+                for u in EXT_EXEC.findall(body):
                     if "NetWork-Module" in u:
                         continue
                     if any(h in u for h in DYNAMIC_HOSTS):

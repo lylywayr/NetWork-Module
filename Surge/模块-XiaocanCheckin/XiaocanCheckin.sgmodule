@@ -10,4 +10,4 @@ hostname = %APPEND% gw.xiaocantech.com
 
 [Script]
 小蚕霸王餐获取 = type=http-response, pattern=^https:\/\/gw\.xiaocantech\.com\/rpc, requires-body=0, argument="{{{cookie}}}", script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-XiaocanCheckin/gate.js, script-update-interval=0
-小蚕霸王餐定时 = type=cron, cronexp=0 8 * * *, wake-system=1, argument=xcbwc_data, script-path=https://gist.githubusercontent.com/Sliverkiss/27c601d97a3f8960b212e5cac5b6c470/raw/xcbwc.js, script-update-interval=0
+小蚕霸王餐定时 = type=cron, cronexp=0 8 * * *, wake-system=1, argument=xcbwc_data, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-XiaocanCheckin/xcbwc.js, script-update-interval=0

@@ -133,14 +133,24 @@ def probe(items):
     return items
 
 def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=40) as r:
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1",
+        "Referer": "https://github.com/",
+    })
+    with urllib.request.urlopen(req, timeout=45) as r:
         return r.read()
+
+
+def looks_html(data):
+    head = data[:400].lstrip().lower()
+    return head.startswith(b"<!doctype") or head.startswith(b"<html")
+
 
 def write(items):
     by_module = {}
     for it in items:
         by_module.setdefault(it["module_dir"], []).append(it)
+    failures = []
     for mdir, its in by_module.items():
         up = os.path.join(ROOT, mdir, "上游")
         os.makedirs(up, exist_ok=True)
@@ -148,34 +158,56 @@ def write(items):
         for it in its:
             name = it["local_name"]
             path = os.path.join(ROOT, mdir, name)
-            data = fetch(it["url"])
-            if not path.endswith(".js") and b"\x00" in data[:1024]:
-                print(f"SKIP 二进制 {it['url']}")
+            try:
+                data = fetch(it["url"])
+            except Exception as e:
+                failures.append((mdir, it["url"], f"{type(e).__name__}: {e}"))
+                print(f"FAIL {mdir}: {it['url']}")
+                continue
+            if looks_html(data):
+                failures.append((mdir, it["url"], "返回 HTML（被拦截或已失效）"))
+                print(f"HTML {mdir}: {it['url']}")
                 continue
             with open(path, "wb") as fh:
                 fh.write(data)
             sha = hashlib.sha256(data).hexdigest()
             rows.append((it["url"], name, sha, len(data)))
             print(f"GET  {mdir}/{name}  {len(data)}B")
-        # 改写模块文件
+        ok_urls = {u for u, _, _, _ in rows}
         for mf in {it["module_file"] for it in its}:
             p = os.path.join(ROOT, mf)
             text = open(p, encoding="utf-8", errors="replace").read()
             for it in its:
+                if it["url"] not in ok_urls:
+                    continue
                 local = RAW + urllib.parse.quote(f"{mdir}/{it['local_name']}", safe="/")
                 text = text.replace(it["url"], local)
             open(p, "w", encoding="utf-8").write(text)
-        # SOURCE.md
         src = os.path.join(up, "SOURCE.md")
         new = not os.path.exists(src)
-        lines = [] if new else [""]
+        lines = []
         if new:
             lines = ["# 上游来源\n", "| 上游文件 | 本地文件 | sha256 | 大小 |\n| --- | --- | --- | --- |"]
         for url, name, sha, size in rows:
             lines.append(f"| {url} | `{name}` | `{sha}` | {size} B |")
-        with open(src, "a", encoding="utf-8") as fh:
-            fh.write("\n".join(lines) + "\n")
-        print(f"SRC  {mdir}/上游/SOURCE.md")
+        if lines:
+            with open(src, "a", encoding="utf-8") as fh:
+                fh.write("\n".join(lines) + "\n")
+            print(f"SRC  {mdir}/上游/SOURCE.md")
+        rp = os.path.join(ROOT, mdir, "README.md")
+        if os.path.exists(rp):
+            rt = open(rp, encoding="utf-8").read()
+            if "上游/" not in rt:
+                rt += ("\n## 上游本地化\n- 本模块引用的上游脚本已下载到本目录，`script-path` 指向本仓副本；"
+                       "清单与 sha256 见 `上游/SOURCE.md`。\n")
+                open(rp, "w", encoding="utf-8").write(rt)
+    if failures:
+        with open(os.path.join(ROOT, "上游待办.md"), "a", encoding="utf-8") as fh:
+            fh.write(f"\n## {__import__('datetime').date.today()}\n")
+            for m, u, why in failures:
+                fh.write(f"- {m}: {u}（{why}）\n")
+        print(f"\n失败 {len(failures)} 个，已记入 上游待办.md")
+
 
 def check():
     bad = 0
@@ -199,6 +231,9 @@ def check():
 
 def main():
     items = plan()
+    if "--only" in sys.argv:
+        key = sys.argv[sys.argv.index("--only") + 1]
+        items = [i for i in items if key in i["module_dir"]]
     if "--write" in sys.argv:
         write(items)
         return 0

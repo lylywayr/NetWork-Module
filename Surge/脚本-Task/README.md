@@ -18,3 +18,6 @@
 - https://raw.githubusercontent.com/id77/QuantumultX/master/task/jdWuLiu%20copy.js,script-update-interval=0,wake-system=1
 - https://raw.githubusercontent.com/NobyDa/Script/master/JD-DailyBonus/JD_DailyBonus.js,script-update-interval=0
 - https://raw.githubusercontent.com/chavyleung/scripts/master/mgtv/mgtv.js,script-update-interval=0
+
+## 上游本地化
+- 本模块引用的上游脚本已下载到本目录，`script-path` 指向本仓副本；清单与 sha256 见 `上游/SOURCE.md`。

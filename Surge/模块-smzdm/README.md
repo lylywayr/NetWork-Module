@@ -55,3 +55,5 @@
 > **「Nexitally」:** [佩奇家主站，一家全线中转线路的高端机场，延迟低速度快。](https://naiixi.com/signupbyemail.aspx?MemberCode=0b532ff85dda43e595fb1ae17843ae6d20211110231626) <br>
 
 > **「TAG」:** [目前共有90+个国家地区节点，覆盖范围目前是机场里最广的。](https://tagss04.pro/#/auth/hlnIqYOx)
+## 上游本地化
+- 本模块引用的上游脚本已下载到本目录，`script-path` 指向本仓副本；清单与 sha256 见 `上游/SOURCE.md`。

@@ -21,3 +21,6 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 
 ## 维护记录
 - 2026-11-13：从 `Surge` 迁入并按 `AGENTS.md` 整理（依赖脚本本地化、链接改写、补中文 README）。
+
+## 上游本地化
+- 本模块引用的上游脚本已下载到本目录，`script-path` 指向本仓副本；清单与 sha256 见 `上游/SOURCE.md`。
