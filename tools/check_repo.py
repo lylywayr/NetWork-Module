@@ -39,8 +39,11 @@ RAW_REF = re.compile(
     r"https://raw\.githubusercontent\.com/([^/\s]+)/NetWork-Module/([^/\s]+)/([^\s,\"')\]]+)"
 )
 
-# 客户端目录下不按模块规范检查的资源目录
-RESOURCE_DIRS = {("Surge", "Rules")}
+# 客户端目录下的资源目录：不按模块规范检查，但必须有 README
+RESOURCE_NAMES = {"Rules"}
+
+# 顶层允许的非客户端目录
+KNOWN_TOP = {"tools", ".github", ".git"}
 
 errors = []
 warns = []
@@ -102,7 +105,7 @@ def check_client(client, suffix):
     )
 
     for d in dirs:
-        if d not in listed and (client, d) not in RESOURCE_DIRS:
+        if d not in listed and d not in RESOURCE_NAMES:
             err(f"{client}/README.md: 清单缺 `{d}`（目录存在但二级 README 没写）")
     for item in listed:
         if item not in dirs:
@@ -121,7 +124,7 @@ def check_client(client, suffix):
         warn(f"{client}/README.md: 清单顺序和目录排序不一致（建议按名称排序）")
 
     for d in dirs:
-        if (client, d) in RESOURCE_DIRS:
+        if d in RESOURCE_NAMES:
             if not os.path.exists(os.path.join(cdir, d, "README.md")):
                 err(f"{client}/{d}: 资源目录缺少 README.md")
             continue
@@ -168,8 +171,20 @@ def check_raw_refs():
                 warn(f"{rel}: 引用了别的仓库 {owner}（按 §3 应本地化）")
 
 
+def check_top_dirs():
+    for entry in sorted(os.listdir(ROOT)):
+        path = os.path.join(ROOT, entry)
+        if not os.path.isdir(path) or entry.startswith("."):
+            continue
+        if entry in CLIENTS or entry in KNOWN_TOP:
+            continue
+        warn(f"{entry}/: 未登记的顶层目录（新客户端按 AGENTS §1.2 登记，并在根 README 表格加一行）")
+
+
 def main():
     only = sys.argv[1] if len(sys.argv) > 1 else None
+    if not only:
+        check_top_dirs()
     for client, suffix in CLIENTS.items():
         if only and client != only:
             continue
