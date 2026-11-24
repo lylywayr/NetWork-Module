@@ -148,11 +148,12 @@ def check_client(client, suffix):
                 files.append(os.path.relpath(os.path.join(dp, fn), mdir))
         if "README.md" not in files:
             err(f"{client}/{d}: 缺少模块 README.md")
-        # 上游快照检查
+        # 上游快照检查（快照文件不参与外链/头部检查）
         up_dir = os.path.join(mdir, "上游")
+        top_files = [f for f in files if not f.startswith("上游/")]
         texts = []
-        for f in files:
-            if f.endswith((".sgmodule", ".plugin", ".yaml", ".stoverride", ".conf", ".js")):
+        for f in top_files:
+            if f.endswith((".sgmodule", ".plugin", ".yaml", ".stoverride", ".conf")):
                 try:
                     texts.append(read(os.path.join(mdir, f)))
                 except Exception:
@@ -160,6 +161,8 @@ def check_client(client, suffix):
         if os.path.isdir(up_dir):
             if not os.path.exists(os.path.join(up_dir, "SOURCE.md")):
                 err(f"{client}/{d}/上游: 缺少 SOURCE.md")
+            elif not any(x.startswith("原版-") for x in os.listdir(up_dir)):
+                err(f"{client}/{d}/上游: 只有 SOURCE.md，没有上游原版文件")
             readme_p = os.path.join(mdir, "README.md")
             if os.path.exists(readme_p) and "上游/" not in read(readme_p):
                 warn(f"{client}/{d}/README.md: 没写明上游原版保存在 上游/ 目录")
@@ -169,25 +172,24 @@ def check_client(client, suffix):
                         continue
                     if not rf.startswith("原版-"):
                         warn(f"{client}/{d}/上游/{rf}: 快照文件未用 原版- 前缀")
-        else:
-            ext = set()
-            for t in texts:
-                body = "\n".join(
-                    ln for ln in t.splitlines()
-                    if not ln.lstrip().startswith(("#", ";", "//"))
-                )
-                for u in EXT_EXEC.findall(body):
-                    if "NetWork-Module" in u:
-                        continue
-                    if any(h in u for h in DYNAMIC_HOSTS):
-                        continue
-                    if re.search(r"\.(png|jpg|jpeg|gif|webp|svg)(\?|$)", u, re.I):
-                        continue
-                    ext.add(u)
-            if ext:
-                UNLOCALIZED.append((f"{client}/{d}", len(ext)))
+        ext = set()
+        for t in texts:
+            body = "\n".join(
+                ln for ln in t.splitlines()
+                if not ln.lstrip().startswith(("#", ";", "//"))
+            )
+            for u in EXT_EXEC.findall(body):
+                if "NetWork-Module" in u:
+                    continue
+                if any(h in u for h in DYNAMIC_HOSTS):
+                    continue
+                if re.search(r"\.(png|jpg|jpeg|gif|webp|svg)(\?|$)", u, re.I):
+                    continue
+                ext.add(u)
+        if ext:
+            UNLOCALIZED.append((f"{client}/{d}", len(ext)))
 
-        mods = [f for f in files if f.endswith(suffix)]
+        mods = [f for f in top_files if f.endswith(suffix)]
         if not mods:
             err(f"{client}/{d}: 缺少模块文件（{' / '.join(suffix)}）")
 

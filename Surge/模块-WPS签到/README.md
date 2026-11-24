@@ -69,3 +69,6 @@ AutoDiscover：1=按业务字段自动对齐组件号；0=只用内置编号
 
 - 迁出仓库：`lylywayr/surge-modules` → `WPSSign.sgmodule`
 - 任务逻辑上游：`MaYIHEI/paperclip`（`app/wps/`）
+
+## 上游本地化
+- 上游模块本体与其使用的脚本已存入本目录 `上游/`（`原版-` 前缀，字节未改），清单与 sha256 见 `上游/SOURCE.md`。

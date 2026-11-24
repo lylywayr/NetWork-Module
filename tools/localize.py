@@ -196,6 +196,10 @@ def write(items):
                 continue
             with open(path, "wb") as fh:
                 fh.write(data)
+            snap = os.path.join(up, "原版-" + name)
+            if not os.path.exists(snap):
+                with open(snap, "wb") as fh:
+                    fh.write(data)
             sha = hashlib.sha256(data).hexdigest()
             rows.append((it["url"], name, sha, len(data)))
             print(f"GET  {mdir}/{name}  {len(data)}B")
@@ -216,7 +220,7 @@ def write(items):
             lines = ["# 上游来源\n", "| 上游文件 | 本地文件 | sha256 | 大小 |\n| --- | --- | --- | --- |"]
         for url, name, sha, size in rows:
             lines.append(f"| {url} | `{name}` | `{sha}` | {size} B |")
-        if lines:
+        if rows:
             with open(src, "a", encoding="utf-8") as fh:
                 fh.write("\n".join(lines) + "\n")
             print(f"SRC  {mdir}/上游/SOURCE.md")

@@ -1,5 +1,8 @@
 # 上游来源
 
+> 本目录 `原版-*` 为上游原件（字节未改），本仓文件在模块目录；下表记录 URL、本地文件名与 sha256。
+
+
 | 上游文件 | 本地文件 | sha256 | 大小 |
 | --- | --- | --- | --- |
 | https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js | `iQIYI.js` | `d89c064a84fb3e17e19eac30dbe39969dc321b57ff1a485fb526ec785fc431a7` | 26739 B |
@@ -13,3 +16,9 @@
 | https://raw.githubusercontent.com/chavyleung/scripts/master/neteasenews/neteasenews.cookie.js | `neteasenews.cookie.js` | `35ed5ba9c445143851f5a3f40b41f50545ff1ae8e3aed062994af8ee9fd5ea39` | 3473 B |
 | https://raw.githubusercontent.com/ClydeTime/Quantumult/main/Script/Task/xmlySign.js | `xmlySign.js` | `29b078a1094b5706d425dc375630f8e4600f619f7da76c5bf2235e7054cdd706` | 36662 B |
 | https://raw.githubusercontent.com/zZPiglet/Task/master/Weibo/Weibo.js | `Weibo.js` | `efd61354f4c9a5d2410aaa5e9d5d1dc0fda037df0333fd833c63cfd57c7b1689` | 18225 B |
+
+## 模块本体
+
+| 快照文件 | 上游地址 | sha256 |
+| --- | --- | --- |
+| `原版-raw-Cookie.sgmodule` | https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Cookie.sgmodule | `2d9713f7d0a9b1a380e78b17d410f2fcc3a8f3191e5039746e49e05c9bb1f3e8` |

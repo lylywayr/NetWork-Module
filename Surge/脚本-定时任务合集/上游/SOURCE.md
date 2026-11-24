@@ -1,5 +1,8 @@
 # 上游来源
 
+> 本目录 `原版-*` 为上游原件（字节未改），本仓文件在模块目录；下表记录 URL、本地文件名与 sha256。
+
+
 | 上游文件 | 本地文件 | sha256 | 大小 |
 | --- | --- | --- | --- |
 | https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js | `iQIYI.js` | `d89c064a84fb3e17e19eac30dbe39969dc321b57ff1a485fb526ec785fc431a7` | 26739 B |
@@ -15,3 +18,9 @@
 | https://raw.githubusercontent.com/chavyleung/scripts/master/neteasenews/neteasenews.js | `neteasenews.js` | `4cd42027aa788aceec5bdd98f66acfd8c0d42f4188cfe372da8fc504bb89d855` | 2549 B |
 | https://raw.githubusercontent.com/chavyleung/scripts/master/ximalaya/ximalaya.js | `ximalaya.js` | `a00c8a2d2cfe74f4dc4b6dc1543d34d76a945a3ecc1927d555741c4cf00e1303` | 13764 B |
 | https://raw.githubusercontent.com/lowking/Scripts/master/weibo/weiboSTCookie.js | `weiboSTCookie.js` | `907bacafd3a92244bb262f080badfe9267cca6904e57f8d3fc783139d6d69ba9` | 25287 B |
+
+## 模块本体
+
+| 快照文件 | 上游地址 | sha256 |
+| --- | --- | --- |
+| `原版-raw-Task.sgmodule` | https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Task.sgmodule | `6f117958a553a56e3bb0d6350b37c7d8517fd13380f500007298eff878a9bfd3` |
