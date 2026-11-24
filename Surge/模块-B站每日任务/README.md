@@ -7,6 +7,7 @@
 - `BiliBiliDailyBonus.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/BiliBiliDailyBonus.sgmodule
 - https://raw.githubusercontent.com/ClydeTime/BiliBili/main/modules/BiliBiliDailyBonus.sgmodule
 - https://github.com/ClydeTime/BiliBili/tree/master

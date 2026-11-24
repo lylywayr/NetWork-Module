@@ -25,6 +25,7 @@
 - 调试开关：`camscanner_debug=true`
 
 ## 来源
+- 类型：上游本地化（上游待补）
 - 上游目录：`MaYIHEI/paperclip/app/camscanner`
 - 脚本来源：`https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/camscanner/camscanner.cookie.js`
 - 脚本来源：`https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/camscanner/camscanner.js`

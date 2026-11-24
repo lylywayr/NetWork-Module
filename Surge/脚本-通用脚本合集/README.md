@@ -7,6 +7,7 @@
 - `Script.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/Script.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Script.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Script/Nicegram.js,script-update-interval=0

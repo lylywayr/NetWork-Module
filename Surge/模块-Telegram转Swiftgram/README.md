@@ -7,6 +7,7 @@ Telegram 外部链接跳转至 Swiftgram
 - `TeleSwiftgram.sgmodule`
 
 ## Source
+- 类型：上游本地化（上游待补）
 - Modules/Utilities/TeleSwiftgram.sgmodule
 - https://apps.apple.com/app/id6471879502
 - https://github.com/Likhixang

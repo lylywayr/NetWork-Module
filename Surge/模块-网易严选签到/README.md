@@ -22,6 +22,7 @@ cookie:true,hour:9,minute:10,notify:true
 cookie：是否自动抓取登录态，打开严选 App 的签到活动页 act.you.163.com/act/pub/ssr/HysmFsmeKj88.html 即可触发（抓到一次后可填 false 关闭）；hour / minute：每日定时执行的时、分（默认 9:10）；notify：是否推送通知，填 false 只写日志。布尔参数填 true / false。
 
 ## 来源
+- 类型：自研
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/YanxuanCheckin/YanxuanCheckin.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/1f/68/01/1f6801fa-504c-fbe0-c14e-8f46b8245de2/AppIcon-1x_U007emarketing-0-8-0-85-220-0.png/100x100bb.jpg

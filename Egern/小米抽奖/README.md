@@ -13,3 +13,6 @@
 
 ## 上游脚本地址
 - `https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/milottery/milottery.js`
+
+## 来源
+- 类型：上游本地化（上游待补）

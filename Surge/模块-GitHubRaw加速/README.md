@@ -48,6 +48,7 @@ CDN=GHP
 CDN=https://example.com/{url}
 
 ## 来源
+- 类型：自研
 - 迁出仓库：`lylywayr/egern` → `GitRawAutoCDN.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://example.com/{url

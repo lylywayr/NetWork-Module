@@ -13,3 +13,6 @@
 ## 上游脚本地址
 - `Egern/Modules/WhosTVSignin/WhosTVSignin.js`
 - 原外链来源：`https://raw.githubusercontent.com/imzwr214/whos/main/WhosTVSignin.js`
+
+## 来源
+- 类型：上游本地化（上游待补）

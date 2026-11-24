@@ -24,6 +24,7 @@
 - `mishop.png`
 
 ## 来源
+- 类型：上游本地化（上游待补）
 - 模块片段来源：`MaYIHEI/paperclip`
 - 脚本来源：`https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/milottery/milottery.js`
 - 图标来源：`https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/mishop.png`

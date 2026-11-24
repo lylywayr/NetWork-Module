@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/Notability/
 ```
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/MySelf` → `Stash/Script/Notability.stoverride`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://raw.githubusercontent.com/yqc007/QuantumultX/master/NotabilityProCrack.js

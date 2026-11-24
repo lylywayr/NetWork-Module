@@ -16,3 +16,6 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 ## 注意
 
 需要在 Surge 中启用 MitM 并信任证书。启用后，私有仓库 raw 链接可以使用不带 token 的普通地址。
+
+## 来源
+- 类型：上游本地化（上游待补）

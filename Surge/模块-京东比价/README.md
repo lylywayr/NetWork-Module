@@ -10,6 +10,7 @@
 - Surge：导入本目录的 `JD_Price-Lite.sgmodule`
 
 ## 来源
+- 类型：二改
 - 上游：`yichahucha/surge` → `jd_price_lite.js`
 - 本仓库未做逻辑改动，仅归档模块文件。
 

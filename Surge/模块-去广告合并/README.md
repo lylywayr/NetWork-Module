@@ -40,6 +40,7 @@
 
 ## 来源
 
+- 类型：二改
 - 菜鸟：fmz200/wool_scripts `Surge/module/split/partC/CaiNiaoGuoGuo.sgmodule`（2026-11-11）
 - 菜鸟：thNylHx/Tools `Surge/LoonLab/CaiNiao.sgmodule`（2026-11-02）
 - 知乎：fmz200/wool_scripts `Surge/module/split/partZ/Zhihu.sgmodule`（2026-11-11）

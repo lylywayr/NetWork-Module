@@ -7,6 +7,7 @@
 - `Task.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/Task.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Task.sgmodule
 - https://raw.githubusercontent.com/NobyDa/Script/master/iQIYI-DailyBonus/iQIYI.js,wake-system=1,script-update-interval=0

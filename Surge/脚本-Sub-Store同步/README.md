@@ -12,6 +12,7 @@ Sub-Store 托管订阅的定时同步任务，提供 6 / 12 / 24 小时三档频
 - Surge：按需导入其中一个 `.sgmodule`，不要同时启用多个频率。
 
 ## 来源
+- 类型：二改
 - 上游：`Peng-YM/Sub-Store` → `cron-sync-artifacts.min.js`
 - 原 `Sub-Store.sgmodule` 来自 LoonKissSurge 分发链，已按来源清理要求移除。
 

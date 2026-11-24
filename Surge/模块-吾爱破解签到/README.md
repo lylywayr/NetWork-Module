@@ -22,6 +22,7 @@ cookie:true,hour:9,minute:0
 cookie：是否抓取 Cookie（抓到一次后设为 false，就不再进行抓取和 MITM 解密处理）；hour / minute：每日签到时间（默认 09:00，24 小时制）
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/Wuai_Checkin/Wuai_Checkin.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://raw.githubusercontent.com/Yuheng0101/X/main/Tasks/52pojie.js

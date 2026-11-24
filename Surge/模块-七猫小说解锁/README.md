@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 ```
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/QiMaoXiaoShuo/QiMaoXiaoShuo.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://raw.githubusercontent.com/I-am-R-E/QuantumultX/main/JavaScript/QiMaoXiaoShuo.js

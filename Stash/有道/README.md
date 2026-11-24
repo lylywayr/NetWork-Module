@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E6%9C%89%E
 ```
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/MySelf` → `Stash/Script/Youdao.stoverride`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://note.youdao.com/yws/(mapi/payment|api/self

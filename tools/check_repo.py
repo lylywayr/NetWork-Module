@@ -161,6 +161,18 @@ def check_client(client, suffix):
                 files.append(os.path.relpath(os.path.join(dp, fn), mdir))
         if "README.md" not in files:
             err(f"{client}/{d}: 缺少模块 README.md")
+        else:
+            rt = read(os.path.join(mdir, "README.md"))
+            mt = re.search(r"^-\s*类型：(.+)$", rt, re.M)
+            if not mt:
+                warn(f"{client}/{d}/README.md: 缺「- 类型：自研 / 二改 / 上游本地化」标注（§1.7）")
+            else:
+                typ = mt.group(1).strip()
+                up = os.path.isdir(os.path.join(mdir, "上游"))
+                if typ.startswith("自研") and up:
+                    err(f"{client}/{d}: 标注自研，却有 上游/ 目录（§1.7）")
+                if typ.startswith("上游") and not up and "待补" not in typ:
+                    warn(f"{client}/{d}: 标注上游来源，但缺 上游/ 目录（§1.7）")
         # 上游快照检查（快照文件不参与外链/头部检查）
         up_dir = os.path.join(mdir, "上游")
         top_files = [f for f in files if not f.startswith("上游/")]

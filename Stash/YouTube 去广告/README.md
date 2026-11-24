@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/YouTube%20%
 ```
 
 ## 来源
+- 类型：自研
 - 迁出仓库：`lylywayr/MySelf` → `Stash/Script/YouTubeAdblock.stoverride`
 
 ## 维护记录

@@ -22,6 +22,7 @@ cookie:true
 cookie：是否抓取签到 Cookie。抓到一次后可设为 false，脚本不再抓取、也不再弹通知
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/HuazhuCheckin/HuazhuCheckin.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://raw.githubusercontent.com/evilbutcher/QuantumultX/main/check_in/hzh/hzh.js

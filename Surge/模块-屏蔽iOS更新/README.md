@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 ```
 
 ## 来源
+- 类型：自研
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/NoOTA_Lite/NoOTA_Lite.sgmodule`
 
 ## 维护记录

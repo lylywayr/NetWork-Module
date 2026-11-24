@@ -7,4 +7,5 @@
 - `SkipProxy.sgmodule`
 
 ## Source
+- 类型：自研
 - Modules/Utilities/SkipProxy.sgmodule

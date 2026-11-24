@@ -7,6 +7,7 @@
 - `GoogleRedirects.sgmodule`
 
 ## Source
+- 类型：自研
 - Modules/Utilities/GoogleRedirects.sgmodule
 - https://www.google.com
 - https://$1.google.com$2

@@ -15,6 +15,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Loon/%E4%B8%AD%E5
 ```
 
 ## 来源
+- 类型：上游本地化（上游待补）
 - 迁出仓库：`lylywayr/resource` → `loon/plugin/picc/picc_adblock.plugin`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://github.com/Sliverkiss/QuantumultX

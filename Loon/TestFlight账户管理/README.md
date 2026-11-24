@@ -12,3 +12,6 @@
 
 ## 上游脚本地址
 - `Surge/Modules/Spec/TestFlight/Moore/TestFlightAccount.js`
+
+## 来源
+- 类型：上游本地化（上游待补）

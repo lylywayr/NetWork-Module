@@ -29,6 +29,7 @@
 
 ## 来源
 
+- 类型：二改
 - 上游：https://github.com/WeiGiegie/666 （`bdyy.js`）
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/BodianMusic/BodianMusic.sgmodule`
 

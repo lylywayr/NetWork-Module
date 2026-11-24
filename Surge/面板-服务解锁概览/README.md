@@ -13,3 +13,6 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E
 - 🟢：可用且延迟低于 1500 ms
 - 🟣：可用但延迟不低于 1500 ms
 - 🔴：检测失败或不可用
+
+## 来源
+- 类型：自研

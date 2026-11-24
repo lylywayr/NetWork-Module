@@ -22,6 +22,7 @@ cookie:true
 cookie：是否抓取签到参数。抓到一次后可设为 false，脚本不再抓取、也不再弹通知
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/XiaocanCheckin/XiaocanCheckin.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://gist.githubusercontent.com/Sliverkiss/27c601d97a3f8960b212e5cac5b6c470/raw/xcbwc.js

@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E
 ```
 
 ## 来源
+- 类型：上游本地化（上游待补）
 - 迁出仓库：`lylywayr/Surge` → `Module/Spec/BiliBiliAdsLite/BiliBiliAdsLite.sgmodule`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://biliverse.github.io/guide/ad-block

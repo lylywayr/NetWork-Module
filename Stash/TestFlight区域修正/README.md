@@ -12,3 +12,6 @@
 
 ## 上游脚本地址
 - 原外链来源：`https://gist.githubusercontent.com/NobyDa/9be418b93afc5e9c8a8f4d28ae403cf2/raw/TF_Download.js`
+
+## 来源
+- 类型：上游本地化（上游待补）

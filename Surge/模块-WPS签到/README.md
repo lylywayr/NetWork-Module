@@ -67,6 +67,7 @@ AutoDiscover：1=按业务字段自动对齐组件号；0=只用内置编号
 
 ## 来源
 
+- 类型：二改
 - 迁出仓库：`lylywayr/surge-modules` → `WPSSign.sgmodule`
 - 任务逻辑上游：`MaYIHEI/paperclip`（`app/wps/`）
 

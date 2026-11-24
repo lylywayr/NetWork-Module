@@ -15,6 +15,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Loon/%E6%98%A5%E9
 ```
 
 ## 来源
+- 类型：上游本地化（上游待补）
 - 迁出仓库：`lylywayr/resource` → `loon/plugin/cfmoto/cfmoto.plugin`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://github.com/leiyiyan/resource

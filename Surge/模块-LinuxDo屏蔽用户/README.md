@@ -7,6 +7,7 @@ Linux.do 屏蔽你不想看到的用户
 - `block-you.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/block-you.sgmodule
 - https://raw.githubusercontent.com/Likhixang/Egerny/main/js/block-you.js,argument="NAMES={{{NAMES}}}&NOTIFY={{{NOTIFY}}}"
 

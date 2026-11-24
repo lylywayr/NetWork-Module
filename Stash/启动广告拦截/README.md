@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E
 ```
 
 ## 来源
+- 类型：二改
 - 迁出仓库：`lylywayr/MySelf` → `Stash/Script/StartupAD.stoverride`
 - 仍引用的上游地址（非本账号仓库，删旧仓不受影响）：
   - https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/script/bilibili/bilibili_plus.js

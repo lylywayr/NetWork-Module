@@ -11,6 +11,7 @@
 - Egern：导入 [https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Egern/WhosTV%E7%AD%BE%E5%88%B0/WhosTV%E7%AD%BE%E5%88%B0.module)](https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Egern/WhosTV%E7%AD%BE%E5%88%B0/WhosTV%E7%AD%BE%E5%88%B0.module)
 
 ## 来源
+- 类型：自研
 - 迁出仓库：`lylywayr/whos` → `WhosTVSignin.module`
 
 ## 维护记录

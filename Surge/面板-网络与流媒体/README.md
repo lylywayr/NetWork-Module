@@ -7,6 +7,7 @@
 - `Panel.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/Panel.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Panel.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/StartTime.js

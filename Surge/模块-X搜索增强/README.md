@@ -7,6 +7,7 @@ Surge module set for X-search.
 - `X-search.sgmodule`
 
 ## Source
+- 类型：上游本地化（上游待补）
 - Modules/Utilities/X-search.sgmodule
 - https://github.com/Likhixang/Egerny/blob/main/markdown/X-search_cn.md
 - https://github.com/Likhixang

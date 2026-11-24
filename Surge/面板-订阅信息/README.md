@@ -12,3 +12,6 @@
 
 ## 上游脚本地址
 - https://raw.githubusercontent.com/mieqq/mieqq/master/sub_info_panel.js
+
+## 来源
+- 类型：上游本地化（上游待补）

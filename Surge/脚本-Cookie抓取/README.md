@@ -7,6 +7,7 @@
 - `Cookie.sgmodule`
 
 ## Source
+- 类型：二改
 - Modules/Utilities/Cookie.sgmodule
 - https://raw.githubusercontent.com/jnlaoshu/MySelf/master/Surge/Cookie.sgmodule
 - https://m.iqiyi.com/user.html
