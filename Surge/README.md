@@ -109,7 +109,7 @@
 - 模块-XiaocanCheckin
 - 模块-YanxuanCheckin
 - 模块-菜鸟包裹去广告
-- 模块-AdBlock
+- 模块-去广告合并
 
 ## 维护说明
 - 各目录来源信息仍写在各自 README.md 中。

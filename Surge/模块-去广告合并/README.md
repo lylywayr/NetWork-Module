@@ -1,10 +1,10 @@
-# 去广告合集（AdBlock）
+# 去广告合并
 
 ## 说明
 
 一个模块覆盖多个 App 的去广告，无参数，装上即生效；改完需重启 App 或清缓存。
 
-**目录与文件名是固定的**：以后新增或移除 App 只改变 `.sgmodule` 内容，路径不动，已安装的设备可以直接覆盖升级，不需要换链接。
+**目录与文件名固定**：以后新增或移除 App 只改 `.sgmodule` 内容，路径不动，已安装的设备直接覆盖升级，不需要换链接。
 
 当前覆盖：菜鸟裹裹、知乎、高德地图、今日水印相机。
 
@@ -19,7 +19,7 @@
 
 ## 文件
 
-- `AdBlock.sgmodule`
+- `去广告合并.sgmodule`
 - `cainiao.js`（奶思原版，处理菜鸟 ads 与会话列表）
 - `zhihu.js`（奶思原版，处理知乎信息流与配置）
 - `header.js`（奶思原版，对菜鸟 UA 的 `amdc/mobileDispatch` 返回 404，断掉 HTTPDNS 调度）
@@ -27,10 +27,10 @@
 
 ## 安装
 
-- Surge：导入 `https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-AdBlock/AdBlock.sgmodule`
-- 深链：`surge:///install-module?url=https%3A%2F%2Fraw.githubusercontent.com%2Flylywayr%2FNetWork-Module%2Fmain%2FSurge%2F%25E6%25A8%25A1%25E5%259D%2597-AdBlock%2FAdBlock.sgmodule`
+- Surge：导入 `https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6.sgmodule`
+- 深链：`surge:///install-module?url=https%3A%2F%2Fraw.githubusercontent.com%2Flylywayr%2FNetWork-Module%2Fmain%2FSurge%2F%25E6%25A8%25A1%25E5%259D%2597-%25E5%258E%25BB%25E5%25B9%25BF%25E5%2591%258A%25E5%2590%2588%25E5%25B9%25B6%2F%25E5%258E%25BB%25E5%25B9%25BF%25E5%2591%258A%25E5%2590%2588%25E5%25B9%25B6.sgmodule`
 
-历史模块已废弃，装本模块后请删除：`三合一去广告（菜鸟 · 知乎 · 高德）`、`今日水印相机去广告`、`去广告四合一`。
+历史模块已废弃，装本模块后请删除：`三合一去广告（菜鸟 · 知乎 · 高德）`、`今日水印相机去广告`、`去广告合集`。
 
 ## 参数
 
@@ -55,4 +55,4 @@
 
 ## 维护记录
 
-- 2026-11-24：定名 `模块-AdBlock` / `AdBlock.sgmodule`，路径从此固定；内容为菜鸟 + 知乎 + 高德 + 今日水印相机。
+- 2026-11-24：定名 `模块-去广告合并` / `去广告合并.sgmodule`，路径从此固定；内容为菜鸟 + 知乎 + 高德 + 今日水印相机。
