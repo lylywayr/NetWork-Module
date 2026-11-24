@@ -45,8 +45,6 @@ http-request ^https:\/\/h5\.ele\.me\/restapi\/eus\/v\d\/current_user$ script-pat
 # > 微博推送 登陆https://m.weibo.cn获取
 微博推送 = type=http-request,pattern=^https:\/\/m\.weibo\.cn\/feed\/,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E8%84%9A%E6%9C%AC-Cookie%E6%8A%93%E5%8F%96/Weibo.js
 # > 新浪微博 app获取
-微博签到 = type=http-request,pattern=https:\/\/api\.weibo\.cn\/\d\/users\/show,script-path=https://raw.githubusercontent.com/Sunert/Script/master/Task/weibo.js
-微博签到 = type=http-request,pattern=https:\/\/m?api\.weibo\.c(n|om)\/\d\/users\/show,script-path=https://raw.githubusercontent.com/Sunert/Script/master/Task/weibo.js
 
 [MITM]
 hostname = %INSERT% passport.iqiyi.com, app.bilibili.com, m.bilibili.com, h5.ele.me,me-api.jd.com,jdjoy.jd.com, credits.bz.mgtv.com, i.meituan.com, iacc.rec.qq.com, music.163.com, *.m.163.com, mobile.ximalaya.com, mobwsa.ximalaya.com, mobilehera.ximalaya.com,api.weibo.cn, m.weibo.cn

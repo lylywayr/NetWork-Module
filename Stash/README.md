@@ -7,7 +7,6 @@
 
 ## 当前模块
 - `Google重定向`
-- `Nicegram`
 - `Notability`
 - `TestFlight区域修正`
 - `TestFlight账户管理`
@@ -18,9 +17,7 @@
 - `京东比价`
 - `启动广告拦截`
 - `微信微博去广告`
-- `扫描全能王`
 - `有道`
-- `酷我音乐`
 
 ## 维护说明
 - 模块目录内保留 `.stoverride`、依赖脚本和 `README.md`。

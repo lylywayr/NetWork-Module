@@ -16,11 +16,6 @@ http:
       type: response
       require-body: true
       timeout: 10
-# BiliBili
-    - match: ^https?:\/\/app\.bilibili\.com\/x\/v2\/splash\/list
-      name: biliAD
-      type: response
-      require-body: true
       timeout: 10
 # 美团外卖
     - match: ^https?:\/\/wmapi\.meituan\.com\/api\/v\d+\/loadInfo?
@@ -40,11 +35,6 @@ script-providers:
   dida:
     url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E5%8A%A8%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/startup.js
     interval: 86400
-# BiliBili
-  biliAD:
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/script/bilibili/bilibili_plus.js
-    interval: 86400
-# 美团外卖
   meituan:
     url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E5%8A%A8%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/startup.js
     interval: 86400
