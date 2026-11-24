@@ -38,7 +38,7 @@ http:
 script-providers:
 # 嘀嗒出行
   dida:
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/script/startup/startup.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E5%8A%A8%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/startup.js
     interval: 86400
 # BiliBili
   biliAD:
@@ -46,9 +46,9 @@ script-providers:
     interval: 86400
 # 美团外卖
   meituan:
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/script/startup/startup.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E5%8A%A8%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/startup.js
     interval: 86400
 # 京东
   jingdong:
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/script/startup/startup.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%90%AF%E5%8A%A8%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/startup.js
     interval: 86400

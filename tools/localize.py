@@ -41,6 +41,10 @@ RAW = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/{BRANCH}/"
 ASSIGN = re.compile(
     r"(?:script-path|scriptPath|script_url)\s*[=:]\s*\"?((?:https?:)?//[^\s,\"']+)"
 )
+# Map Local 的内联资源：data="https://..."
+DATA = re.compile(r'\bdata\s*=\s*"?(https?://[^\s,\"]+)')
+# Stash / YAML 的 script-providers: url: https://...
+PROVIDER = re.compile(r"^\s*url\s*:\s*\"?((?:https?:)?//[^\s,\"']+)", re.M)
 # 规则引用：RULE-SET,<url>
 RULESET = re.compile(r"^\s*(?:RULE-SET|rule-set)\s*[,=:]\s*((?:https?:)?//[^\s,]+)", re.M)
 
@@ -57,7 +61,7 @@ def module_files():
                 out.append(p)
     return sorted(out)
 
-def external_urls(text):
+def external_urls(text, text_path=""):
     urls = []
     lines = []
     for line in text.splitlines():
@@ -66,7 +70,9 @@ def external_urls(text):
             continue
         lines.append(line)
     body = "\n".join(lines)
-    candidates = ASSIGN.findall(body) + RULESET.findall(body)
+    candidates = ASSIGN.findall(body) + RULESET.findall(body) + DATA.findall(body)
+    if text_path.endswith((".stoverride", ".yaml")):
+        candidates += PROVIDER.findall(body)
     for u in candidates:
         if u.startswith("//"):
             u = "https:" + u
@@ -103,7 +109,7 @@ def plan():
     items = []
     for mf in module_files():
         text = open(mf, encoding="utf-8", errors="replace").read()
-        urls = external_urls(text)
+        urls = external_urls(text, mf)
         if not urls:
             continue
         used = {f for f in os.listdir(os.path.dirname(mf))}
@@ -158,9 +164,21 @@ def write(items):
         for it in its:
             name = it["local_name"]
             path = os.path.join(ROOT, mdir, name)
-            try:
-                data = fetch(it["url"])
-            except Exception as e:
+            urls_try = [it["url"]]
+            if "/master/" in it["url"]:
+                urls_try.append(it["url"].replace("/master/", "/main/"))
+            elif "/main/" in it["url"]:
+                urls_try.append(it["url"].replace("/main/", "/master/"))
+            data = None
+            last_err = None
+            for u in urls_try:
+                try:
+                    data = fetch(u)
+                    break
+                except Exception as e:
+                    last_err = e
+            if data is None:
+                e = last_err
                 failures.append((mdir, it["url"], f"{type(e).__name__}: {e}"))
                 print(f"FAIL {mdir}: {it['url']}")
                 continue

@@ -13,5 +13,5 @@ http:
       
 script-providers:
   VUE pro:
-    url: https://raw.githubusercontent.com/NobyDa/Script/master/Surge/JS/VUE.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/VUE%20Pro/VUE.js
     interval: 86400

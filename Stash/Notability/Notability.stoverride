@@ -13,5 +13,5 @@ http:
       
 script-providers:
   notability:
-    url: https://raw.githubusercontent.com/yqc007/QuantumultX/master/NotabilityProCrack.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/Notability/NotabilityProCrack.js
     interval:  86400

@@ -28,12 +28,12 @@ http:
 script-providers:
   # 微信公众号去广告
   wx:
-    url: https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/File/Wechat.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%BE%AE%E4%BF%A1%E5%BE%AE%E5%8D%9A%E5%8E%BB%E5%B9%BF%E5%91%8A/Wechat.js
     interval: 86400
   # 微博去广告
   wb:
-    url: https://raw.githubusercontent.com/yichahucha/surge/master/wb_launch.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%BE%AE%E4%BF%A1%E5%BE%AE%E5%8D%9A%E5%8E%BB%E5%B9%BF%E5%91%8A/wb_launch.js
     interval: 86400
   wb2:
-    url: https://raw.githubusercontent.com/yichahucha/surge/master/wb_ad.js
+    url: https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Stash/%E5%BE%AE%E4%BF%A1%E5%BE%AE%E5%8D%9A%E5%8E%BB%E5%B9%BF%E5%91%8A/wb_ad.js
     interval: 86400
