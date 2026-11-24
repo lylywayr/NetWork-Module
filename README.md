@@ -7,14 +7,14 @@
 
 ## 给 Agent 的约定（重要）
 
-**本仓库是 `lylywayr` 名下唯一的网络客户端模块仓库。**
+**本仓库是 `lylywayr` 名下的网络客户端模块仓库。**
 
 > 任何 agent / 自动化流程需要把 Surge、Loon、QuantumultX、Egern、Stash、Clash、Shadowrocket、
 > Sub-Store 的模块、面板、脚本、插件、覆写放到 GitHub 时，**直接提交到本仓库**
 > （`lylywayr/NetWork-Module`，默认分支 `main`），按下面的客户端目录归档，并补齐模块 `README.md`。
 >
-> 不要新建仓库，不要 fork 别人的仓库，不要写进上游仓库
-> （如 `Rabbit-Spec/Surge`、`ddgksf2013/*`、`blackmatrix7/*`）。
+> 模块的上游来源（仓库、作者、许可证、同步版本）和本地改动，必须写进模块 `README.md` 的「来源」一节；
+> 从上游 raw 直接取原文，不复制二手转载，方便溯源和后续同步。
 
 完整规则见 **[AGENTS.md](AGENTS.md)**：目录与文件命名、模块 README 模板、提交前检查清单、已知坑。
 Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instructions.md`，内容都指向 `AGENTS.md`。
@@ -38,6 +38,7 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 - 三级目录是具体模块目录，Surge 按用途加前缀：`模块-` / `面板-` / `脚本-`。
 - 每一级目录都保留 `README.md` 说明用途和维护方式。
 - 模块目录内放同一功能的模块文件、依赖脚本和来源说明。
+- `tools/` 放仓库自检脚本，提交前跑 `python3 tools/check_repo.py`。
 
 ## 链接规范
 - 模块里所有脚本与安装地址都指向本仓库的 raw 链接：
@@ -51,5 +52,6 @@ Claude / Copilot 等工具会分别读取 `CLAUDE.md` 与 `.github/copilot-instr
 - 模块级 README 至少包含：说明、文件清单、安装地址、参数（如有）、来源、维护记录。
 
 ## 变更记录
+- 2026-11-24：补强 Agent 约定：README 三层同步、路径永久固定（链接即 API）、上游溯源；新增 `tools/check_repo.py` 自检；修正各客户端 README 清单。
 - 2026-11-13：清空来自 Kelee 的去广告内容（`Fanqie/`、`Surge/模块-番茄小说去广告/`、`Loon/模块-番茄小说去广告/`）及对应的 GitHub Actions 定时同步。
 - 2026-11-13：从 `surge-modules`、`Surge`、`egern`、`MySelf`、`resource`、`whos` 汇总迁入 35 个模块（并补 `Egern/WhosTV签到`），依赖脚本本地化，链接统一指向本仓 raw。

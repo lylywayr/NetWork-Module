@@ -2,7 +2,7 @@
 #!desc=限制响应体大小为128KB，防止内存溢出；定时+拦截双模式
 
 [MITM]
-hostname = gw.xiaocantech.com
+hostname = %APPEND% gw.xiaocantech.com
 
 [Script]
 小蚕霸王餐定时 = type=cron,argument=xcbwc_data,cronexp=0 8 * * *,wake-system=1,script-path=https://gist.githubusercontent.com/Sliverkiss/27c601d97a3f8960b212e5cac5b6c470/raw/xcbwc.js,script-update-interval=0

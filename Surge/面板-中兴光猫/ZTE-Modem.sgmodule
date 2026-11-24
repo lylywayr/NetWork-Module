@@ -1,3 +1,9 @@
+#!name=中兴光猫面板
+#!desc=查看中兴光猫运行状态（CPU / 内存 / 温度 / 连接数），每天 04:00 自动时间同步。使用前先改 ZTE_Panel.js 顶部的光猫地址与登录信息。
+#!author=lylywayr
+#!category=信息面板
+#!system=iOS
+
 [Script]
 # 每 5 分钟刷新一次面板信息
 ZTE_Modem_Status = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E4%B8%AD%E5%85%B4%E5%85%89%E7%8C%AB/ZTE_Panel.js,timeout=10

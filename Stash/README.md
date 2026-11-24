@@ -7,11 +7,10 @@
 
 ## 当前模块
 - `Google重定向`
-- `京东比价`
-- `TestFlight账户管理`
-- `TestFlight区域修正`
 - `Nicegram`
 - `Notability`
+- `TestFlight区域修正`
+- `TestFlight账户管理`
 - `TikTok 台区`
 - `TikTok 日区`
 - `TikTok 美区`
@@ -19,6 +18,7 @@
 - `VSCO`
 - `VUE Pro`
 - `YouTube 去广告`
+- `京东比价`
 - `启动广告拦截`
 - `微信微博去广告`
 - `扫描全能王`
