@@ -1,6 +1,6 @@
 #!name=流媒体检测
 #!desc=检测 Netflix、Disney+、YouTube 等流媒体解锁状态
-#!category=面板模块
+#!category=信息面板
 #!arguments=UPDATE_INTERVAL:7200
 #!arguments-desc=[参数说明]\n1. UPDATE_INTERVAL: 面板自动刷新间隔，单位为秒。
 

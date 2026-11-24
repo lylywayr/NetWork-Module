@@ -1,7 +1,7 @@
 #!name= GitHub Raw Auto CDN
 #!desc= GitHub Raw 可选反代；CDN=OFF 或不填时不反代
 #!author= lylywayr
-#!category= 增强
+#!category=网络分流
 #!version= 2.2.0
 #!date= 2026-07-16
 #!arguments=CDN:OFF

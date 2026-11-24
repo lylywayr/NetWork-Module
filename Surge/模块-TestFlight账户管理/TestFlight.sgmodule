@@ -1,4 +1,5 @@
 #!name=TestFlight区域限制解除
+#!category=解锁增强
 #!desc=该模块适用于TestFlight更新时，提示"APP不可用"的问题。
 #!system=ios
 #!author=NobyDa

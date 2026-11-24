@@ -1,6 +1,6 @@
 #!name=接口信息 紧凑版
 #!desc=紧凑显示网络接口速度与流量信息
-#!category=面板模块
+#!category=信息面板
 #!author=@xream https://t.me/zhetengsha
 #!arguments=UPDATE-INTERVAL:1
 #!arguments-desc=[参数说明]\n1. UPDATE-INTERVAL: 面板自动刷新间隔，单位为秒。

@@ -1,4 +1,5 @@
 #!name=网络解锁监测
+#!category=信息面板
 #!desc=检测 Netflix、Disney+、ChatGPT、Claude、Gemini 解锁状态
 #!author=lylywayr
 #!version=0.2

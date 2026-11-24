@@ -1,4 +1,5 @@
 #!name = X-search
+#!category=功能修复
 #!desc = Safari快速搜索和页面跳转，关键词+空格+内容，即刻直达
 #!openUrl = https://github.com/Likhixang/Egerny/blob/main/markdown/X-search_cn.md
 #!author = Li Khixang

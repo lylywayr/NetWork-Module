@@ -1,6 +1,6 @@
 #!name=网络信息
 #!desc=显示当前出口 IP、运营商与地区信息
-#!category=面板模块
+#!category=信息面板
 #!author=@Nebulosa-Cat @Rabbit-Spec
 
 [Panel]

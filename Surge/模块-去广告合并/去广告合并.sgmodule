@@ -1,7 +1,7 @@
 #!name=去广告合并
 #!desc=菜鸟裹裹 / 知乎 / 高德地图 / 今日水印相机 / 波点音乐 去广告合并。波点只含去广告，解锁请另装「波点音乐 解锁」。来源与明细见仓库 README，改动后需重启 App 或清缓存生效。
 #!author=IrisCode
-#!category=去广告
+#!category=去广告净化
 #!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/AdblockPlus.png
 #!homepage=https://github.com/lylywayr/NetWork-Module
 #!date=2026-11-24

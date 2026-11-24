@@ -2,7 +2,7 @@
 #!desc=修改 Apple 网络定位返回坐标，可配合选点页面和快捷指令保存位置
 #!author=Yu9191 Rewrite
 #!homepage=https://github.com/Yu9191/wloc
-#!category=Tools
+#!category=信息面板
 #!arguments=经度:113.94114, 纬度:22.544577, 精度:25, 日志级别:info
 #!arguments-desc=经度/纬度: 默认坐标，若已在线保存位置则优先使用在线保存值。\n精度: GPS 精度，单位米。\n日志级别: off/error/warn/info/debug/all。\n\n使用方法: 打开选点页面 -> 选位置 -> 储存到设备
 

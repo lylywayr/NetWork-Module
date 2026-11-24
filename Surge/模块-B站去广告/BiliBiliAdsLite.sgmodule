@@ -1,7 +1,7 @@
 #!name=BiliBili 去广告（精简版）
 #!desc=只保留广告相关脚本：开屏/推荐/搜索/播放页/播放地址/番剧/直播/动态；去掉弹幕、评论商业链接、隐私上报共 5 个非广告脚本。脚本来自 Biliverse/ADBlock v0.7.5。
 #!author=Biliverse（ClydeTime/VirgilClyne/app2smile/RuCu6/Maasea）；精简由 lylywayr 完成
-#!category=广告拦截
+#!category=去广告净化
 #!homepage=https://biliverse.github.io/guide/ad-block
 
 [MITM]

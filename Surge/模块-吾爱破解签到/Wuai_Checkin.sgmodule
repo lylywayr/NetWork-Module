@@ -1,7 +1,7 @@
 #!name=吾爱破解签到
 #!desc=打开 52pojie.cn 登录后自动抓取 Cookie，每天定时自动签到。抓取可用参数关闭；签到脚本来自 Yuheng0101/X。
 #!author=lylywayr
-#!category=任务签到
+#!category=签到任务
 #!arguments=cookie:true,hour:9,minute:0
 #!arguments-desc=cookie：是否抓取 Cookie（抓到一次后设为 false，就不再进行抓取和 MITM 解密处理）；hour / minute：每日签到时间（默认 09:00，24 小时制）
 

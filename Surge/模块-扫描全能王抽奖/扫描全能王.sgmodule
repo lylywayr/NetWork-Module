@@ -1,4 +1,5 @@
 #!name=扫描全能王
+#!category=签到任务
 #!desc=扫描全能王幸运大转盘；抓取 Cookie 后每日自动完成抽奖
 #!author=MaYIHEI, lylywayr
 #!icon=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%89%AB%E6%8F%8F%E5%85%A8%E8%83%BD%E7%8E%8B%E6%8A%BD%E5%A5%96/camscanner.png

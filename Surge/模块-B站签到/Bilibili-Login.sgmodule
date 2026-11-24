@@ -1,4 +1,5 @@
 #!name=Bilibili签到
+#!category=签到任务
 #!desc=B站自动签到
 
 [Script]

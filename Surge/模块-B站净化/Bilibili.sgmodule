@@ -1,4 +1,5 @@
 #!name=B站净化
+#!category=去广告净化
 #!desc=B站官方App净化
 #!system=ios
 # h2下走grpc.biliapi.net(Surge TF2332以上版本可正常解析) h1时走app.bilibili.com

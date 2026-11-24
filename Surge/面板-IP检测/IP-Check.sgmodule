@@ -1,6 +1,6 @@
 #!name=IP 检测
 #!desc=查看当前节点出口 IP 与地区信息
-#!category=面板模块
+#!category=信息面板
 
 [Panel]
 IP-Check = script-name=IP-Check,title="节点详情",content="请刷新面板",style=info,update-interval=1

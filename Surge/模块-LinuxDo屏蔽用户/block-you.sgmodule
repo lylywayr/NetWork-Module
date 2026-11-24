@@ -2,7 +2,7 @@
 #!desc=Linux.do 屏蔽你不想看到的用户
 #!system=ios
 #!author=原作者@pushduck, 仅修复js路径.
-#!category=Linux.do
+#!category=去广告净化
 #!arguments=NAMES:username,NOTIFY:on
 #!arguments-desc=NAMES:\n填入多个用户名，逗号分开\n例: neo,floki,user3\n\nNOTIFY:\n屏蔽时通知。开启：on，关闭：off，默认开启
 

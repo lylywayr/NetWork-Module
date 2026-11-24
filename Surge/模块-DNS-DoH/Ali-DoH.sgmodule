@@ -1,4 +1,5 @@
 #!name = Ali-DoH
+#!category=网络分流
 #!desc = 使用阿里DNS-over-HTTPS (DoH)
 
 [General]

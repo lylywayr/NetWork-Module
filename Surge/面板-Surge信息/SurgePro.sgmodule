@@ -1,6 +1,6 @@
 #!name=Surge 信息
 #!desc=显示 Surge 运行状态并支持一键重载配置
-#!category=面板模块
+#!category=信息面板
 
 [Panel]
 SurgePro_ReloadProfile = script-name=SurgePro_ReloadProfile,update-interval=1

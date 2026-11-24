@@ -1,4 +1,5 @@
 #!name = Ali-DNS over QUIC
+#!category=网络分流
 #!desc = 使用阿里DNS-over-QUIC
 
 [General]

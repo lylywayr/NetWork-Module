@@ -1,4 +1,5 @@
 #!name = DNSPod-DoH
+#!category=网络分流
 #!desc = 使用腾讯DNS-over-HTTPS (DoH)
 
 [General]

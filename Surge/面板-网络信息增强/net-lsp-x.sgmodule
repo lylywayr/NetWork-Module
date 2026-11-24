@@ -1,6 +1,6 @@
 #!name=网络信息增强
 #!desc=增强显示国内出口、落地 IP、ASN、运营商、隐私状态、LAN 与 SSID 等信息
-#!category=面板模块
+#!category=信息面板
 #!arguments=DOMESTIC_IPv4:spcn,DOMESTIC_IPv4_KEY:若接口需要密钥则填写,DOMESTIC_IPv6:ddnspod,LANDING_IPv4:ipapi,LANDING_IPv6:ipsb,DNS:ali,FLAG:1,ASN:0,ORG:0,PRIVACY:0,LAN:0,SSID:0,IPv6:0,MASK:0,TIMEOUT:5,RETRIES:1,RETRY_DELAY:1,ENTRANCE_DELAY:0,EVENT_SCRIPT_NAME:网络信息变化,EVENT_DELAY:3,PANEL_NAME:网络信息面板,UPDATE-INTERVAL:-1,ICON:globe.asia.australia,ICON-COLOR:#6699FF
 #!arguments-desc=[参数说明]\n1. 1 为开启，0 为关闭。\n2. DOMESTIC_IPv4 可选 spcn、cip、bilibili、126、ipip、ip233、pingan、muhan、ipplus、ipim、ali。\n3. DOMESTIC_IPv6 可选 ddnspod、neu6。\n4. LANDING_IPv4 可选 ipapi、ipsb、ipinfo、ipscore、ipwhois。\n5. LANDING_IPv6 可选 ipsb、ident、ipify。\n6. DNS 可选 google、cf、ali、tencent。\n7. EVENT_SCRIPT_NAME 或 PANEL_NAME 设为 # 可禁用对应项。
 

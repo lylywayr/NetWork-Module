@@ -1,4 +1,5 @@
 #!name = Talkatone
+#!category=网络分流
 #!desc = Talkatone 日常使用分流，插件内选择代理指向策略组，默认Proxy。
 #!author = 原作者@LowerTop @YunS 修改@Li_Khixang
 #!icon = https://raw.githubusercontent.com/lige47/QuanX-icon-rule/refs/heads/main/icon/talkatone.png

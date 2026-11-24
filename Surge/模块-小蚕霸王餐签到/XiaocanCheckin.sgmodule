@@ -1,7 +1,7 @@
 #!name=小蚕霸王餐签到
 #!desc=打开小蚕霸王餐 App 触发 RPC 请求自动抓参数，每天 08:00 自动签到。脚本来自 Sliverkiss。
 #!author=lylywayr
-#!category=任务签到
+#!category=签到任务
 #!arguments=cookie:true
 #!arguments-desc=cookie：是否抓取签到参数。抓到一次后可设为 false，脚本不再抓取、也不再弹通知
 

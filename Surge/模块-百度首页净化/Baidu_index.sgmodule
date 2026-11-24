@@ -1,6 +1,6 @@
 #!name=Baidu 首页
 #!desc=纯净搜索 @key
-#!category= Key
+#!category=去广告净化
 
 [Map Local]
 ^https?:\/\/(?:www|m)\.baidu\.com(?:\/|\/\?(tn=&)?from=\w+)?$ data="https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E7%99%BE%E5%BA%A6%E9%A6%96%E9%A1%B5%E5%87%80%E5%8C%96/index.html" header="Content-Type: text/html; charset=utf-8"
