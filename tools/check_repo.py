@@ -135,6 +135,8 @@ def check_client(client, suffix):
         warn(f"{client}/README.md: 清单顺序和目录排序不一致（建议按名称排序）")
 
     for d in dirs:
+        if client == "Surge" and d not in RESOURCE_NAMES and not re.search(r"[\u4e00-\u9fa5]", d):
+            warn(f"{client}/{d}: 目录名缺少中文功能词（AGENTS §1.3：品牌 + 功能）")
         if d in RESOURCE_NAMES:
             if not os.path.exists(os.path.join(cdir, d, "README.md")):
                 err(f"{client}/{d}: 资源目录缺少 README.md")

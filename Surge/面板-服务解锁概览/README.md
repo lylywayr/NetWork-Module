@@ -3,7 +3,7 @@
 模块地址：
 
 ```text
-https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-NetStatusPanel/NetStatusPanel.sgmodule
+https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E6%9C%8D%E5%8A%A1%E8%A7%A3%E9%94%81%E6%A6%82%E8%A7%88/NetStatusPanel.sgmodule
 ```
 
 在 Surge 的模块页面通过 URL 安装后，策略组页面会显示“网络服务解锁”面板。点击面板刷新按钮可立即重新检测；默认每 300 秒自动更新一次。

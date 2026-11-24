@@ -6,4 +6,4 @@
 NetStatusPanel = title="服务解锁",content="加载服务状态...",icon=dot.radiowaves.left.and.right,icon-color=#34C759,script-name=NetStatusPanel,update-interval=300
 
 [Script]
-NetStatusPanel = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-NetStatusPanel/NetStatusPanel.js,timeout=15,engine=auto
+NetStatusPanel = type=generic,script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E9%9D%A2%E6%9D%BF-%E6%9C%8D%E5%8A%A1%E8%A7%A3%E9%94%81%E6%A6%82%E8%A7%88/NetStatusPanel.js,timeout=15,engine=auto
