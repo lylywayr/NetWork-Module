@@ -10,8 +10,9 @@
 6. MITM hostname 行使用 %APPEND% / %INSERT%
 
 用法：
-    python3 tools/check_repo.py            # 全仓
+    python3 tools/check_repo.py            # 全仓，外链按 warning 统计
     python3 tools/check_repo.py Surge      # 只查一个客户端
+    python3 tools/check_repo.py --strict   # 外链也算 error（本地化完成后启用）
 退出码 0 = 通过（可有 warning），1 = 有 error。
 """
 import os
@@ -42,20 +43,15 @@ RAW_REF = re.compile(
 # 客户端目录下的资源目录：不按模块规范检查，但必须有 README
 RESOURCE_NAMES = {"Rules"}
 
-# 聚合订阅型模块：脚本跟随上游，不做逐个快照
-AGGREGATORS = {
-    "Surge/脚本-Cookie", "Surge/脚本-Task", "Surge/脚本-Script",
-    "Surge/脚本-Script-Hub", "Surge/脚本-PluginHub", "Surge/脚本-Sub-Store",
-    "Surge/面板-Panel",
-}
+# 动态转换 / 代理服务：靠参数实时转换，没有固定文件可存，允许保留
+DYNAMIC_HOSTS = ("script.hub",)
 
-# 外部脚本引用
-EXT_REF = re.compile(
+# 外部可执行资源引用（脚本 / 规则 / 模块）：都应该本地化
+EXT_EXEC = re.compile(
     r"https?://(?:raw\.githubusercontent\.com|gist\.githubusercontent\.com|"
-    r"hub\.nan\.cn|hub\.nange\.cn|kelee\.one|script\.hub)[^\s,\"')]+"
+    r"hub\.nan\.cn|hub\.nange\.cn|kelee\.one|mirror\.ghproxy\.com)[^\s,\"')]+"
 )
-
-missing_snap = []
+UNLOCALIZED = []
 
 # 顶层允许的非客户端目录
 KNOWN_TOP = {"tools", ".github", ".git"}
@@ -174,12 +170,16 @@ def check_client(client, suffix):
         else:
             ext = set()
             for t in texts:
-                for u in EXT_REF.findall(t):
+                for u in EXT_EXEC.findall(t):
                     if "NetWork-Module" in u:
                         continue
+                    if any(h in u for h in DYNAMIC_HOSTS):
+                        continue
+                    if re.search(r"\.(png|jpg|jpeg|gif|webp|svg)(\?|$)", u, re.I):
+                        continue
                     ext.add(u)
-            if ext and f"{client}/{d}" not in AGGREGATORS:
-                missing_snap.append((f"{client}/{d}", len(ext)))
+            if ext:
+                UNLOCALIZED.append((f"{client}/{d}", len(ext)))
 
         mods = [f for f in files if f.endswith(suffix)]
         if not mods:
@@ -227,8 +227,11 @@ def check_top_dirs():
         warn(f"{entry}/: 未登记的顶层目录（新客户端按 AGENTS §1.2 登记，并在根 README 表格加一行）")
 
 
+STRICT = "--strict" in sys.argv
+
+
 def main():
-    only = sys.argv[1] if len(sys.argv) > 1 else None
+    only = next((a for a in sys.argv[1:] if not a.startswith("-")), None)
     if not only:
         check_top_dirs()
     for client, suffix in CLIENTS.items():
@@ -237,12 +240,12 @@ def main():
         check_client(client, suffix)
     check_raw_refs()
 
-    if missing_snap:
-        missing_snap.sort(key=lambda x: -x[1])
-        head = ", ".join(f"{d}({n})" for d, n in missing_snap[:6])
-        warns.append(
-            f"{len(missing_snap)} 个模块有上游外链但缺 上游/ 快照，合计 {sum(n for _, n in missing_snap)} 个文件：{head} ..."
-        )
+    if UNLOCALIZED:
+        UNLOCALIZED.sort(key=lambda x: -x[1])
+        head = ", ".join(f"{d}({n})" for d, n in UNLOCALIZED[:8])
+        msg = (f"{len(UNLOCALIZED)} 个模块仍有外部订阅链接未本地化，"
+               f"合计 {sum(n for _, n in UNLOCALIZED)} 个：{head} ...")
+        (errors if STRICT else warns).append(msg)
     for w in warns:
         print(f"WARN  {w}")
     for e in errors:

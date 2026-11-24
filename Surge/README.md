@@ -39,7 +39,6 @@
 
 ## 脚本目录
 - `脚本-Cookie`
-- `脚本-PluginHub`
 - `脚本-Script`
 - `脚本-Script-Hub`
 - `脚本-Sub-Store`
@@ -49,7 +48,6 @@
 - `模块-1.1.1.1`
 - `模块-52pojie`
 - `模块-AppleWeatherEnhancer`
-- `模块-Auto_Join_TF`
 - `模块-Baidu_index`
 - `模块-Bilibili`
 - `模块-Bilibili-Login`
@@ -60,7 +58,6 @@
 - `模块-BoxJs`
 - `模块-DNS-QUIC`
 - `模块-DoH`
-- `模块-Fileball_mount`
 - `模块-FollowRSS_checkin`
 - `模块-GitHubPrivate`
 - `模块-GitHubRawAutoCDN`
@@ -73,7 +70,6 @@
 - `模块-IPPure`
 - `模块-IPPurity`
 - `模块-JD_Price`
-- `模块-Kelee2Egern`
 - `模块-LoonKissSurge2Egern`
 - `模块-macOS-Translate`
 - `模块-NoOTA_Lite`
@@ -82,7 +78,6 @@
 - `模块-QuickSearchn`
 - `模块-SkipProxy`
 - `模块-smzdm`
-- `模块-Spotify_lyrics_translation`
 - `模块-SURGE-GPT-AI`
 - `模块-SwiptLoopback`
 - `模块-sxmd_sign`
@@ -92,13 +87,9 @@
 - `模块-TeleTurrit`
 - `模块-TestFlight`
 - `模块-Tieba`
-- `模块-TikTok_redirectn`
 - `模块-TodayWatermarkCamera`
 - `模块-UnnooQuan_remove_watermark`
-- `模块-VVebo_repair`
 - `模块-Weibo`
-- `模块-Weixin_external_links_unlock`
-- `模块-WPS_checkin`
 - `模块-WPSCheckin`
 - `模块-WPSSign`
 - `模块-Wuai_Checkin`
@@ -107,7 +98,6 @@
 - `模块-XiaoCan`
 - `模块-XiaocanCheckin`
 - `模块-YanxuanCheckin`
-- `模块-YouTubeSubtitlesTranslation`
 - `模块-去广告合并`
 - `模块-小米抽奖`
 - `模块-扫描全能王`

@@ -1,19 +1,17 @@
-# JD_Price
+# 京东比价 Lite
 
-## Description
-京东、淘宝历史价格
+## 说明
+京东、淘宝商品历史价格（Lite 版）。进商品详情页即可显示历史价格曲线。
 
-## Files
+## 文件
 - `JD_Price-Lite.sgmodule`
-- `JD_Price.sgmodule`
-- `README.md`
 
-## Source
-- Modules/Utilities/JD_Price.sgmodule
-- https://raw.githubusercontent.com/yichahucha/surge/master/jd_price_lite.js
-- https://raw.githubusercontent.com/QingRex/LoonKissSurge/main/Surge/%E4%BA%AC%E4%B8%9C%E6%AF%94%E4%BB%B7.sgmodule
-- https://github.com/wf021325],githubdulong[https://github.com/githubdulong],mw418[https://github.com/mw418]
-- https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JD.png
-- https://apps.apple.com/app/id414245413
-- https://github.com/luestr/ProxyResource/blob/main/README.md
-- https://kelee.one/Resource/Script/JD/JD_Price.js,
+## 安装
+- Surge：导入本目录的 `JD_Price-Lite.sgmodule`
+
+## 来源
+- 上游：`yichahucha/surge` → `jd_price_lite.js`
+- 本仓库未做逻辑改动，仅归档模块文件。
+
+## 维护记录
+- 2026-11-24：移除同目录的 kelee 版 `JD_Price.sgmodule`（该来源已停用），目录只保留 Lite。
