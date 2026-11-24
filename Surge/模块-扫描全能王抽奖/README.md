@@ -29,3 +29,6 @@
 - 脚本来源：`https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/camscanner/camscanner.cookie.js`
 - 脚本来源：`https://raw.githubusercontent.com/MaYIHEI/paperclip/refs/heads/main/app/camscanner/camscanner.js`
 - 图标来源：`https://raw.githubusercontent.com/MaYIHEI/pin/refs/heads/main/app/camscanner.png`
+
+## 上游
+- 上游模块本体保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。

@@ -199,8 +199,9 @@ def check_client(client, suffix):
                 ups = os.listdir(up_dir)
                 if not any(x.startswith("原版-") for x in ups):
                     err(f"{client}/{d}/上游: 只有 SOURCE.md，没有上游原版文件")
-                if not any(x.startswith("原版-") and x.endswith(suffix) for x in ups):
-                    warn(f"{client}/{d}/上游: 缺模块本体快照（原版-*.{'/'.join(suffix)}）")
+                MOD_EXT = (".sgmodule", ".plugin", ".yaml", ".stoverride", ".conf", ".snippet")
+                if not any(x.startswith("原版-") and x.endswith(MOD_EXT) for x in ups):
+                    warn(f"{client}/{d}/上游: 缺模块本体快照（原版-* 模块文件）")
             readme_p = os.path.join(mdir, "README.md")
             if os.path.exists(readme_p) and "上游/" not in read(readme_p):
                 warn(f"{client}/{d}/README.md: 没写明上游原版保存在 上游/ 目录")

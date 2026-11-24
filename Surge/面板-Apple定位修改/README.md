@@ -15,3 +15,6 @@
 ## 上游脚本地址
 - https://raw.githubusercontent.com/Yu9191/wloc/refs/heads/main/dist/wloc.js
 - https://raw.githubusercontent.com/Yu9191/wloc/refs/heads/main/dist/wloc-settings.js
+
+## 上游
+- 上游模块本体与脚本保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。

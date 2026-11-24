@@ -25,3 +25,6 @@ https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Loon/%E9%98%BF%E9
 
 ## 维护记录
 - 2026-11-13：从 `resource` 迁入并按 `AGENTS.md` 整理（依赖脚本本地化、链接改写、补中文 README）。
+
+## 上游
+- 上游模块本体保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。

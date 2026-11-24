@@ -12,3 +12,6 @@
 
 ## 上游脚本地址
 - https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Module/Panel/Surge-Pro/Moore/SurgePro.js
+
+## 上游
+- 上游模块本体保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。

@@ -18,3 +18,6 @@ Surge module set for X-search.
 - https://www.google.com/search?q=$2
 - https://www.google.com/search?tbm=isch&q=$1
 - https://chatgpt.com/?hints=search&q=$2
+
+## 上游
+- 上游模块本体保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。

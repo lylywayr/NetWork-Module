@@ -12,3 +12,6 @@
 
 ## 上游脚本地址
 - https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/net-lsp-x.js
+
+## 上游
+- 上游模块本体保存在本目录 `上游/`，未做修改；清单见 `上游/SOURCE.md`。
