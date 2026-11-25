@@ -1,15 +1,13 @@
 # Muse 补充域名（VPSDance/ai-proxy-rules 的 meta-ai.list 未覆盖的部分）
 #
-# 主规则集：https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/surge/meta-ai.list
-#   已含 muse.ai / meta.ai / atmeta.com / llama.com / metaaivm.com 等，活跃维护
+# 主规则集：VPSDance/ai-proxy-rules → rules/surge/meta-ai.list（活跃维护）
+#   已含 muse.ai / meta.ai / atmeta.com / llama.com / metaaivm.com /
+#        metaaiusercontent.com / ai.meta.com 等
 #
-# 本文件只补「登录与静态资源」链路，实测（2026-11-23）这些域名
-# 曾落到「海外业务（新加坡）」而主体走美国，跨区导致登录失败：
-#   ecto1.ai / hatch.club     -> 返回「Facebook - Production - Signing in」，登录跳转
-#   auth.meta.com             -> 登录
-#   nest-static.fbcdn.net     -> 静态资源
+# 本文件补「登录、账号与静态资源」链路。实测（2026-11-23）这些域名
+# 曾落到「海外业务（新加坡）」而主体走美国，跨区导致登录失败。
 #
-# meta.ai 的子域（hatch.meta.ai / agent.meta.ai）已由主规则集的
+# 注意：meta.ai 的子域（hatch.meta.ai / agent.meta.ai）已由主规则集的
 # DOMAIN-SUFFIX,meta.ai 覆盖，此处不重复。
 
 # > Muse 自有域
@@ -20,8 +18,8 @@ DOMAIN,voice.museai.com
 DOMAIN,api.muse.ai
 DOMAIN,production.museai.com
 
-# > Meta 登录 / 账号 / 静态 / CDN
-DOMAIN-SUFFIX,accountscenter.meta.com
+# > Meta 登录 / 账号（meta.com 整域含 auth.meta.com、accountscenter.meta.com）
+DOMAIN-SUFFIX,meta.com
 DOMAIN,connect.facebook.net
 DOMAIN-SUFFIX,fbcdn.net
 DOMAIN-SUFFIX,facebook.com
