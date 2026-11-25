@@ -1,0 +1,48 @@
+name: Update Muse rules
+
+# 每日采集 Muse / Meta AI 体系域名，生成 Surge 规则集
+# 规则文件：Surge/Rules/Muse.list
+# IP 参考： Surge/Rules/MuseIPs.txt（不参与分流）
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 每日 03:00 UTC（北京时间 11:00）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-muse-rules
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate rules
+        run: python3 tools/update_muse_rules.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -z "$(git status --porcelain -- Surge/Rules/Muse.list Surge/Rules/MuseIPs.txt)" ]; then
+            echo "内容无变化，跳过提交"
+            exit 0
+          fi
+
+          git add Surge/Rules/Muse.list Surge/Rules/MuseIPs.txt
+          git commit -m "chore(rules): 自动更新 Muse 域名清单"
+          git push
