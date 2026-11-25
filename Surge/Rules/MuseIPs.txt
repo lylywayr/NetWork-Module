@@ -1,0 +1,44 @@
+# Muse / Meta AI 解析 IP —— 自动生成，仅供参考
+# 生成时间：2026-11-25 06:34 +0000
+#
+# 注意：本文件不参与分流。CDN 与 anycast 的 IP 会频繁变化，
+#       写 IP-CIDR 规则会导致分流结果不稳定，故仅作排查参考。
+#
+# 解析成功 36 / 65 个主机，共 56 条 IP
+
+a.ecto1.ai: 64.239.109.1, 64.239.109.129
+accountscenter.meta.com: 57.144.20.141
+agent.meta.ai: 57.144.20.141
+api.muse.ai: 57.144.220.141
+auth.meta.com: 57.144.20.141
+auth.muse.ai: 57.144.20.141
+connect.facebook.net: 57.144.20.128
+draft.research.ecto1.ai: 64.239.123.129, 64.239.123.65
+ecto1.ai: 64.239.123.1, 64.239.123.65
+editor.research.ecto1.ai: 64.239.109.193, 64.239.123.193
+facebook.com: 57.144.20.1
+fbcdn.net: 57.144.20.1
+hatch.club: 64.239.109.1
+hatch.meta.ai: 57.144.20.141
+introducing.museai.com: 64.239.123.1, 64.239.123.65
+llama.com: 57.144.20.141
+m.museai.com: 64.239.109.129, 64.239.123.65
+meta.ai: 57.144.20.141
+meta.com: 57.144.20.141
+muse.ai: 57.144.20.141
+museai.com: 64.239.109.1, 64.239.123.65
+nest-static.fbcdn.net: 57.144.20.128
+onboarding.hatch.ecto1.ai: 64.239.109.129, 64.239.123.193
+preview.ecto1.ai: 64.239.109.129, 64.239.123.65
+preview.hatch.ecto1.ai: 64.239.109.65, 64.239.123.65
+preview.museai.com: 64.239.109.1, 64.239.109.193
+production.museai.com: 64.239.109.129, 64.239.109.193
+staging.hatch.ecto1.ai: 64.239.109.1, 64.239.109.129
+staging.research.ecto1.ai: 64.239.123.129, 64.239.123.193
+usercontent.ecto1.ai: 64.239.109.193, 64.239.123.1
+usercontent.staging.ecto1.ai: 64.239.109.1, 64.239.109.65
+voice.hatch.ecto1.ai: 64.239.109.1, 64.239.123.193
+voice.museai.com: 64.239.109.1, 64.239.123.129
+www.hatch.club: 13.248.169.48, 76.223.54.146
+www.muse.ai: 57.144.220.141
+www.museai.com: 64.239.109.193, 64.239.123.1
