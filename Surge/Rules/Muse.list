@@ -1,38 +1,28 @@
-# Muse（Meta 个人 AI Agent）与 Meta 体系依赖域名
+# Muse / Meta AI 体系 —— 自动生成，请勿手工编辑
+# 生成时间：2026-11-25 14:33 +0800
+# 生成脚本：tools/update_muse_rules.py
+# 定时任务：.github/workflows/update-muse-rules.yml（每日 03:00 UTC）
 #
-# Muse 是 Meta 产品（bundle: com.facebook.hatch），登录、账号中心、静态资源、
-# CDN 与 Facebook / Instagram 共用同一套域名，因此收录 meta.com / fbcdn.net
-# 等域属正常设计，不是误收。
+# DOMAIN-SUFFIX 13 条 | DOMAIN 1 条
 #
-# 实测依据（2026-11-23，本机 Surge）：
-#   ecto1.ai / hatch.club      -> 返回「Facebook - Production - Signing in」，登录跳转链路
-#   voice.museai.com           -> 语音接口
-#   nest-static.fbcdn.net      -> 静态资源
-#   auth.meta.com              -> 登录
-#   以上先前落在「海外业务（新加坡）」而主体走美国，跨区导致登录失败
-#
-# 顺序要求：必须置于 AIGC.list 之前，否则 muse.ai 會被 AIGC 抢先匹配。
+# 说明：Muse 是 Meta 产品，登录、账号、静态资源、CDN 与 Facebook/Instagram 共用域名，
+#       因此包含 meta.com / fbcdn.net / facebook.com 属正常设计。
+# 排序要求：必须置于 AIGC.list 之前，否则 muse.ai 会被 AIGC 抢先匹配。
 
-# > Muse
+# > 根域（含全部子域）
+DOMAIN-SUFFIX,atmeta.com
+DOMAIN-SUFFIX,ecto1.ai
+DOMAIN-SUFFIX,facebook.com
+DOMAIN-SUFFIX,fbcdn.net
+DOMAIN-SUFFIX,hatch.club
+DOMAIN-SUFFIX,llama.com
+DOMAIN-SUFFIX,llamameta.net
+DOMAIN-SUFFIX,meta.ai
+DOMAIN-SUFFIX,meta.com
+DOMAIN-SUFFIX,metaaiusercontent.com
+DOMAIN-SUFFIX,metaaivm.com
 DOMAIN-SUFFIX,muse.ai
 DOMAIN-SUFFIX,museai.com
-DOMAIN-SUFFIX,ecto1.ai
-DOMAIN-SUFFIX,hatch.club
-DOMAIN,production.museai.com
-DOMAIN,voice.museai.com
-DOMAIN,api.muse.ai
 
-# > Meta AI
-DOMAIN-SUFFIX,meta.ai
-DOMAIN,agent.meta.ai
-DOMAIN,hatch.meta.ai
-DOMAIN-SUFFIX,metaaivm.com
-DOMAIN-SUFFIX,llamameta.net
-
-# > Meta 共用：登录 / 账号 / 静态 / CDN
-DOMAIN-SUFFIX,meta.com
-DOMAIN-SUFFIX,atmeta.com
-DOMAIN-SUFFIX,accountscenter.meta.com
+# > 精确主机（人工清单 + 证书透明发现）
 DOMAIN,connect.facebook.net
-DOMAIN-SUFFIX,fbcdn.net
-DOMAIN-SUFFIX,facebook.com
