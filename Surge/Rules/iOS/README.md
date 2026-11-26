@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | `AIGC.list` | Rabbit-Spec/Surge | 0 |
 | `Apple.list` | Rabbit-Spec/Surge | 9 |
-| `Telegram.list` | Rabbit-Spec/Surge | 0 |
+| `Telegram.list` | blackmatrix7/ios_rule_script | 5 |
 | `Game.list` | Rabbit-Spec/Surge | 0 |
 | `YouTube.list` | Rabbit-Spec/Surge | 0 |
 | `Netflix.list` | Rabbit-Spec/Surge | 1 |
@@ -51,3 +51,4 @@ python3 tools/sync_ios_rules.py --check  # 只报告差异
 ## 维护记录
 
 - 2026-11-27：建立目录，15 份清单完成首次同步，合计剔除 32 条 macOS 专有规则。
+- 2026-11-27：`Telegram.list` 换源到 blackmatrix7 —— 原 Rabbit 版只有 14 条 IP 段、零域名，iOS 上 `telegram.org` 这类域名走不到电报信息组；换源后 25 条域名 + 10 条 IP 段。

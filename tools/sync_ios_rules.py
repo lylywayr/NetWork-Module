@@ -23,7 +23,9 @@ SOURCES = {
     # Rabbit-Spec/Surge（配置上游）
     "AIGC":        RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/AIGC.list"),
     "Apple":       RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/Apple.list"),
-    "Telegram":    RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/Telegram.list"),
+    # Telegram 用黑matrix7：Rabbit 那份只有 14 条 IP 段、零域名，iOS 上 telegram.org 这类域名走不到组里
+    "Telegram":    RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
+                              path="rule/Surge/Telegram/Telegram.list"),
     "Game":        RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/Game.list"),
     "YouTube":     RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/YouTube.list"),
     "Netflix":     RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/Netflix.list"),
