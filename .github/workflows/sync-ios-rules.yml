@@ -1,0 +1,30 @@
+name: Sync iOS rule lists
+
+on:
+  schedule:
+    - cron: "20 19 * * *"   # 每天 UTC 19:20（北京时间 03:20）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync lists
+        run: python3 tools/sync_ios_rules.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Surge/Rules/iOS
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "chore(iOS rules): 同步上游 $(date -u +%Y-%m-%d)"
+            git push
+          fi

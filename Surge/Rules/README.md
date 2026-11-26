@@ -22,7 +22,9 @@ RULE-SET,https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/Ru
 
 - `Muse.list`
 - `ZhipuExtra.list`
+- `iOS/`：iOS 可用版规则清单镜像（剔除 macOS 专有的 `PROCESS-NAME` 规则），见 [iOS/README.md](iOS/README.md)
 
 ## 维护记录
 
 - 2026-11-24：补 README，说明用途与引用方式。
+- 2026-11-27：新增 `iOS/` 子目录，15 份常用清单剔除 32 条 macOS 专有规则，GitHub Actions 每日同步。
