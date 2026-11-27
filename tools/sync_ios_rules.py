@@ -41,6 +41,8 @@ SOURCES = {
                               path="rule/Surge/Microsoft/Microsoft.list"),
     "TikTok":      RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
                               path="rule/Surge/TikTok/TikTok.list"),
+    "Gemini":      RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
+                              path="rule/Surge/Gemini/Gemini.list"),
     # 秋风广告规则
     "AWAvenueAds": RAW.format(repo="TG-Twilight/AWAvenue-Ads-Rule", branch="main",
                               path="Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"),
