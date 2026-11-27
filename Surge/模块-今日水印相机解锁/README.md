@@ -40,7 +40,7 @@
 
 - 会员密文与 App 版本/密钥绑定，回放的密文来自 3.0.35；若 3.0.5xx 的解密密钥已轮换，会员页可能仍显示未开通（日志里 `cipher len` 与 240 不同就是信号）
 - 不处理苹果内购校验（`/next/app/order/apple/receipts`），服务端二次校验无法绕过
-- 只覆盖 `today.xhey.top`、`h5.xhey.top`、`test.xhey.top` 与四个历史 IP；若日志里没有 `hit`，说明请求走了 `net-cloud.xhey.top`，需要把该域名补进 MITM 与 pattern
+- 覆盖 `today` / `net-cloud` / `h5` / `test` / `member-ship` 五个 `xhey.top` 子域与四个历史 IP；`net-cloud` 是主 API 域，MITM 会解密全部流量，若 App 出现图片加载异常，说明该域有证书固定，需要单独处理
 
 ## 维护记录
 
