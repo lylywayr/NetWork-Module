@@ -13,7 +13,7 @@
 - **菜鸟裹裹**：奶思 fmz200 的 Map Local 全套 + thNylHx 的两条 404 兜底 + 三条 jq 改写（搜索页推荐、首页 banner/活动/会员、网络流量广告）。奶思的 `adkeyword.get` / `ads.m?show` 与 thNylHx 的同名规则冲突，保留奶思的脚本版。
 - **知乎**：奶思 fmz200 全套（Rule 10 + URL Rewrite 9 + Map Local 14 + Body Rewrite 1 + 脚本 12），覆盖开屏、悬浮图标、顶部横幅、推荐/热榜信息流与直播、回答底部卡片、评论区顶部、会员页弹窗、我的页项目列表、搜索热词、服务器推送配置，并把 `link.zhihu.com` 跳转还原成真实链接。
 - **高德地图**：JupiterH 的 16 条 jq 注入（`updatable` 与 `poi/detail` 两条原本是 `jq-path`，已内联）+ 奶思的域名/接口拦截。JupiterH 的 `valueadded/alimama/splash_screen` 被奶思的宽泛 `valueadded` reject 覆盖，已剔除。
-- **今日水印相机**：ZenmoFeiShi 原版 `xhey-ad-clean.snippet` 的完整 16 条规则（TopOn / anythink / 百度 mobads / 快手 open.e / 车来了 / 1rtb / statisticslinks / 腾讯 sdkquic / 百度 als）+ 双分支脚本：对 `sensorsdata` 的 AB 实验接口注入 `CloseAllAd=true`，对 `jt-sdk-ios` 的 `iOSConfig.txt` 关掉开屏、插屏、激励、应用商店广告开关。
+- **今日水印相机**：两份来源互补。ZenmoFeiShi 原版 `xhey-ad-clean.snippet` 的 17 条规则（TopOn / anythink / 百度 mobads / 快手 open.e / 车来了 / 1rtb / statisticslinks / 腾讯 sdkquic / 百度 als）+ 双分支脚本：对 `sensorsdata` 的 AB 实验接口注入 `CloseAllAd=true`，对 `jt-sdk-ios` 的 `iOSConfig.txt` 关掉开屏、插屏、激励、应用商店广告开关；奶思 2026-11-11 的 `api.sogaha.cn/ssp/ad/get?ip` 用 Map Local 置空，补 3.0.5xx 新版自营广告位（ZenmoFeiShi 那套只覆盖 3.0.18x 的 SDK 请求）。
 - **波点音乐**（只去广告，解锁在 `模块-波点音乐解锁`）：腾讯音乐广告域名 4 条 URL Rewrite（`mc.tencentmusic.com`、`ad.tencentmusic.com`、`tmeadcomm.y.qq.com`、`ossgw.alicdn.com/creatives-assets`）+ 7 条 Map Local 返回 `{}`（`play/advert/info`、`service/banner/positions`、`service/advert/config`、`advert/free/config`、`popup/start/info`、`xs.gdt.qq.com/style_factory/template_list`、`us.l.qq.com/exapp`）+ `bodian-clean.js` 净化 `service/conf/all`（删 adStartAppDialog / adGuideTest / playTips / adExitChange / adGuidePopCount / adDownListOpen，关 P2P）。
 
 与已有模块的关系：本模块的高德部分与「高德地图（mulanshan）」的 Map Local / Script 在 `scene/recommend`、`nodefaas`、`main-page`、`splash_screen` 上重叠，两者同时开启时 Map Local 会先命中。要用本模块，请先关闭 mulanshan 那个模块。
@@ -61,6 +61,7 @@
 
 - 2026-11-24：定名 `模块-去广告合并` / `去广告合并.sgmodule`，路径从此固定；内容为菜鸟 + 知乎 + 高德 + 今日水印相机。
 - 2026-11-24：并入波点音乐去广告部分，解锁留在 `模块-波点音乐解锁`。
+- 2026-11-27：补奶思 `JinRiShuiYinCamera.sgmodule` 的 `api.sogaha.cn/ssp/ad/get?ip` Map Local（今日水印相机 3.0.5xx 新版广告接口），MITM 同步加 `api.sogaha.cn`；ZenmoFeiShi 规则数由「16 条」更正为 17 条。
 
 ## 上游本地化
 - 上游模块本体与其使用的脚本已存入本目录 `上游/`（`原版-` 前缀，字节未改），清单与 sha256 见 `上游/SOURCE.md`。

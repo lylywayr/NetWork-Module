@@ -9,3 +9,4 @@
 | `原版-raw-gaode.sgmodule` | https://raw.githubusercontent.com/JupiterH/Surge/main/Module/gaode.sgmodule | `9937713b11c4c6158b08f59f6c182d04539086c1a017b26e4863986727a8f34a` |
 | `原版-raw-AutoNavi.sgmodule` | https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partG/AutoNavi.sgmodule | `a1047c2b8bb57b2743ded400f41035c816d30bb66493f098bd90e632019baef1` |
 | `原版-raw-xhey-ad-clean.snippet` | https://raw.githubusercontent.com/ZenmoFeiShi/Qx/main/xhey-ad-clean.snippet | `2c8f3bea0d896165531a8581ffedb264248668acde87671bd9db4dd07778bdd1` |
+| `原版-raw-JinRiShuiYinCamera.sgmodule` | https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partJ/JinRiShuiYinCamera.sgmodule | `c5544dc10b6bd34e006bfe01295282142ad1327349ef3aa8d21723c5dbca0a5a` |
