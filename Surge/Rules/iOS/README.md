@@ -16,6 +16,8 @@
 | `Apple.list` | Rabbit-Spec/Surge | 9 |
 | `Telegram.list` | blackmatrix7/ios_rule_script | 5 |
 | `Game.list` | Rabbit-Spec/Surge | 0 |
+| `GameCN.list` | 由 `Game.list` 按落地归属拆分 | 0 |
+| `GameIntl.list` | 由 `Game.list` 按落地归属拆分 | 0 |
 | `YouTube.list` | Rabbit-Spec/Surge | 0 |
 | `Netflix.list` | Rabbit-Spec/Surge | 1 |
 | `BiliBili.list` | Rabbit-Spec/Surge | 2 |
@@ -41,12 +43,24 @@ RULE-SET,https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/Ru
 
 首次切换后执行一次 `external-resource update all`，或重启 Surge 引擎，确保拉取新地址。
 
+## 游戏清单拆分
+
+`GameCN.list` / `GameIntl.list` 由 `tools/split_game_rules.py` 生成：逐条走 DoH（doh.pub / alidns）解析，
+任一 A 记录落在 `ChinaCIDR` 里或域名本身是 `.cn` 的归入 CN（直连），其余归入 Intl（游戏平台）。
+上游更新后手动重跑一次，两份文件一起提交。
+
 ## 维护
 
 ```bash
 python3 tools/sync_ios_rules.py          # 同步并写入
 python3 tools/sync_ios_rules.py --check  # 只报告差异
 ```
+
+## 游戏清单拆分
+
+`GameCN.list` / `GameIntl.list` 由 `tools/split_game_rules.py` 生成：逐条走 DoH（doh.pub / alidns）解析，
+任一 A 记录落在 `ChinaCIDR` 里或域名本身是 `.cn` 的归入 CN（直连），其余归入 Intl（游戏平台）。
+上游更新后手动重跑一次，两份文件一起提交。
 
 ## 维护记录
 

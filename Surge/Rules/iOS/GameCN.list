@@ -1,0 +1,39 @@
+# NAME: Game CN（按落地归属拆分）
+# SOURCE: Rabbit-Spec/Surge Rules/Game.list
+# SYNCED: 2026-11-27 22:25:30 +0800
+# NOTE: 解析落地在中国大陆（任一 A 记录落在 ChinaCIDR 或 .cn 域名）→ 直连
+# TOTAL: 33
+
+DOMAIN,gog.qtlglb.com
+DOMAIN,lv.queniujq.cn
+DOMAIN,xz.pphimalayanrt.com
+DOMAIN-SUFFIX,bluearchive-cn.com
+DOMAIN-SUFFIX,client-update.queniuqe.com
+DOMAIN-SUFFIX,csgo.com.cn
+DOMAIN-SUFFIX,csgo.wmsj.cn
+DOMAIN-SUFFIX,dl.steam.clngaa.com
+DOMAIN-SUFFIX,dota2.com.cn
+DOMAIN-SUFFIX,dota2.wmsj.cn
+DOMAIN-SUFFIX,dungeonkeeper.cn
+DOMAIN-SUFFIX,dungeonkeeper.com.cn
+DOMAIN-SUFFIX,gstore.val.manlaxy.com
+DOMAIN-SUFFIX,leagueoflegends.cn
+DOMAIN-SUFFIX,legendofzelda.cn
+DOMAIN-SUFFIX,legendofzelda.com.cn
+DOMAIN-SUFFIX,lpl.com.cn
+DOMAIN-SUFFIX,mariokart.cn
+DOMAIN-SUFFIX,mariokart.com.cn
+DOMAIN-SUFFIX,miitomo.com.cn
+DOMAIN-SUFFIX,n0vadesktop.com
+DOMAIN-SUFFIX,nintendolabo.cn
+DOMAIN-SUFFIX,nintendoswitch.cn
+DOMAIN-SUFFIX,nintendoswitch.com.cn
+DOMAIN-SUFFIX,st.dl.bscstorage.net
+DOMAIN-SUFFIX,st.dl.eccdnx.com
+DOMAIN-SUFFIX,steamchina.com
+DOMAIN-SUFFIX,supermariobros.com.cn
+DOMAIN-SUFFIX,supersmashbros.cn
+DOMAIN-SUFFIX,supersmashbros.com.cn
+DOMAIN-SUFFIX,xboxlive.cn
+DOMAIN-SUFFIX,yostar.cn
+DOMAIN-SUFFIX,yostar.net
