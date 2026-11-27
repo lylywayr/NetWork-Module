@@ -4,7 +4,7 @@
 #!category=去广告净化
 #!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/AdblockPlus.png
 #!homepage=https://github.com/lylywayr/NetWork-Module
-#!date=2026-11-24
+#!date=2026-11-27
 #!tag=去广告, 合并, 菜鸟, 知乎, 高德, 水印相机, 波点音乐
 #!system=ios
 
@@ -15,6 +15,7 @@
 #   高德  https://raw.githubusercontent.com/JupiterH/Surge/main/Module/gaode.sgmodule
 #         https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partG/AutoNavi.sgmodule
 #   水印相机 https://raw.githubusercontent.com/ZenmoFeiShi/Qx/main/xhey-ad-clean.snippet
+#            https://raw.githubusercontent.com/fmz200/wool_scripts/main/Surge/module/split/partJ/JinRiShuiYinCamera.sgmodule
 
 [Rule]
 USER-AGENT,"AVOS*",REJECT
@@ -38,6 +39,28 @@ DOMAIN,optimus-ads.amap.com.w.alikunlun.com,REJECT
 DOMAIN-SUFFIX,page.amap.com,REJECT
 DOMAIN-SUFFIX,shouji.sougou.com,REJECT
 DOMAIN-SUFFIX,u51.me,REJECT
+DOMAIN-SUFFIX,anythinktech.com,REJECT
+DOMAIN-SUFFIX,toponadss.com,REJECT
+DOMAIN-SUFFIX,mobads.baidu.com,REJECT
+DOMAIN,mobads-pre-config.bj.bcebos.com,REJECT
+DOMAIN,mobads-pre-config.cdn.bcebos.com,REJECT
+DOMAIN,open.e.kuaishou.com,REJECT
+DOMAIN,open.e.kuaishou.cn,REJECT
+DOMAIN,s.e.kuaishou.com,REJECT
+DOMAIN,ulog-sdk.ksapisrv.com,REJECT
+DOMAIN,zt.gifshow.com,REJECT
+DOMAIN-SUFFIX,kskwai.com,REJECT
+DOMAIN-SUFFIX,gskwai.com,REJECT
+DOMAIN,static.yximgs.com,REJECT
+DOMAIN,stage2.chelaile.net.cn,REJECT
+DOMAIN-SUFFIX,statisticslinks.com,REJECT
+DOMAIN-SUFFIX,1rtb.net,REJECT
+DOMAIN-SUFFIX,1rtb.com,REJECT
+DOMAIN,sdkquic.e.qq.com,REJECT
+DOMAIN-SUFFIX,als.baidu.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,cpro.baidustatic.com,REJECT
 
 [URL Rewrite]
 ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.cainiao\.guoguo\.nbnetflow\.ads - reject
@@ -52,22 +75,6 @@ DOMAIN-SUFFIX,u51.me,REJECT
 ^https:\/\/zhstatic\.zhihu\.com\/brand-ad - reject
 ^https?:\/\/m5\.amap\.com\/ws\/valueadded\/ - reject
 ^https?:\/\/amap-aos-info-nogw\.amap\.com\/ws\/aos\/alimama\/splash_screen_rt - reject
-^https?:\/\/abtest-tx-beijing-01\.saas\.sensorsdata\.cn\/api\/v2\/abtest\/online\/results\?project-key=(?:0E6053C30A799D63EFA48959776B2EE2EDC81359|EE39C73914ED208E6EBE24A7333CAF5C3FE2E89D) - reject
-^https?:\/\/(?:api|da|tk|adx)\.anythinktech\.com\/ - reject
-^https?:\/\/api\.toponadss\.com\/ - reject
-^https?:\/\/mobads(?:-logs)?\.baidu\.com\/ - reject
-^https?:\/\/mobads-pre-config\.(?:bj|cdn)\.bcebos\.com\/ - reject
-^https?:\/\/open\.e\.kuaishou\.(?:com|cn)\/ - reject
-^https?:\/\/stage2\.chelaile\.net\.cn\/sdk - reject
-^https?:\/\/ad\.xhey\.top\/next\/(?:app\/adx\/|promote\/operation\/appstart\/adx\/|ad\/event\/track\/).* - reject
-^https?:\/\/39\.108\.85\.131\/next\/(?:ios\/config\/cache|promote\/operation\/config\/get\/cache)(?:\?.*)?$ - reject
-^https?:\/\/sdk\.1rtb\.net\/sdk\/(?:config\/v2a|req_ad)(?:\?.*)?$ - reject
-^https?:\/\/adx-strategy-api-cn\.statisticslinks\.com\/sdk\/pl_strategy(?:\?.*)?$ - reject
-^https?:\/\/adx-micro\.statisticslinks\.com\/http_bid(?:\?.*)?$ - reject
-^https?:\/\/da\.statisticslinks\.com\/v1\/open\/da(?:\?.*)?$ - reject
-^https?:\/\/tk\.statisticslinks\.com\/v2\/open\/a_tk(?:\?.*)?$ - reject
-^https?:\/\/sdkquic\.e\.qq\.com\/launch(?:\?.*)?$ - reject
-^https?:\/\/als\.baidu\.com\/clog\/glog(?:\?.*)?$ - reject
 ^https?:\/\/mc\.tencentmusic\.com\/ - reject
 ^https?:\/\/ad\.tencentmusic\.com\/ - reject
 ^https?:\/\/tmeadcomm\.y\.qq\.com\/ - reject
@@ -114,6 +121,9 @@ DOMAIN-SUFFIX,u51.me,REJECT
 ^https?:\/\/bd-api\.kuwo\.cn\/api\/popup\/start\/info data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https?:\/\/xs\.gdt\.qq\.com\/style_factory\/template_list data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https?:\/\/us\.l\.qq\.com\/exapp data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/api\.sogaha\.cn\/ssp\/ad\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/(?:[A-Za-z0-9-]+\.)*xhey\.top\/(?:next\/)?(?:app\/adx\/|app\/ad_plan\/|promote\/operation\/appstart\/adx\/|ad\/event\/track\/) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/39\.108\.85\.131\/next\/(?:ios\/config\/cache|promote\/operation\/config\/get\/cache)(?:\?.*)?$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 [Body Rewrite]
 http-response-jq (?i)^https:\/\/(cn-acs\.m|e2e-mtop)\.cainiao\.com\/gw\/mtop\.cainiao\.app\.e2e\.engine\.page\.fetch 'del(.data.data.data.mainSearch.bizData.searchContents, .data.data.data.operationList)'
@@ -157,4 +167,4 @@ bodian_conf = type=http-response, pattern=^https?:\/\/bd-api\.kuwo\.cn\/api\/ser
 watermark_config = type=http-response, pattern=^https?:\/\/jt-sdk-ios\.oss-cn-beijing\.aliyuncs\.com\/iOSConfig\.txt(?:\?.*)?$, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E5%8E%BB%E5%B9%BF%E5%91%8A%E5%90%88%E5%B9%B6/xhey-ad-clean.js, requires-body=true, max-size=131072
 
 [MITM]
-hostname = %APPEND% cn-acs.m.cainiao.com, amdc.m.taobao.com, netflow-mtop.cainiao.com, nbcps-mtop.cainiao.com, e2e-mtop.cainiao.com, longquan-mtop.cainiao.com, api.zhihu.com, www.zhihu.com, appcloud2.zhihu.com, m-cloud.zhihu.com, zhuanlan.zhihu.com, link.zhihu.com, m*.amap.com, m5.amap.com, m5-zb.amap.com, sns.amap.com, ai.amap.com, info.amap.com, center.amap.com, optimus-ads.amap.com, amap-aos-info-nogw.amap.com, abtest-tx-beijing-01.saas.sensorsdata.cn, jt-sdk-ios.oss-cn-beijing.aliyuncs.com, bd-api.kuwo.cn, *.kuwo.cn, h5app.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, xs.gdt.qq.com, *.l.qq.com, mc.tencentmusic.com, ad.tencentmusic.com, tmeadcomm.y.qq.com, ossgw.alicdn.com
+hostname = %APPEND% cn-acs.m.cainiao.com, amdc.m.taobao.com, netflow-mtop.cainiao.com, nbcps-mtop.cainiao.com, e2e-mtop.cainiao.com, longquan-mtop.cainiao.com, api.zhihu.com, www.zhihu.com, appcloud2.zhihu.com, m-cloud.zhihu.com, zhuanlan.zhihu.com, link.zhihu.com, m*.amap.com, m5.amap.com, m5-zb.amap.com, sns.amap.com, ai.amap.com, info.amap.com, center.amap.com, optimus-ads.amap.com, amap-aos-info-nogw.amap.com, abtest-tx-beijing-01.saas.sensorsdata.cn, jt-sdk-ios.oss-cn-beijing.aliyuncs.com, bd-api.kuwo.cn, *.kuwo.cn, h5app.kuwo.cn, h5s.kuwo.cn, ab-bodian.kuwo.cn, xs.gdt.qq.com, *.l.qq.com, mc.tencentmusic.com, ad.tencentmusic.com, tmeadcomm.y.qq.com, ossgw.alicdn.com, api.sogaha.cn, ad.xhey.top, 39.108.85.131

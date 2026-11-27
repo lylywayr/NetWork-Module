@@ -13,7 +13,9 @@
 - **菜鸟裹裹**：奶思 fmz200 的 Map Local 全套 + thNylHx 的两条 404 兜底 + 三条 jq 改写（搜索页推荐、首页 banner/活动/会员、网络流量广告）。奶思的 `adkeyword.get` / `ads.m?show` 与 thNylHx 的同名规则冲突，保留奶思的脚本版。
 - **知乎**：奶思 fmz200 全套（Rule 10 + URL Rewrite 9 + Map Local 14 + Body Rewrite 1 + 脚本 12），覆盖开屏、悬浮图标、顶部横幅、推荐/热榜信息流与直播、回答底部卡片、评论区顶部、会员页弹窗、我的页项目列表、搜索热词、服务器推送配置，并把 `link.zhihu.com` 跳转还原成真实链接。
 - **高德地图**：JupiterH 的 16 条 jq 注入（`updatable` 与 `poi/detail` 两条原本是 `jq-path`，已内联）+ 奶思的域名/接口拦截。JupiterH 的 `valueadded/alimama/splash_screen` 被奶思的宽泛 `valueadded` reject 覆盖，已剔除。
-- **今日水印相机**：ZenmoFeiShi 原版 `xhey-ad-clean.snippet` 的完整 16 条规则（TopOn / anythink / 百度 mobads / 快手 open.e / 车来了 / 1rtb / statisticslinks / 腾讯 sdkquic / 百度 als）+ 双分支脚本：对 `sensorsdata` 的 AB 实验接口注入 `CloseAllAd=true`，对 `jt-sdk-ios` 的 `iOSConfig.txt` 关掉开屏、插屏、激励、应用商店广告开关。
+- **今日水印相机**：两份来源互补。ZenmoFeiShi 原版 `xhey-ad-clean.snippet` 的 17 条规则（TopOn / anythink / 百度 mobads / 快手 open.e / 车来了 / 1rtb / statisticslinks / 腾讯 sdkquic / 百度 als）+ 双分支脚本：对 `sensorsdata` 的 AB 实验接口注入 `CloseAllAd=true`，对 `jt-sdk-ios` 的 `iOSConfig.txt` 关掉开屏、插屏、激励、应用商店广告开关；奶思 2026-11-11 的 `api.sogaha.cn` 整段 `/ssp/ad/` 用 Map Local 置空，补 3.0.5xx 新版自营广告位。
+  域名级拦截（anythinktech / toponadss / mobads / 快手 / 螳螂 / statisticslinks / 1rtb / sdkquic / als / pglstatp 等 23 条）已从 URL Rewrite 下沉到 `[Rule]` 的 `DOMAIN,REJECT`：URL Rewrite 对 HTTPS 必须先 MITM，而这些域名不在 MITM 列表里，之前等于空转；下沉后不解密也能拦，且对走 pinning 的 SDK 同样有效。
+  混合域不做整域拦截：`xhey.top` 既跑主 API（`net-cloud.xhey.top`）也跑广告，广告只按路径处理。两条路径级规则从 `- reject` 改成 Map Local 返回 `{}` 200 —— 直接掐连接会让客户端重试、并回落到客户端竞价，空 JSON 才是「本次没有广告」。MITM 已加 `ad.xhey.top`、`39.108.85.131`。
 - **波点音乐**（只去广告，解锁在 `模块-波点音乐解锁`）：腾讯音乐广告域名 4 条 URL Rewrite（`mc.tencentmusic.com`、`ad.tencentmusic.com`、`tmeadcomm.y.qq.com`、`ossgw.alicdn.com/creatives-assets`）+ 7 条 Map Local 返回 `{}`（`play/advert/info`、`service/banner/positions`、`service/advert/config`、`advert/free/config`、`popup/start/info`、`xs.gdt.qq.com/style_factory/template_list`、`us.l.qq.com/exapp`）+ `bodian-clean.js` 净化 `service/conf/all`（删 adStartAppDialog / adGuideTest / playTips / adExitChange / adGuidePopCount / adDownListOpen，关 P2P）。
 
 与已有模块的关系：本模块的高德部分与「高德地图（mulanshan）」的 Map Local / Script 在 `scene/recommend`、`nodefaas`、`main-page`、`splash_screen` 上重叠，两者同时开启时 Map Local 会先命中。要用本模块，请先关闭 mulanshan 那个模块。
@@ -61,6 +63,10 @@
 
 - 2026-11-24：定名 `模块-去广告合并` / `去广告合并.sgmodule`，路径从此固定；内容为菜鸟 + 知乎 + 高德 + 今日水印相机。
 - 2026-11-24：并入波点音乐去广告部分，解锁留在 `模块-波点音乐解锁`。
+- 2026-11-27：补奶思 `JinRiShuiYinCamera.sgmodule` 的 `api.sogaha.cn/ssp/ad/get?ip` Map Local（今日水印相机 3.0.5xx 新版广告接口），MITM 同步加 `api.sogaha.cn`；ZenmoFeiShi 规则数由「16 条」更正为 17 条。
+- 2026-11-27：按脱壳包 `com.xhey.XCamera 3.0.500 (202611191233)` 复核。包内 19 个 framework，广告侧为 GDTMobSDK / KSAdSDK / SmartdigimktSDK（聚合，内含 anythink、admob 适配）+ 主二进制里的百度 mobads、穿山甲 CSJ、Sigmob、1rtb、神策。据此新增 `pglstatp-toutiao.com`、`pangolin-sdk-toutiao.com`、`cpro.baidustatic.com`、`kskwai.com`、`gskwai.com`、`s.e.kuaishou.com`、`ulog-sdk.ksapisrv.com`、`zt.gifshow.com`、`static.yximgs.com`、`sdk-report.1rtb.com`、`1rtb.com`；xhey 路径规则放宽到任意子域并补 `app/ad_plan/`（包内 `XHAdConfig` 的 `app/ad_plan/delivery/plans`）。
+- 2026-11-27：按「混合域不整域拦」原则复核：包的 19 个 framework 里，`statisticslinks`、`anythink` 属 SmartdigimktSDK，`yximgs`/`kskwai` 属 KSAdSDK，其余被拦域名都能落到具体广告 SDK，只有 `xhey.top` 是 API 与广告同域；因此只把 xhey 的广告路径改为 Map Local 空 JSON。
+- 2026-11-27：修掉一处互相打架的写法——`sensorsdata` AB 接口原来同时有 URL Rewrite `- reject` 和注入脚本，reject 先命中导致脚本根本不执行；现在只留脚本（包内两个 project-key `0E6053C3…`、`EE39C739…` 与模块完全一致，`CloseAllAd` / `isCloseAllAdABKey` / `XHSplashCloseAllAdCondition` 仍是开屏总开关）。
 
 ## 上游本地化
 - 上游模块本体与其使用的脚本已存入本目录 `上游/`（`原版-` 前缀，字节未改），清单与 sha256 见 `上游/SOURCE.md`。

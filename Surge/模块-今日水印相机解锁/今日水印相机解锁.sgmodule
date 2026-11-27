@@ -1,0 +1,14 @@
+#!name=今日水印相机 · 解锁
+#!desc=尝试解锁今日水印相机会员权益：回放已抓到的会员密文（vip/info、去水印次数），并把真实密文写进脚本日志。覆盖 today / net-cloud / h5 / test / member-ship 五个域名。只改响应，不碰登录与订单。
+#!category=解锁增强
+#!date=2026-11-27
+#!author=IrisCode（Minis 环境）
+#!arguments=Replay:1,Debug:1
+#!arguments-desc=Replay:1=回放 2023 年抓到的会员密文；0=只记录不改写，适合先看日志确认接口\n\nDebug:1=输出 [XHVIP] 日志
+#!openUrl=https://apps.apple.com/cn/app/id1319071502
+
+[Script]
+xhey_vip = type=http-response, pattern=^https?:\/\/(?:[^\/]*\.)?xhey\.top\/(?:next\/)?app\/(?:vip\/|h5\/vip\/|remove\/watermark\/counts), requires-body=1, max-size=0, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E4%BB%8A%E6%97%A5%E6%B0%B4%E5%8D%B0%E7%9B%B8%E6%9C%BA%E8%A7%A3%E9%94%81/vip-rewrite.js
+
+[MITM]
+hostname = %APPEND% today.xhey.top, net-cloud.xhey.top, h5.xhey.top, test.xhey.top, member-ship.xhey.top, 47.112.75.234, 47.102.81.236, 112.126.120.71, 47.108.29.128

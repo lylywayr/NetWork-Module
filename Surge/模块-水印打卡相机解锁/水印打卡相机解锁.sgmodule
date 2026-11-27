@@ -1,0 +1,11 @@
+#!name=水印打卡相机 · 解锁
+#!desc=解锁 VIP 会员并清空广告位：登录 / 用户信息接口把会员字段置真、模板列表去锁、广告容器置空。适配水印打卡相机（com.laoyapi.waterfv）与同源白牌相机（com.xiangji.super 等）。
+#!category=解锁增强
+#!author=IrisCode（Minis 环境）
+#!openUrl=https://apps.apple.com/cn/app/id6479684172
+
+[Script]
+水印打卡相机解锁 = type=http-response, pattern=^https?:\/\/(water-fv\.jslynhapi\.com|supercamera\.yifanxinmei\.com|watermarking\.xitengtech\.cn)\/api\/, requires-body=1, max-size=0, script-path=https://raw.githubusercontent.com/lylywayr/NetWork-Module/main/Surge/%E6%A8%A1%E5%9D%97-%E6%B0%B4%E5%8D%B0%E6%89%93%E5%8D%A1%E7%9B%B8%E6%9C%BA%E8%A7%A3%E9%94%81/%E8%A7%A3%E9%94%81-%E5%93%8D%E5%BA%94%E6%94%B9%E5%86%99.js
+
+[MITM]
+hostname = %APPEND% water-fv.jslynhapi.com, supercamera.yifanxinmei.com, watermarking.xitengtech.cn
