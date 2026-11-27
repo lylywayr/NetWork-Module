@@ -75,8 +75,6 @@ DOMAIN-SUFFIX,cpro.baidustatic.com,REJECT
 ^https:\/\/zhstatic\.zhihu\.com\/brand-ad - reject
 ^https?:\/\/m5\.amap\.com\/ws\/valueadded\/ - reject
 ^https?:\/\/amap-aos-info-nogw\.amap\.com\/ws\/aos\/alimama\/splash_screen_rt - reject
-^https?:\/\/(?:[A-Za-z0-9-]+\.)*xhey\.top\/(?:next\/)?(?:app\/adx\/|app\/ad_plan\/|promote\/operation\/appstart\/adx\/|ad\/event\/track\/).* - reject
-^https?:\/\/39\.108\.85\.131\/next\/(?:ios\/config\/cache|promote\/operation\/config\/get\/cache)(?:\?.*)?$ - reject
 ^https?:\/\/mc\.tencentmusic\.com\/ - reject
 ^https?:\/\/ad\.tencentmusic\.com\/ - reject
 ^https?:\/\/tmeadcomm\.y\.qq\.com\/ - reject
@@ -124,6 +122,8 @@ DOMAIN-SUFFIX,cpro.baidustatic.com,REJECT
 ^https?:\/\/xs\.gdt\.qq\.com\/style_factory\/template_list data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https?:\/\/us\.l\.qq\.com\/exapp data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https?:\/\/api\.sogaha\.cn\/ssp\/ad\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/(?:[A-Za-z0-9-]+\.)*xhey\.top\/(?:next\/)?(?:app\/adx\/|app\/ad_plan\/|promote\/operation\/appstart\/adx\/|ad\/event\/track\/) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https?:\/\/39\.108\.85\.131\/next\/(?:ios\/config\/cache|promote\/operation\/config\/get\/cache)(?:\?.*)?$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
 [Body Rewrite]
 http-response-jq (?i)^https:\/\/(cn-acs\.m|e2e-mtop)\.cainiao\.com\/gw\/mtop\.cainiao\.app\.e2e\.engine\.page\.fetch 'del(.data.data.data.mainSearch.bizData.searchContents, .data.data.data.operationList)'
