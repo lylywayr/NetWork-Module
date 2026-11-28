@@ -49,6 +49,7 @@ SOURCES = {
 GEOIP_SOURCES = [
     "https://raw.githubusercontent.com/v2fly/geoip/release/text/cn.txt",
     "https://raw.githubusercontent.com/misakaio/chnroutes2/master/chnroutes.txt",
+    "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt",
 ]
 
 DROP_TYPES = {"PROCESS-NAME"}
@@ -213,7 +214,15 @@ def build_geoip(check_only):
                 cidrs.append(cidr)
                 n += 1
         print(f"    geoip {u.split('/')[3]}: {n} 条")
-    cidrs = sorted(set(cidrs), key=lambda c: tuple(int(x) for x in c.split("/")[0].split(".")))
+    import ipaddress
+    nets = []
+    for c in set(cidrs):
+        try:
+            nets.append(ipaddress.ip_network(c, strict=False))
+        except ValueError:
+            pass
+    # 合并相邻网段、去掉被包含的网段：规则更少，覆盖不变
+    cidrs = [str(n) for n in ipaddress.collapse_addresses(nets)]
     if len(cidrs) < 1000:
         print("    ! 中国 IP 段不足，保留旧文件")
         return 0
