@@ -168,7 +168,7 @@ def build_category(name, sources):
         merged.extend(rules)
     final = dedupe(merged)
     if len(final) < MIN_RULES:
-        return None, contrib
+        return None, contrib, False
     # 有两个以上来源成功时，合并结果可信，不再拿旧文件比大小
     return final, contrib, len(contrib) >= 2
 
