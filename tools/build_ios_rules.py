@@ -138,6 +138,13 @@ def dedupe(rules):
 
 def build_category(name, sources):
     merged, contrib = [], {}
+    # 仓内现有清单也作为最低优先级的源：上游全挂时也不会掉覆盖，只会往上加
+    existing = os.path.join(OUT_DIR, f"{name}.list")
+    if os.path.exists(existing):
+        prev = parse_surge(io.open(existing, encoding="utf-8").read())
+        if prev:
+            contrib["repo:previous"] = len(prev)
+            merged.extend(prev)
     for src in sources:
         u = url_of(*src)
         text = fetch(u)
