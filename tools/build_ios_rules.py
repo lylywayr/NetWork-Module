@@ -169,10 +169,11 @@ def build_category(name, sources):
     final = dedupe(merged)
     if len(final) < MIN_RULES:
         return None, contrib
-    return final, contrib
+    # 有两个以上来源成功时，合并结果可信，不再拿旧文件比大小
+    return final, contrib, len(contrib) >= 2
 
 
-def write(name, final, contrib, urls, check_only):
+def write(name, final, contrib, urls, check_only, trust=False):
     body = [
         f"# NAME: {name}（geosite 优先 · 多源合并 · iOS 可用版）",
         f"# SOURCES: {' | '.join(urls)}",
@@ -186,7 +187,7 @@ def write(name, final, contrib, urls, check_only):
     path = os.path.join(OUT_DIR, f"{name}.list")
     old = io.open(path, encoding="utf-8").read() if os.path.exists(path) else ""
     old_n = sum(1 for l in old.split("\n") if l and not l.startswith("#"))
-    if old_n and len(final) < old_n * 0.5:
+    if (not trust) and old_n and len(final) < old_n * 0.5:
         print(f"    ! {name} 新结果 {len(final)} 条不足旧文件 {old_n} 条的一半，保留旧文件")
         return 0
     if old.split("\n", 6)[6:] == text.split("\n", 6)[6:]:
@@ -297,11 +298,11 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     changed = 0
     for name, sources in SOURCES.items():
-        final, contrib = build_category(name, sources)
+        final, contrib, trust = build_category(name, sources)
         if final is None:
             print(f"    ! {name} 合并结果过少，保留旧文件")
             continue
-        changed += write(name, final, contrib, [url_of(*s) for s in sources], check_only)
+        changed += write(name, final, contrib, [url_of(*s) for s in sources], check_only, trust)
     changed += build_geoip(check_only)
     changed += build_china_domains(check_only)
     print(f"\n变更 {changed} 个文件" + ("（--check，未写入）" if check_only else ""))
