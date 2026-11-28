@@ -1,11 +1,26 @@
-# NAME: Gemini（iOS 可用版）
-# SOURCE: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list
-# SYNCED: 2026-11-27 22:48:28 +0800
-# NOTE: 已移除 macOS 专属规则类型（PROCESS-NAME），其余条目与上游一致。
-# TOTAL: 13（上游剔除 0 条）
+# NAME: Gemini（geosite 优先 · 多源合并 · iOS 可用版）
+# SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/google-gemini | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list
+# CONTRIB: geosite:google-gemini=16 | rule:rule/Surge/Gemini/Gemini.list=13
+# SYNCED: 2026-11-28 17:37:08 +0800
+# NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
+# TOTAL: 27
 
 DOMAIN,ai.google.dev
+DOMAIN,alkalicore-pa.clients6.google.com
 DOMAIN,alkalimakersuite-pa.clients6.google.com
+DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
+DOMAIN,geminiweb-pa.clients.google.com
+DOMAIN,geminiweb-pa.clients6.google.com
+DOMAIN,appsgenaiserver-pa.clients.google.com
+DOMAIN,appsgenaiserver-pa.clients6.google.com
+DOMAIN,appsgenaiserver-pa.googleapis.com
+DOMAIN,cloudaicompanion.googleapis.com
+DOMAIN,cloudcode-pa.googleapis.com
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN,notebooklm-pa.googleapis.com
+DOMAIN,notebooklm.googleapis.com
+DOMAIN,antigravity-pa.googleapis.com
+DOMAIN,antigravity.googleapis.com
 DOMAIN,makersuite.google.com
 DOMAIN-SUFFIX,bard.google.com
 DOMAIN-SUFFIX,deepmind.com

@@ -221,6 +221,68 @@ def build_geoip(check_only):
                  {"geoip": len(cidrs)}, GEOIP_SOURCES, check_only)
 
 
+
+
+CHINA_DOMAIN_SOURCES = [
+    "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
+    "https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/China.list",
+    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list",
+]
+
+
+def build_china_domains(check_only):
+    """国内直连域名集（DOMAIN-SET 格式，一行一个域名）。"""
+    doms = []
+    for u in CHINA_DOMAIN_SOURCES:
+        text = fetch(u)
+        if not text:
+            continue
+        n = 0
+        for line in text.split("\n"):
+            s0 = line.strip()
+            if not s0 or s0.startswith(("#", "//")):
+                continue
+            if s0.startswith("."):
+                d = s0[1:].lower()
+            else:
+                parts = [x.strip() for x in s0.split(",")]
+                if len(parts) >= 2 and parts[0].upper() in ("DOMAIN", "DOMAIN-SUFFIX"):
+                    d = parts[1].lower()
+                elif "," not in s0:
+                    d = s0.lower()
+                else:
+                    continue
+            if d and "." in d:
+                doms.append(d); n += 1
+        print(f"    china-domains {u.split('/')[4]}: {n} 条")
+
+    uniq = sorted(set(doms))
+    keep = []
+    sset = set(uniq)
+    for d in uniq:
+        p2 = d.split(".")
+        if any(".".join(p2[i:]) in sset for i in range(1, len(p2))):
+            continue
+        keep.append(d)
+    if len(keep) < 50000:
+        print(f"    ! 国内域名仅 {len(keep)} 条，保留旧文件")
+        return 0
+    body = ["# NAME: ChinaDomains（国内直连域名集 · DOMAIN-SET 格式）",
+            "# SOURCES: " + " | ".join(CHINA_DOMAIN_SOURCES),
+            f"# SYNCED: {time.strftime('%Y-%m-%d %H:%M:%S %z')}",
+            f"# TOTAL: {len(keep)}", ""]
+    text = "\n".join(body + keep) + "\n"
+    path = os.path.join(OUT_DIR, "ChinaDomains.dset")
+    old = io.open(path, encoding="utf-8").read() if os.path.exists(path) else ""
+    if old.split("\n", 4)[4:] == text.split("\n", 4)[4:]:
+        print(f"无变化 ChinaDomains  {len(keep):6d} 条")
+        return 0
+    print(f"更新   ChinaDomains  {len(keep):6d} 条")
+    if not check_only:
+        io.open(path, "w", encoding="utf-8").write(text)
+    return 1
+
+
 def main():
     check_only = "--check" in sys.argv
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -232,6 +294,7 @@ def main():
             continue
         changed += write(name, final, contrib, [url_of(*s) for s in sources], check_only)
     changed += build_geoip(check_only)
+    changed += build_china_domains(check_only)
     print(f"\n变更 {changed} 个文件" + ("（--check，未写入）" if check_only else ""))
 
 
