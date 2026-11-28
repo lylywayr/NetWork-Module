@@ -37,8 +37,7 @@ SOURCES = {
     # blackmatrix7/ios_rule_script（Surge 原生清单）
     "GitHub":      RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
                               path="rule/Surge/GitHub/GitHub.list"),
-    "Microsoft":   RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
-                              path="rule/Surge/Microsoft/Microsoft.list"),
+    "Microsoft":   RAW.format(repo="Rabbit-Spec/Surge", branch="Master", path="Rules/Microsoft.list"),
     "TikTok":      RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
                               path="rule/Surge/TikTok/TikTok.list"),
     "Gemini":      RAW.format(repo="blackmatrix7/ios_rule_script", branch="master",
@@ -47,6 +46,11 @@ SOURCES = {
     "AWAvenueAds": RAW.format(repo="TG-Twilight/AWAvenue-Ads-Rule", branch="main",
                               path="Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"),
 }
+
+# 上游已归档或不再可靠、改由本仓库自行维护的清单：
+# blackmatrix7/ios_rule_script 已于 2026-10 归档，这几份内容稳定但不再更新，
+# 我们直接采用仓内快照，需要补条目时手改对应 .list 并在此登记。
+SELF_MAINTAINED = {"GitHub", "Gemini", "TikTok", "Telegram", "Microsoft"}
 
 # iOS 端不支持的规则类型（macOS 专有）
 DROP_TYPES = ("PROCESS-NAME",)
@@ -86,6 +90,8 @@ def clean(name, url, text):
         f"# TOTAL: {len(kept)}（上游剔除 {dropped} 条）",
         "",
     ]
+    if len(kept) < 10 or any(k.lower().startswith(("forbidden", "<html", "404")) for k in kept):
+        raise SystemExit(f"{name} 上游内容异常（{len(kept)} 条），保留旧文件")
     return "\n".join(header + kept) + "\n", dropped
 
 
@@ -94,7 +100,14 @@ def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     changed = 0
     for name, url in SOURCES.items():
-        body, dropped = clean(name, url, fetch(url))
+        if name in SELF_MAINTAINED:
+            print(f"自有维护 {name:12s} 跳过同步（仓内快照为准）")
+            continue
+        try:
+            body, dropped = clean(name, url, fetch(url))
+        except SystemExit as e:
+            print(f"下载失败 {name:12s} 保留仓内旧文件：{e}")
+            continue
         path = os.path.join(OUT_DIR, f"{name}.list")
         old = io.open(path, encoding="utf-8").read() if os.path.exists(path) else ""
         # 忽略 SYNCED 行的差异，避免每天无意义提交

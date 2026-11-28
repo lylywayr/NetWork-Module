@@ -1,5 +1,15 @@
 # iOS 可用版规则清单
 
+## 架构（2026-11-28 起）
+
+以**公开权威源优先**：先取 `v2fly/domain-list-community` 的 geosite 分类（社区维护、每日更新，
+`include:` 会递归展开），再用 Rabbit-Spec、blackmatrix7 等聚合源补 geosite 缺失的 IP 段与冷门域名，
+最后在本仓库内做完全去重、后缀收敛，并剔除 macOS 专有的 `PROCESS-NAME`。
+
+中国 IP 段由 `v2fly/geoip` 与 `misakaio/chnroutes2` 合并去重生成 `ChinaCIDR.list`。
+
+构建脚本 `tools/build_ios_rules.py`，GitHub Actions 每日自动运行。两个护栏：
+上游返回 Forbidden/空内容时保留旧文件；新结果不足旧文件一半时放弃覆盖。
 ## 说明
 
 上游规则清单里混有 macOS 专有的规则类型（`PROCESS-NAME`，按进程名匹配）。Surge iOS 看不到进程，
