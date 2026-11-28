@@ -1,7 +1,7 @@
 # NAME: Gemini（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/google-gemini | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Gemini/Gemini.list
 # CONTRIB: geosite:google-gemini=16 | rule:rule/Surge/Gemini/Gemini.list=13
-# SYNCED: 2026-11-28 17:37:08 +0800
+# SYNCED: 2026-11-28 08:50:02 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 27
 

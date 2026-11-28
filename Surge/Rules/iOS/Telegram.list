@@ -1,7 +1,7 @@
 # NAME: Telegram（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/telegram | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Telegram/Telegram.list
 # CONTRIB: rule:rule/Surge/Telegram/Telegram.list=41
-# SYNCED: 2026-11-28 17:36:11 +0800
+# SYNCED: 2026-11-28 08:49:26 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 41
 

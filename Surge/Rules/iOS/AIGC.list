@@ -1,7 +1,7 @@
 # NAME: AIGC（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/openai | https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/anthropic | https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/google-gemini | https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/AIGC.list
 # CONTRIB: geosite:openai=10 | geosite:google-gemini=16 | rule:Rules/AIGC.list=357
-# SYNCED: 2026-11-28 17:35:37 +0800
+# SYNCED: 2026-11-28 08:49:10 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 349
 
