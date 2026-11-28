@@ -1,7 +1,7 @@
 # NAME: Netflix（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/netflix | https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/Netflix.list
 # CONTRIB: repo:previous=1619
-# SYNCED: 2026-11-28 19:25:33 +0800
+# SYNCED: 2026-11-28 10:29:25 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 1619
 

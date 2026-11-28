@@ -1,7 +1,7 @@
 # NAME: YouTube（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/youtube | https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/YouTube.list
 # CONTRIB: repo:previous=189
-# SYNCED: 2026-11-28 19:25:29 +0800
+# SYNCED: 2026-11-28 10:29:23 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 186
 

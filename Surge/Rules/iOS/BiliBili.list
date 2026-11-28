@@ -1,7 +1,7 @@
 # NAME: BiliBili（geosite 优先 · 多源合并 · iOS 可用版）
 # SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/bilibili | https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/BiliBili.list
 # CONTRIB: repo:previous=125
-# SYNCED: 2026-11-28 19:25:40 +0800
+# SYNCED: 2026-11-28 10:29:30 +0000
 # NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
 # TOTAL: 124
 
