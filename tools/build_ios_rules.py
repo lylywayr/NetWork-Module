@@ -25,31 +25,32 @@ BM7 = "blackmatrix7/ios_rule_script"
 SOURCES = {
     "AIGC":        [("geosite", "openai"), ("geosite", "anthropic"), ("geosite", "google-gemini"),
                     ("rule", RABBIT, "Master", "Rules/AIGC.list")],
-    "Apple":       [("geosite", "apple"), ("rule", RABBIT, "Master", "Rules/Apple.list")],
-    "Telegram":    [("geosite", "telegram"), ("rule", BM7, "master", "rule/Surge/Telegram/Telegram.list")],
+    "Apple":       [("geosite", "apple"), ("rule", "Loyalsoldier/surge-rules", "release", "apple.txt"),
+                    ("rule", RABBIT, "Master", "Rules/Apple.list")],
+    "Telegram":    [("geosite", "telegram"), ("rule", "SukkaW/Surge", "master", "Source/non_ip/telegram.conf")],
     "YouTube":     [("geosite", "youtube"), ("rule", RABBIT, "Master", "Rules/YouTube.list")],
     "Netflix":     [("geosite", "netflix"), ("rule", RABBIT, "Master", "Rules/Netflix.list")],
     "BiliBili":    [("geosite", "bilibili"), ("rule", RABBIT, "Master", "Rules/BiliBili.list")],
-    "TikTok":      [("geosite", "tiktok"), ("rule", BM7, "master", "rule/Surge/TikTok/TikTok.list")],
-    "Google":      [("geosite", "google"), ("rule", RABBIT, "Master", "Rules/Google.list")],
-    "Gemini":      [("geosite", "google-gemini"), ("rule", BM7, "master", "rule/Surge/Gemini/Gemini.list")],
-    "GitHub":      [("geosite", "github"), ("rule", BM7, "master", "rule/Surge/GitHub/GitHub.list")],
-    "Microsoft":   [("geosite", "microsoft"), ("rule", BM7, "master", "rule/Surge/Microsoft/Microsoft.list")],
+    "TikTok":      [("geosite", "tiktok")],
+    "Google":      [("geosite", "google"), ("rule", "Loyalsoldier/surge-rules", "release", "google.txt"),
+                    ("rule", RABBIT, "Master", "Rules/Google.list")],
+    "Gemini":      [("geosite", "google-gemini")],
+    "GitHub":      [("geosite", "github")],
+    "Microsoft":   [("geosite", "microsoft"), ("rule", "Loyalsoldier/surge-rules", "release", "microsoft.txt")],
     "Game":        [("geosite", "steam"), ("geosite", "epicgames"), ("geosite", "blizzard"),
                     ("geosite", "nintendo"), ("geosite", "playstation"), ("geosite", "riot"),
                     ("rule", RABBIT, "Master", "Rules/Game.list")],
     "ChinaMedia":  [("geosite", "category-media-cn"), ("rule", RABBIT, "Master", "Rules/ChinaMedia.list")],
     "GlobalMedia": [("geosite", "disney"), ("geosite", "hbo"), ("geosite", "primevideo"),
                     ("rule", RABBIT, "Master", "Rules/GlobalMedia.list")],
-    "Proxy":       [("geosite", "gfw"), ("rule", RABBIT, "Master", "Rules/Proxy.list")],
-    "AWAvenueAds": [("rule", "TG-Twilight/AWAvenue-Ads-Rule", "main",
-                     "Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list")],
+    "Proxy":       [("geosite", "gfw"), ("rule", "Loyalsoldier/surge-rules", "release", "proxy.txt"),
+                    ("rule", "Loyalsoldier/surge-rules", "release", "gfw.txt"),
+                    ("rule", RABBIT, "Master", "Rules/Proxy.list")],
 }
 
 GEOIP_SOURCES = [
     "https://raw.githubusercontent.com/v2fly/geoip/release/text/cn.txt",
     "https://raw.githubusercontent.com/misakaio/chnroutes2/master/chnroutes.txt",
-    "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt",
 ]
 
 DROP_TYPES = {"PROCESS-NAME"}
@@ -108,10 +109,17 @@ def parse_surge(text):
         s = line.strip()
         if not s or s.startswith("#") or s.startswith("//"):
             continue
+        if "," not in s:
+            d = s[1:].lower() if s.startswith(".") else s.lower()
+            if "." in d:
+                rules.append(("DOMAIN-SUFFIX",
+                              d if not d.endswith(".cn") or True else d))
+            continue
         parts = [p.strip() for p in s.split(",")]
         t = parts[0].upper()
         if t in DROP_TYPES or len(parts) < 2:
             continue
+        # Surge 里不带策略的规则集格式：DOMAIN-SUFFIX,example.com
         rules.append((t, parts[1].lower()))
     return rules
 
@@ -243,7 +251,6 @@ def build_geoip(check_only):
 CHINA_DOMAIN_SOURCES = [
     "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt",
     "https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/China.list",
-    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list",
 ]
 
 
