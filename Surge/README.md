@@ -107,6 +107,5 @@
 
 ## 维护说明
 - `Rules/` 放不属于任何模块的独立规则清单，见 `Rules/README.md`。
-- `Skills/` 放本机自用的 agent skill 副本（当前只有 `surge-ios`），与 `/var/minis/skills/surge-ios/` 保持一致，见 `Skills/surge-ios/SKILL.md`。
 - 各目录来源信息仍写在各自 README.md 中。
 - 这次只做命名归类和缺失模块补回，不纳入被排除的仓库内容。
