@@ -1,93 +1,86 @@
-# NAME: AIGC（iOS 可用版）
-# SOURCE: https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/AIGC.list
-# SYNCED: 2026-11-27 07:35:56 +0800
-# NOTE: 已移除 macOS 专属规则类型（PROCESS-NAME），其余条目与上游一致。
-# TOTAL: 358（上游剔除 0 条）
+# NAME: AIGC（geosite 优先 · 多源合并 · iOS 可用版）
+# SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/openai | https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/anthropic | https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/google-gemini | https://raw.githubusercontent.com/Rabbit-Spec/Surge/Master/Rules/AIGC.list
+# CONTRIB: geosite:openai=10 | geosite:google-gemini=16 | rule:Rules/AIGC.list=357
+# SYNCED: 2026-11-28 08:49:10 +0000
+# NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
+# TOTAL: 349
 
+DOMAIN,openaiapi-site.azureedge.net
+DOMAIN,openaiassets.blob.core.windows.net
+DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
+DOMAIN,openaicom.imgix.net
+DOMAIN,openaicomproductionae4b.blob.core.windows.net
+DOMAIN,production-openaicom-storage.azureedge.net
+DOMAIN,browser-intake-datadoghq.com @ads @telemetry
+DOMAIN,o33249.ingest.sentry.io @ads @telemetry
+DOMAIN,o33249.ingest.us.sentry.io @ads @telemetry
+DOMAIN,openai.qualtrics.com @ads
+DOMAIN,ai.google.dev
+DOMAIN,geminiweb-pa.clients.google.com
+DOMAIN,appsgenaiserver-pa.clients.google.com
+DOMAIN,appsgenaiserver-pa.googleapis.com
+DOMAIN,cloudaicompanion.googleapis.com
+DOMAIN,cloudcode-pa.googleapis.com
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN,notebooklm-pa.googleapis.com
+DOMAIN,notebooklm.googleapis.com
+DOMAIN,antigravity-pa.googleapis.com
+DOMAIN,antigravity.googleapis.com
 DOMAIN-SUFFIX,cursor.com
 DOMAIN-SUFFIX,cursor.sh
 DOMAIN,7h15.ru1353t.1s.m4d3.by.5ukk4w.skk.moe
 DOMAIN,ai.developer.meta.com
-DOMAIN,ai.google.dev
 DOMAIN,ai.meta.com
 DOMAIN,aicode.googleapis.com
 DOMAIN,aida.googleapis.com
 DOMAIN,aidemos.meta.com
 DOMAIN,aisandbox-pa.googleapis.com
-DOMAIN,alkalicore-pa.clients6.google.com
-DOMAIN,alkalimakersuite-pa.clients6.google.com
 DOMAIN,anthropic-com.ghost.io
-DOMAIN,anthropic.auth0.com
 DOMAIN,anthropic.com.cdn.cloudflare.net
-DOMAIN,antigravity-pa.googleapis.com
 DOMAIN,antigravity-unleash.goog
 DOMAIN,antigravity.google
-DOMAIN,antigravity.googleapis.com
 DOMAIN,api.cloudflare.com
 DOMAIN,api.github.com
-DOMAIN,api.jetbrains.ai
 DOMAIN,api.msn.com
 DOMAIN,api.statsig.com
-DOMAIN,appsgenaiserver-pa.clients.google.com
-DOMAIN,appsgenaiserver-pa.clients6.google.com
-DOMAIN,appsgenaiserver-pa.googleapis.com
 DOMAIN,assets.msn.com
 DOMAIN,aws-language-servers.us-east-1.amazonaws.com
 DOMAIN,aws-toolkit-language-servers.amazonaws.com
-DOMAIN,bridge.claudeusercontent.com
 DOMAIN,browser-intake-datadoghq.com
 DOMAIN,browser-intake-us5-datadoghq.com
 DOMAIN,cdn.growthbook.io
 DOMAIN,cdn.usefathom.com
-DOMAIN,chat.openai.com.cdn.cloudflare.net
 DOMAIN,claude.site
 DOMAIN,client-telemetry.us-east-1.amazonaws.com
-DOMAIN,cloud.zed.dev
-DOMAIN,cloudaicompanion.googleapis.com
-DOMAIN,cloudcode-pa.googleapis.com
 DOMAIN,codewhisperer.us-east-1.amazonaws.com
 DOMAIN,cognito-identity.us-east-1.amazonaws.com
 DOMAIN,copilot-proxy.githubusercontent.com
 DOMAIN,copilot-workspace.githubnext.com
 DOMAIN,copilotprodattachments.blob.core.windows.net
-DOMAIN,daily-cloudcode-pa.googleapis.com
 DOMAIN,daily-cloudcode-pa.sandbox.googleapis.com
 DOMAIN,developer.meta.com
-DOMAIN,gateway.ai.cloudflare.com
 DOMAIN,gateway.bingviz.microsoft.net
 DOMAIN,gateway.bingviz.microsoftapp.net
-DOMAIN,geminiweb-pa.clients.google.com
-DOMAIN,geminiweb-pa.clients6.google.com
 DOMAIN,idetoolkits-hostedfiles.amazonaws.com
 DOMAIN,idetoolkits.amazonwebservices.com
 DOMAIN,in.appcenter.ms
-DOMAIN,inference.codeium.com
 DOMAIN,jules.google.com
 DOMAIN,llama.developer.meta.com
 DOMAIN,location.microsoft.com
 DOMAIN,makersuite.google.com
-DOMAIN,notebooklm-pa.googleapis.com
-DOMAIN,notebooklm.googleapis.com
 DOMAIN,odc.officeapps.live.com
 DOMAIN,openai-api.arkoselabs.com
-DOMAIN,openaiassets.blob.core.windows.net
-DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
-DOMAIN,openaicomproductionae4b.blob.core.windows.net
 DOMAIN,openrouter.ai
 DOMAIN,ppl-ai-file-upload.s3.amazonaws.com
 DOMAIN,pplx-res.cloudinary.com
 DOMAIN,production-copilot-host-westus.webpubsub.azure.com
-DOMAIN,production-openaicom-storage.azureedge.net
 DOMAIN,q-developer-integration.us-east-1.api.aws
 DOMAIN,robinfrontend-pa.googleapis.com
 DOMAIN,self.events.data.microsoft.com
 DOMAIN,servd-anthropic-website.b-cdn.net
-DOMAIN,server.codeium.com
-DOMAIN,server.self-serve.windsurf.com
 DOMAIN,static.cloudflareinsights.com
 DOMAIN,storage.googleapis.com
 DOMAIN,sydney.bing.com
-DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
 DOMAIN-SUFFIX,abtestvm-sg.bytedance.com
 DOMAIN-SUFFIX,ai.cloudflare.com
 DOMAIN-SUFFIX,ai.com
@@ -189,7 +182,6 @@ DOMAIN-SUFFIX,eigent.ai
 DOMAIN-SUFFIX,elevenlabs.com
 DOMAIN-SUFFIX,elevenlabs.io
 DOMAIN-SUFFIX,elevenlabsusercontent.com
-DOMAIN-SUFFIX,events.statsigapi.net
 DOMAIN-SUFFIX,factory.ai
 DOMAIN-SUFFIX,featuregates.org
 DOMAIN-SUFFIX,firebaseinstallations.googleapis.com
@@ -351,14 +343,14 @@ DOMAIN-SUFFIX,youmind.ai
 DOMAIN-SUFFIX,youmind.com
 DOMAIN-SUFFIX,youmind.site
 DOMAIN-SUFFIX,zed.dev
-IP-ASN,14061,no-resolve
-IP-ASN,20473,no-resolve
-IP-ASN,399358,no-resolve
-IP-ASN,401518,no-resolve
-IP-CIDR,129.146.3.78/32,no-resolve
-IP-CIDR,160.79.104.0/21,no-resolve
-IP-CIDR,199.47.142.0/23,no-resolve
-IP-CIDR,24.199.123.28/32,no-resolve
-IP-CIDR,64.23.132.171/32,no-resolve
-IP-CIDR6,2604:F20::/32,no-resolve
-IP-CIDR6,2607:6BC0::/32,no-resolve
+IP-ASN,14061
+IP-ASN,20473
+IP-ASN,399358
+IP-ASN,401518
+IP-CIDR,129.146.3.78/32
+IP-CIDR,160.79.104.0/21
+IP-CIDR,199.47.142.0/23
+IP-CIDR,24.199.123.28/32
+IP-CIDR,64.23.132.171/32
+IP-CIDR6,2604:f20::/32
+IP-CIDR6,2607:6bc0::/32

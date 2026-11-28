@@ -1,22 +1,23 @@
-# NAME: AWAvenueAds（iOS 可用版）
-# SOURCE: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-# SYNCED: 2026-11-27 07:36:05 +0800
-# NOTE: 已移除 macOS 专属规则类型（PROCESS-NAME），其余条目与上游一致。
-# TOTAL: 998（上游剔除 0 条）
+# NAME: AWAvenueAds（geosite 优先 · 多源合并 · iOS 可用版）
+# SOURCES: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
+# CONTRIB: rule:Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list=998
+# SYNCED: 2026-11-28 08:51:20 +0000
+# NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
+# TOTAL: 979
 
-IP-CIDR,111.20.26.186/32,no-resolve
-IP-CIDR,112.84.130.73/32,no-resolve
-IP-CIDR,116.142.251.100/32,no-resolve
-IP-CIDR,116.177.251.215/32,no-resolve
-IP-CIDR,120.77.173.114/32,no-resolve
-IP-CIDR,123.56.23.22/32,no-resolve
-IP-CIDR,14.29.101.160/32,no-resolve
-IP-CIDR,14.29.101.168/32,no-resolve
-IP-CIDR,14.29.101.169/32,no-resolve
-IP-CIDR,182.254.116.116/32,no-resolve
-IP-CIDR,203.205.137.89/32,no-resolve
-IP-CIDR,218.77.192.51/32,no-resolve
-IP-CIDR,38.190.225.166/32,no-resolve
+IP-CIDR,111.20.26.186/32
+IP-CIDR,112.84.130.73/32
+IP-CIDR,116.142.251.100/32
+IP-CIDR,116.177.251.215/32
+IP-CIDR,120.77.173.114/32
+IP-CIDR,123.56.23.22/32
+IP-CIDR,14.29.101.160/32
+IP-CIDR,14.29.101.168/32
+IP-CIDR,14.29.101.169/32
+IP-CIDR,182.254.116.116/32
+IP-CIDR,203.205.137.89/32
+IP-CIDR,218.77.192.51/32
+IP-CIDR,38.190.225.166/32
 DOMAIN,1500020991.vodplayer.wxamedia.com
 DOMAIN,1500022744.vodplayer.wxamedia.com
 DOMAIN,1500026601.vodplayer.wxamedia.com
@@ -93,7 +94,6 @@ DOMAIN,adks.hpplay.cn
 DOMAIN,adlink-api.huan.tv
 DOMAIN,adlog.vivo.com.cn
 DOMAIN,adm.funshion.com
-DOMAIN,adm.zhangyuyidong.cn
 DOMAIN,admarketing.yahoo.net
 DOMAIN,admobile.top
 DOMAIN,adreq.vivo.com.cn
@@ -143,7 +143,6 @@ DOMAIN,adse.wsa.ximalaya.com
 DOMAIN,adse.ximalaya.com
 DOMAIN,adsebs.ximalaya.com
 DOMAIN,adsense.google.cn
-DOMAIN,adserver.unityads.unity3d.com
 DOMAIN,adservice.google.com
 DOMAIN,adservice.sigmob.cn
 DOMAIN,adserviceretry.kugou.com
@@ -263,7 +262,6 @@ DOMAIN,api.shanghailingye.cn
 DOMAIN,api.ssp.xcultur.com
 DOMAIN,api.statsig.com
 DOMAIN,api.touch-moblie.com
-DOMAIN,api.yfanads.com
 DOMAIN,api5-normal-quic-lf.ixigua.com
 DOMAIN,apiyd.my91app.com
 DOMAIN,apmplus.volces.com
@@ -276,7 +274,6 @@ DOMAIN,applog.zijieapi.com
 DOMAIN,applovin.com
 DOMAIN,aqyad.com
 DOMAIN,aspect-upush.umeng.com
-DOMAIN,auction.unityads.unity3d.com
 DOMAIN,audid-api.taobao.com
 DOMAIN,audid.umeng.com
 DOMAIN,b1-data.ads.heytapmobi.com
@@ -323,7 +320,6 @@ DOMAIN,ccc-x.jd.com
 DOMAIN,ccs.umeng.com
 DOMAIN,cdn-ad.wtzw.com
 DOMAIN,cdn-ads.oss-cn-shanghai.aliyuncs.com
-DOMAIN,cdn-f.adsmoloco.com
 DOMAIN,cdn-plugin-sync-upgrade-juui.hismarttv.com
 DOMAIN,cdn.aiclk.com
 DOMAIN,cdn.chinaliftoff-creatives.io
@@ -356,7 +352,6 @@ DOMAIN,commercial.shouji.360.cn
 DOMAIN,conf.hpplay.cn
 DOMAIN,config.chsmarttv.com
 DOMAIN,config.inmobi.com
-DOMAIN,config.unityads.unity3d.com
 DOMAIN,cpc-service-square.aiclk.com
 DOMAIN,cpro.baidustatic.com
 DOMAIN,crash2.zhihu.com
@@ -373,7 +368,6 @@ DOMAIN,data.mistat.rus.xiaomi.com
 DOMAIN,data.mistat.xiaomi.com
 DOMAIN,datacollection.uve.weibo.com
 DOMAIN,dc.sigmob.cn
-DOMAIN,de.ad.gameley.com
 DOMAIN,de.tynt.com
 DOMAIN,diagnosis.ad.xiaomi.com
 DOMAIN,dlogs.bwton.com
@@ -509,7 +503,6 @@ DOMAIN,ixav-cse.avlyun.com
 DOMAIN,iyfbodn.com
 DOMAIN,janapi.jd.com
 DOMAIN,jiguang.cn
-DOMAIN,jp.ad.gameley.com
 DOMAIN,jpush.cn
 DOMAIN,jpush.html5.qq.com
 DOMAIN,jpush.io
@@ -596,10 +589,8 @@ DOMAIN,masdkv6.3g.qq.com
 DOMAIN,mazu.m.qq.com
 DOMAIN,mbdlog.iqiyi.com
 DOMAIN,medproad.com
-DOMAIN,metrics.data.hicloud.com
 DOMAIN,metrics.icloud.com
 DOMAIN,metrics.mzstatic.com
-DOMAIN,metrics2.data.hicloud.com
 DOMAIN,metrika.yandex.ru
 DOMAIN,mi.gdt.qq.com
 DOMAIN,miav-cse.avlyun.com
@@ -751,7 +742,6 @@ DOMAIN,sdk-track.66mobi.com
 DOMAIN,sdk.1rtb.net
 DOMAIN,sdk.ad.smaato.net
 DOMAIN,sdk.adhuanxiao.com
-DOMAIN,sdk.adx.adwangmai.com
 DOMAIN,sdk.aqyad.com
 DOMAIN,sdk.beizi.biz
 DOMAIN,sdk.cferw.com
@@ -760,7 +750,6 @@ DOMAIN,sdk.hzsanjiaomao.com
 DOMAIN,sdk.hzzfcm.com
 DOMAIN,sdk.markmedia.com.cn
 DOMAIN,sdk.mobads.adwangmai.com
-DOMAIN,sdk.zhangyuyidong.cn
 DOMAIN,sdkapi.cloooud.com
 DOMAIN,sdkapp.uve.weibo.com
 DOMAIN,sdkauth.hpplay.cn
@@ -769,7 +758,6 @@ DOMAIN,sdkconfig.ad.intl.xiaomi.com
 DOMAIN,sdkconfig.ad.xiaomi.com
 DOMAIN,sdkconfig.play.aiseet.atianqi.com
 DOMAIN,sdkconfig.video.qq.com
-DOMAIN,sdklog.zhangyuyidong.cn
 DOMAIN,sdkoptedge.chinanetcenter.com
 DOMAIN,sdkreport.e.qq.com
 DOMAIN,sdktmp.hubcloud.com.cn
@@ -825,11 +813,8 @@ DOMAIN,t.l.qq.com
 DOMAIN,t.teads.tv
 DOMAIN,t.track.ad.xiaomi.com
 DOMAIN,t002.ottcn.com
-DOMAIN,t1.a.market.xiaomi.com
 DOMAIN,t1.teads.tv
-DOMAIN,t2.a.market.xiaomi.com
 DOMAIN,t2.fancyapi.com
-DOMAIN,t3.a.market.xiaomi.com
 DOMAIN,t7z.cupid.ptqy.gitv.tv
 DOMAIN,tagtic.cn
 DOMAIN,tangram.e.qq.com
@@ -868,7 +853,6 @@ DOMAIN,toblog.ctobsnssdk.com
 DOMAIN,tpa-hcdn.iqiyi.com
 DOMAIN,tpc.googlesyndication-cn.com
 DOMAIN,tpc.googlesyndication.com
-DOMAIN,tr-asia.adsmoloco.com
 DOMAIN,trace.aqyad.com
 DOMAIN,trace.qq.com
 DOMAIN,tracelog-debug.aiclk.com
@@ -916,7 +900,6 @@ DOMAIN,us.l.qq.com
 DOMAIN,usr-api.aiclk.com
 DOMAIN,utoken.umeng.com
 DOMAIN,v.110route.cn
-DOMAIN,v.adintl.cn
 DOMAIN,v.adx.hubcloud.com.cn
 DOMAIN,v1-ad.video.yximgs.com
 DOMAIN,v2-ad.video.yximgs.com
@@ -948,7 +931,6 @@ DOMAIN,wcp.taobao.com
 DOMAIN,weather-analytics-events.apple.com
 DOMAIN,weather-community-drcn.weather.dbankcloud.cn
 DOMAIN,webstat.qiumibao.com
-DOMAIN,webview.unityads.unity3d.com
 DOMAIN,widgets.outbrain.com
 DOMAIN,widgets.pinterest.com
 DOMAIN,wildcard.moatads.com.edgekey.net

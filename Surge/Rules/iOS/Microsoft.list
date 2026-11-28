@@ -1,10 +1,84 @@
-# NAME: Microsoft（iOS 可用版）
-# SOURCE: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list
-# SYNCED: 2026-11-27 07:36:05 +0800
-# NOTE: 已移除 macOS 专属规则类型（PROCESS-NAME），其余条目与上游一致。
-# TOTAL: 671（上游剔除 2 条）
+# NAME: Microsoft（geosite 优先 · 多源合并 · iOS 可用版）
+# SOURCES: https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/microsoft | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Microsoft/Microsoft.list
+# CONTRIB: geosite:microsoft=122 | rule:rule/Surge/Microsoft/Microsoft.list=671
+# SYNCED: 2026-11-28 08:50:23 +0000
+# NOTE: 已剔除 PROCESS-NAME，做完全去重与后缀收敛；regexp/include 条目跳过。
+# TOTAL: 744
 
+DOMAIN,aurora-customization-usw2.lithium.com
+DOMAIN,img-prod-cms-rt-microsoft-com.akamaized.net
+DOMAIN,img-s-msn-com.akamaized.net
+DOMAIN,mwf-service.akamaized.net
+DOMAIN,officecdn-microsoft-com.akamaized.net
+DOMAIN,statics-marketingsites-eas-ms-com.akamaized.net
+DOMAIN,statics-marketingsites-eus-ms-com.akamaized.net
+DOMAIN,statics-marketingsites-wcus-ms-com.akamaized.net
+DOMAIN,azuremigrate.download.prss.microsoft.com @cn
+DOMAIN,azuremigratetest.download.prss.microsoft.com @cn
+DOMAIN,azurestackhub.download.prss.microsoft.com @cn
+DOMAIN,azurestackhubuat.download.prss.microsoft.com @cn
+DOMAIN,b.c2r.ts.cdn.office.net @cn
+DOMAIN,cbdstest.download.prss.microsoft.com @cn
+DOMAIN,cn.windowssearch.com @cn
+DOMAIN,collaborate.download.prss.microsoft.com @cn
+DOMAIN,collaborateppe.download.prss.microsoft.com @cn
+DOMAIN,ctldl.windowsupdate.com @cn
+DOMAIN,developer.microsoft.com @cn
+DOMAIN,download.microsoft.com @cn
+DOMAIN,dreamspark.download.prss.microsoft.com @cn
+DOMAIN,dreamsparkuat.download.prss.microsoft.com @cn
+DOMAIN,f.c2r.ts.cdn.office.net @cn
+DOMAIN,itacademy.download.prss.microsoft.com @cn
+DOMAIN,itacademyuat.download.prss.microsoft.com @cn
+DOMAIN,lex.download.prss.microsoft.com @cn
+DOMAIN,lexuat.download.prss.microsoft.com @cn
+DOMAIN,mbs.download.prss.microsoft.com @cn
+DOMAIN,mpnbenefits.download.prss.microsoft.com @cn
+DOMAIN,mpnbenefitsrtl.download.prss.microsoft.com @cn
+DOMAIN,mpnbenefitsrtluat.download.prss.microsoft.com @cn
+DOMAIN,msdn.download.prss.microsoft.com @cn
+DOMAIN,msdprod-ad.download.prss.microsoft.com @cn
+DOMAIN,msproduct.download.prss.microsoft.com @cn
+DOMAIN,myvs.download.prss.microsoft.com @cn
+DOMAIN,oemsoc.download.prss.microsoft.com @cn
+DOMAIN,oemsocuat.download.prss.microsoft.com @cn
+DOMAIN,officecdn.microsoft.com @cn
+DOMAIN,officemkt.download.prss.microsoft.com @cn
+DOMAIN,officemktuat.download.prss.microsoft.com @cn
+DOMAIN,osrelease.download.prss.microsoft.com @cn
+DOMAIN,rsm.download.prss.microsoft.com @cn
+DOMAIN,sdx.microsoft.com @cn
+DOMAIN,shell.cdn.office.net @cn
+DOMAIN,software.download.prss.microsoft.com @cn
+DOMAIN,statics.teams.cdn.office.net @cn
+DOMAIN,storecorefulfillment.download.prss.microsoft.com @cn
+DOMAIN,storeedge.microsoft.com @cn
+DOMAIN,storeedgefd.dsx.mp.microsoft.com @cn
+DOMAIN,surface.download.prss.microsoft.com @cn
+DOMAIN,surface.downloads.prss.microsoft.com @cn
+DOMAIN,vlportal.download.prss.microsoft.com @cn
+DOMAIN,volic.download.prss.microsoft.com @cn
+DOMAIN,vz.download.prss.microsoft.com @cn
+DOMAIN,windbg.download.prss.microsoft.com @cn
+DOMAIN,dc.applicationinsights.azure.com @telemetry
+DOMAIN,live.applicationinsights.azure.com @telemetry
+DOMAIN,bj1.api.bing.com @cn
+DOMAIN,github-api.arkoselabs.com
+DOMAIN,github-cloud.s3.amazonaws.com
+DOMAIN,github-production-release-asset-2e65be.s3.amazonaws.com
+DOMAIN,github-production-repository-file-5c1aeb.s3.amazonaws.com
+DOMAIN,github-production-repository-image-32fea6.s3.amazonaws.com
+DOMAIN,github-production-upload-manifest-file-7fdce7.s3.amazonaws.com
+DOMAIN,github-production-user-asset-6210df.s3.amazonaws.com
+DOMAIN,dc.services.visualstudio.com @telemetry
+DOMAIN,download.visualstudio.microsoft.com @cn
+DOMAIN,rt.services.visualstudio.com @telemetry
+DOMAIN,vscode.download.prss.microsoft.com @cn
 DOMAIN,vsmarketplacebadge.apphb.com
+DOMAIN,copilot-proxy.githubusercontent.com
+DOMAIN,copilot-workspace.githubnext.com
+DOMAIN,copilot-telemetry-service.githubusercontent.com @telemetry
+DOMAIN,copilot-telemetry.githubusercontent.com @telemetry
 DOMAIN-SUFFIX,1drv.ms
 DOMAIN-SUFFIX,21vbc.com
 DOMAIN-SUFFIX,21vbluecloud.com
@@ -672,6 +746,6 @@ DOMAIN-KEYWORD,microsoft
 DOMAIN-KEYWORD,1drv
 DOMAIN-KEYWORD,onedrive
 DOMAIN-KEYWORD,skydrive
-USER-AGENT,Microsoft*
-USER-AGENT,OneDrive*
-USER-AGENT,OneDriveiOSApp*
+USER-AGENT,microsoft*
+USER-AGENT,onedrive*
+USER-AGENT,onedriveiosapp*
