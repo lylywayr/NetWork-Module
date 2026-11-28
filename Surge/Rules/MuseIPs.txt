@@ -1,44 +1,43 @@
 # Muse / Meta AI 解析 IP —— 自动生成，仅供参考
-# 生成时间：2026-11-27 11:57 +0000
+# 生成时间：2026-11-28 11:31 +0000
 #
 # 注意：本文件不参与分流。CDN 与 anycast 的 IP 会频繁变化，
 #       写 IP-CIDR 规则会导致分流结果不稳定，故仅作排查参考。
 #
-# 解析成功 36 / 65 个主机，共 56 条 IP
+# 解析成功 35 / 64 个主机，共 54 条 IP
 
-a.ecto1.ai: 64.239.123.129, 64.239.123.193
-accountscenter.meta.com: 57.144.216.141
-agent.meta.ai: 57.144.216.141
-api.muse.ai: 57.144.216.141
-auth.meta.com: 57.144.216.141
-auth.muse.ai: 57.144.216.141
-connect.facebook.net: 57.144.216.128
-draft.research.ecto1.ai: 64.239.123.1, 64.239.123.193
-ecto1.ai: 64.239.123.1, 64.239.123.65
+a.ecto1.ai: 64.239.109.129, 64.239.123.65
+accountscenter.meta.com: 157.240.14.15
+agent.meta.ai: 157.240.14.15
+api.muse.ai: 57.144.196.141
+auth.meta.com: 157.240.14.15
+auth.muse.ai: 157.240.14.15
+connect.facebook.net: 157.240.14.19
+draft.research.ecto1.ai: 64.239.109.129, 64.239.123.65
+ecto1.ai: 64.239.109.193, 64.239.123.1
 editor.research.ecto1.ai: 64.239.109.193, 64.239.109.65
-facebook.com: 57.144.216.1
-fbcdn.net: 57.144.216.1
+facebook.com: 157.240.14.35
+fbcdn.net: 57.144.252.1
 hatch.club: 64.239.109.1
-hatch.meta.ai: 57.144.216.141
-introducing.museai.com: 64.239.109.65, 64.239.123.193
-llama.com: 57.144.216.141
+hatch.meta.ai: 57.144.252.141
+introducing.museai.com: 64.239.109.1, 64.239.123.193
+llama.com: 157.240.14.15
 m.museai.com: 64.239.109.193, 64.239.109.65
-meta.ai: 57.144.216.141
-meta.com: 57.144.216.141
-muse.ai: 57.144.216.141
-museai.com: 64.239.109.1, 64.239.123.129
-nest-static.fbcdn.net: 57.144.216.128
-onboarding.hatch.ecto1.ai: 64.239.109.193, 64.239.123.65
-preview.ecto1.ai: 64.239.109.129, 64.239.123.1
-preview.hatch.ecto1.ai: 64.239.109.129, 64.239.109.65
-preview.museai.com: 64.239.123.129, 64.239.123.193
-production.museai.com: 64.239.109.193, 64.239.123.65
-staging.hatch.ecto1.ai: 64.239.109.65, 64.239.123.193
-staging.research.ecto1.ai: 64.239.109.65, 64.239.123.129
-usercontent.ecto1.ai: 64.239.109.129, 64.239.123.1
-usercontent.staging.ecto1.ai: 64.239.109.193, 64.239.109.65
-voice.hatch.ecto1.ai: 64.239.109.65, 64.239.123.129
-voice.museai.com: 64.239.109.129, 64.239.123.193
-www.hatch.club: 13.248.169.48, 76.223.54.146
-www.muse.ai: 57.144.216.141
-www.museai.com: 64.239.109.1, 64.239.109.65
+meta.ai: 157.240.14.15
+meta.com: 57.144.180.141
+muse.ai: 157.240.14.15
+museai.com: 64.239.109.129, 64.239.123.193
+nest-static.fbcdn.net: 157.240.14.19
+onboarding.hatch.ecto1.ai: 64.239.109.129, 64.239.123.1
+preview.ecto1.ai: 64.239.109.1, 64.239.123.129
+preview.hatch.ecto1.ai: 64.239.123.1, 64.239.123.129
+preview.museai.com: 64.239.109.1, 64.239.109.65
+production.museai.com: 64.239.123.1, 64.239.123.129
+staging.hatch.ecto1.ai: 64.239.109.1, 64.239.123.1
+staging.research.ecto1.ai: 64.239.109.193, 64.239.123.65
+usercontent.ecto1.ai: 64.239.109.1, 64.239.109.65
+usercontent.staging.ecto1.ai: 64.239.109.1, 64.239.123.1
+voice.hatch.ecto1.ai: 64.239.109.193, 64.239.123.193
+voice.museai.com: 64.239.109.129, 64.239.109.193
+www.muse.ai: 157.240.14.15
+www.museai.com: 64.239.109.129, 64.239.123.193
